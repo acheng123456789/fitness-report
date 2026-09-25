@@ -21,7 +21,13 @@
 <link rel="icon" type="image/png" sizes="64x64" href="https://acheng123456789.github.io/favicon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://acheng123456789.github.io/favicon-32.png">
 <link rel="shortcut icon" href="https://acheng123456789.github.io/favicon.png">
+<meta name="theme-color" content="#00C86F">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="我的运动报告">
+<meta name="application-name" content="我的运动报告">
 <style>
 
 :root{
@@ -1078,15 +1084,34 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
 </script>
 <script>
 (function(){
- var h=document.querySelector('.home');if(!h)return;
- /* ① 按压反馈：pointerdown 立刻下沉，up/cancel/leave 任一到达就弹回。
+ var h=document.querySelector('.home');
+
+ /* ① 返回封面：**优先 history.back()**（不是整页跳 index.html）。
+    ⚠️ 用户原话："点了首页，回到运动报告首页的时候，它就会出现像截图里面这种叉叉和那个，
+       就变成一个网页版的了" —— 整页跳转是**一次新导航**，在"添加到主屏幕"的容器里
+       这次导航有时会被交给普通浏览器打开，于是地址栏 + ✕ 全回来了。
+       back() 退回的是**本容器里已经加载过的那份封面文档**，不产生新导航 ⇒ 绝不会掉出去，
+       而且是瞬时的（不重新下载、不重新绘）。
+    只在"上一条历史确实是本站"时才拦截（有历史 + referrer 同源），否则老老实实走 href
+    —— 免得用户从外部链接直接打开次级页时，back() 把他带出站点。 */
+ if(h){
+   h.addEventListener('click',function(e){
+     try{
+       if(history.length>1&&document.referrer&&
+          document.referrer.indexOf(location.origin)===0){
+         e.preventDefault();history.back();
+       }
+     }catch(_){}
+   });
+
+ /* ② 按压反馈：pointerdown 立刻下沉，up/cancel/leave 任一到达就弹回。
     ⚠️ pointercancel 必须监听（iOS 判成滚动时只发 cancel、不发 up），漏了会永远"按着"。 */
  h.addEventListener('pointerdown',function(){h.classList.add('press');});
  var off=function(){h.classList.remove('press');};
  h.addEventListener('pointerup',off);
  h.addEventListener('pointercancel',off);
  h.addEventListener('pointerleave',off);
- /* ② 收起/滑出：向下滚正文就收进左边缘（不挡字），向上滚或回到顶部立刻滑出来。 */
+ /* ③ 收起/滑出：向下滚正文就收进左边缘（不挡字），向上滚或回到顶部立刻滑出来。 */
  var last=0,busy=false;
  addEventListener('scroll',function(){
    if(busy)return;busy=true;
@@ -1097,6 +1122,31 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
      else if(y<last-4){h.classList.remove('hide');}
      last=y;busy=false;});
  },{passive:true});
+ }
+
+ /* ④ 点屏幕顶端 ＝ 滚回本页最上面。
+    "点状态栏回顶"是 iOS **只给 Safari** 的特权，装到桌面的独立 App / WebView 里不生效，
+    所以自己补一个：落在顶部 ZONE 内的"轻点"（位移很小、不是滚动）就平滑回顶。
+    ⚠️ 挂在 window 上、且**什么都不 preventDefault** ⇒ 不抢滚动手势、不挡任何链接按钮；
+       点在 a/button/label/input 上直接放过 —— 报告页的图表热区全是 <label>，
+       放过的意思是"那一下仍旧是选中数据点"，不会被我们抢去回顶。 */
+ var ZONE=130,sy=0,sx=0,armed=false;
+ addEventListener('pointerdown',function(e){
+   armed=false;
+   if(e.isPrimary===false)return;
+   if(e.target&&e.target.closest&&
+      e.target.closest('a,button,label,input,select,textarea'))return;
+   if(e.clientY>ZONE)return;
+   sy=e.clientY;sx=e.clientX;armed=true;
+ },{passive:true});
+ addEventListener('pointerup',function(e){
+   if(!armed)return;armed=false;
+   if(Math.abs(e.clientY-sy)>12||Math.abs(e.clientX-sx)>12)return;  /* 是滚动/拖拽，不是轻点 */
+   var y=scrollY||document.documentElement.scrollTop||0;
+   if(y<24)return;                                                  /* 已经在最上面 */
+   try{scrollTo({top:0,behavior:'smooth'});}catch(_){scrollTo(0,0);}
+ },{passive:true});
+ addEventListener('pointercancel',function(){armed=false;},{passive:true});
 })();
 </script>
 </body>
