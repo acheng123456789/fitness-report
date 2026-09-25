@@ -82,7 +82,13 @@ body{
 .fig{width:100%;position:relative}
 /* ---- 纯 CSS 交互核心 ---- */
 .chart{position:relative}
-.r{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+/* ⚠️ position 必须是 fixed、不能是 absolute：
+   这些 radio 是给 <label> 点按用的，而点 <label> 会让浏览器**聚焦**关联的 radio，
+   并按"把聚焦元素滚进视野"处理 —— absolute + 0 尺寸时它躺在图表自己的位置上，
+   于是每次点热区页面都会自己往上跳一下（实测点在屏幕顶端时整页跳 527px）。
+   fixed 的元素永远算"已在视野内"，focus 不再触发滚动；
+   0 尺寸 + opacity:0 照旧完全不可见、点不到。 */
+.r{position:fixed;top:0;left:0;opacity:0;width:0;height:0;pointer-events:none}
 .plot{position:relative;overflow:visible}
 .plot>svg{display:block;width:100%;height:auto}
 .hot{position:absolute;z-index:3;cursor:pointer}
