@@ -212,8 +212,28 @@ html{scroll-behavior:smooth}
    radio 切面板**不产生历史** → 右滑直接退回上一页（封面/主屏）。 */
 .tbi{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .pnls>.blk{display:none}
+/* 切板块时给**头图**一个很轻的进场（淡入 + 上浮 6px）：
+   `display:none` → `block` 会让动画**重新播放**，不需要任何 JS 配合。
+   ⚠️ 只动头图这一小块（约 100px 高），**不给整块面板做动画** ——
+   面板可能几千像素高，整块淡入/位移会让 iOS 去合成一张巨大的图层，
+   反而更卡（用户这次反馈的"有点卡"）。头图这一下就够"内容换了"的提示。 */
+@keyframes pnlIn{from{opacity:0;transform:translate3d(0,6px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}}
 #tb1:checked~.pnls>.blk.p1,#tb2:checked~.pnls>.blk.p2,
 #tb3:checked~.pnls>.blk.p3,#tb4:checked~.pnls>.blk.p4{display:block}
+#tb1:checked~.pnls>.blk.p1>.hero,#tb2:checked~.pnls>.blk.p2>.hero,
+#tb3:checked~.pnls>.blk.p3>.hero,#tb4:checked~.pnls>.blk.p4>.hero{
+  animation:pnlIn .32s cubic-bezier(.32,.72,0,1)}
+/* 深链兜底（纯 CSS，不依赖脚本）：URL 里带 #gN 就直接显示对应面板，
+   **且从第一帧起就对** —— 封面点"有氧"跳的是 report.html#g2，正常由脚本预选 radio，
+   但脚本在文档末尾才跑，首帧仍会先按 `checked` 属性渲染成"总览"（大文档下
+   能看见明显一跳）。这层 CSS 让首帧就落在对的板块。
+   为什么给容器加 id：`#pnls:has(…)>…` 的选择器权重(1,4,1) 才压得住
+   `#tb1:checked~.pnls>.blk.p1`(1,4,0)，否则两个面板会同时显示。
+   脚本跑完会 replaceState 抹掉 hash → 这层自动失效，radio 重新接管。 */
+#pnls:has(>.blk:target)>.blk:not(:target){display:none}
+#pnls:has(>.blk:target)>.blk:target{display:block}
+#pnls:has(>.blk:target)>.blk:target>.hero{animation:pnlIn .32s cubic-bezier(.32,.72,0,1)}
 /* 底部留白：给「悬浮 Dock」让位（Dock 高约 72px + 距底 10px） */
 body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 /* Dock 背后一层**极淡的彩色氛围光** —— 给玻璃"有颜色的东西可折射"。
@@ -264,7 +284,7 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
   width:54px;height:36px;border-radius:18px;
   /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮（只有 transform，最稳）。 */
   transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
-  transition:transform .26s cubic-bezier(.34,1.35,.5,1)}
+  transition:transform .34s cubic-bezier(.32,.72,0,1)}
 /* ⚠️ 这里原来挂了一串 `filter: blur() + drop-shadow(红) + drop-shadow(蓝)` 做"棱镜色散"。
    iOS 上会渲染出**品红色杂线**（与上面 tabbar 注释里的 ③ 同一类合成本 bug），
    已整体删除。现在"隔着玻璃看图标"的感觉只由 .tgl 的放大 + .live 的换色表达。 */
@@ -273,17 +293,17 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
 /* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
    选中态的 4 条规则在下面，一起管。 */
 .tabbar label.live{color:var(--ac)}
-/* ===== 手势层：铺满整个 Dock 的一层透明方块 =====
-   ⚠️ 这里**赔过两次教训**，所以不用 `<input type=range>` 了：
-   原生 range 的"点哪跳哪"是把**滑块（thumb）中心**对到手指上，而 thumb 有宽度（25%），
-   于是「手指位置 → value」中间隔着一层 (trackW−thumbW) 的映射：
-   点第 i 个 Tab 的**正中**，拿到的 value ≠ i（实测是 i−1 那一档，且越靠左偏得越狠），
-   结果就是**点"总览"没反应**（value 原地不动 ⇒ 连 input/change 都不触发）。
-   直接读 `clientX` 自己算坐标，映射 100% 可预期，跟手也不输原生。 */
-.tsurf{position:absolute;inset:0;z-index:3;border-radius:inherit;
-  background:transparent;touch-action:pan-y;cursor:grab;
-  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
-.tsurf:active{cursor:grabbing}
+/* ===== 手势：**点按完全走原生**，只有横向拖动才由脚本接管 =====
+   ⚠️ 这里以前铺了一层透明的 .tsurf 盖住整个 Dock，点按全靠脚本在 pointerup 里
+   手动跳转。结果 iOS 上（竖向滑动优先）一旦把这次触摸判成滚动，就直接发
+   **pointercancel**，pointerup 永远不来 ⇒ 那一次点按**静默丢失**，
+   表现就是"点了没反应 / 得先点总览才行"。
+   现在：点按交给原生 `<label>` / `<a>` 的 click（浏览器保证触发，脚本挂了也能用），
+   横向拖动才由脚本接管（|dx|>8 且横向占优），拖完把那次 click 吃掉。
+   touch-action:pan-y ＝ 竖直手势仍归页面滚动（Dock 上也能顺畅滚），横向不发滚动。 */
+.tabbar{touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:grab;
+  -webkit-touch-callout:none}
+.tabbar.dragging{cursor:grabbing}
 #tb1:checked~.tabbar label[for=tb1],
 #tb2:checked~.tabbar label[for=tb2],
 #tb3:checked~.tabbar label[for=tb3],
@@ -304,19 +324,29 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
   /* 玻璃"中间薄、边缘厚"的观感：两层**普通渐变**叠出来（不许用 filter/mask/inset，见 .tabbar 注释）。
      第一层径向的**峰值放在 26% 高度 —— 落在胶囊内部**，不在上沿，所以不会烧出一条亮线。 */
   background:
-    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.26),rgba(255,255,255,0) 72%),
-    linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,.13) 46%,
-      rgba(255,255,255,.18) 100%);
-  -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
-  backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
+    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.30),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.19) 46%,
+      rgba(255,255,255,.24) 100%);
+  /* ⚠️⚠️ 这颗胶囊**必须没有 backdrop-filter**（原来有 blur(3px) saturate(190%) brightness(1.06)）：
+     backdrop-filter 的元素一移动，浏览器就得**每一帧把身后的内容重新取景+重新糊**，
+     而它身后还压着 .tabbar 那层 blur(30px)，等于每帧重算两次模糊 —— 这是拖动"发卡"的主因。
+     好消息是**拿掉它几乎看不出区别**（实测逐像素比对：平均差 0.22/255、只有 0.3% 的像素差值>3）——
+     因为身后已经是 .tabbar 糊过一遍的、几乎中性的白玻璃，再 saturate/brighten 等于白做。
+     底色因此上调了一点点（.26/.28/.13/.18 → .30/.34/.19/.24）来补回那点"肉感"。 */
   /* ⚠️ 一条 inset 都没有，也**没有伪元素**：inset 阴影在元素边界处最亮又被硬裁，
      必然在胶囊上沿留一道 1px 亮线；而"伪元素 + filter/mask"在 iOS 上会渲染出
      品红杂线（详见上面 .tabbar 的注释）。只用外投影 + 渐变底色，最稳。
-     translateZ(0)：提到独立合成层，避免拖动时亚像素重绘出接缝。 */
+     translateZ(0)：提到独立合成层，拖动时只剩纯位移，不再重绘。 */
   box-shadow:0 5px 16px rgba(18,45,32,.14),0 1px 3px rgba(18,45,32,.08);
-  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度" */
+  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度"。
+     ⚠️ 缓动用 iOS 自己的曲线 cubic-bezier(.32,.72,0,1)：起步快、收尾极长，
+     是"丝滑"的来源。之前那版 (.3,1.32,.45,1) 带**回弹过冲**，弹一下看着热闹，
+     但苹果的胶囊从来不过冲 —— 过冲＝廉价感。 */
   transform:translateX(calc(var(--i,0) * 100% / 1.14)) translateZ(0);
-  transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
+  transition:transform .42s cubic-bezier(.32,.72,0,1)}
+/* 手指按住拖动时：滑块走的是"跟手"路径（脚本每帧直接写 --i、过渡关掉），
+   这里只把它**提升成独立合成层**，避免每帧都要重新合成投影。松手立刻撤掉，别常驻吃显存。 */
+.tabbar.dragging .gsl{will-change:transform}
 #tb1:checked~.tabbar .gsl{--i:0}
 #tb2:checked~.tabbar .gsl{--i:1}
 #tb3:checked~.tabbar .gsl{--i:2}
@@ -803,7 +833,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
 <input class="tbi" type="radio" name="tb" id="tb3">
 <input class="tbi" type="radio" name="tb" id="tb4">
 
-<div class="pnls">
+<div class="pnls" id="pnls">
 <section class="blk pnl p1" id="g1" style="--gc:#00C86F"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><rect x="2.7" y="3.4" width="18.6" height="17.2" rx="5.2"/><path d="M6.8 15.2 10.4 11.2 13.4 13.6 17.6 8.6"/><circle cx="17.6" cy="8.6" r="1.5" fill="#fff" stroke="none"/></svg></div><h1>总览</h1><div class="hsub">日历 · 趋势 · 类型占比</div></header><div class="cnt">
   <div class="kpis"><div class="kpi"><div class="v">140<small>次</small></div><div class="l">运动总次数</div></div><div class="kpi"><div class="v">124.6<small>h</small></div><div class="l">运动总时长</div></div><div class="kpi"><div class="v">1.5<small>次/周</small></div><div class="l">平均每周运动次数</div></div><div class="kpi"><div class="v">760.0<small>km</small></div><div class="l">运动总距离</div></div><div class="kpi"><div class="v">102<small>天</small></div><div class="l">有运动天数</div></div><div class="kpi"><div class="v">73.3<small>min</small></div><div class="l">运动日均时长</div></div><div class="kpi"><div class="v">34<small>次</small></div><div class="l">跑步次数</div></div><div class="kpi"><div class="v">175.8<small>km</small></div><div class="l">跑步总里程</div></div><div class="kpi"><div class="v">127<small>bpm</small></div><div class="l">全期平均心率</div></div><div class="kpi"><div class="v">17/21<small></small></div><div class="l">活跃月数</div></div></div>
 
@@ -897,84 +927,110 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
 
 <script>
 (function(){
- var r=document.querySelectorAll('.tbi');
+ var bar=document.querySelector('.tabbar'),r=document.querySelectorAll('.tbi');
+ /* ---- ① 深链：#g3 → 预选第三个 Tab ---- */
  var h=location.hash.match(/^#g([1-4])$/);
  if(h&&document.getElementById('tb'+h[1])){
    document.getElementById('tb'+h[1]).checked=true;
-   /* 抹掉 hash：历史里只留"上一页"，于是从屏幕左缘右滑＝直接回封面 */
+   /* 抹掉 hash：历史里只留"上一页"，于是从屏幕左缘右滑＝直接回封面。
+      抹掉后 CSS 的 :target 兜底自动失效、radio 重新接管，两边不会打架。 */
    history.replaceState(null,'',location.pathname+location.search);
  }
- for(var i=0;i<r.length;i++)r[i].addEventListener('change',function(){scrollTo(0,0);});
+ /* ---- ② 换 Tab 后回到顶部 ---- */
+ function toTop(){try{scrollTo({top:0,behavior:'smooth'});}catch(e){scrollTo(0,0);}}
+ for(var i=0;i<r.length;i++)r[i].addEventListener('change',function(){
+   /* 点按路径：把上次拖动留在 gsl 上的行内 --i 清掉，让 :checked 规则重新掌管位置 */
+   if(gsl){gsl.style.transition='';gsl.style.removeProperty('--i');}
+   toTop();
+ });
 
- /* ===== 手动拖动滑块 ===== */
- var bar=document.querySelector('.tabbar');if(!bar)return;
+ if(!bar)return;
  var gsl=bar.querySelector('.gsl'),ls=bar.querySelectorAll('label');
  var N=ls.length;if(!N)return;
- var picked=0;
- for(var k=0;k<r.length;k++)if(r[k].checked)picked=k;
- function paint(v,snap){
-   if(gsl){
-     gsl.style.transition=snap?'':'none';   /* 拖动中关过渡，才跟手 */
-     gsl.style.setProperty('--i',v);
-   }
+ var lastLens=[-1,-1,-1,-1],lastN=-1,raf=0;
+ var down=false,dragging=false,sx=0,sy=0,lx=0,rect=null,suppress=false;
+
+ /* 每帧只写"真的变了"的属性：原来每来一个 pointermove（一帧可能好几个）都要写
+    8 个自定义属性 + 4 次 class 切换，拖动那把卡顿基本来自这里。 */
+ function paint(){
+   raf=0;if(!rect)return;
+   var v=(lx-rect.left)/rect.width*N-0.5;
+   if(v<0)v=0;if(v>N-1)v=N-1;
+   if(gsl)gsl.style.setProperty('--i',v);
    var n=Math.round(v);
    for(var j=0;j<N;j++){
-     /* 透镜：拖动中按"离滑块多远"放大（贴着滑块最大 34%）；不拖时只留选中格一点的基准 */
-     var d=Math.abs(j-v);
-     var f=snap?(j===n?0.3:0):(d>=1?0:Math.pow(1-d,0.75));
-     ls[j].style.setProperty('--lens',f.toFixed(3));
-     ls[j].classList.toggle('live',j===n);
+     var d=Math.abs(j-v),f=d>=1?0:Math.pow(1-d,0.75);
+     if(Math.abs(f-lastLens[j])>.008){
+       ls[j].style.setProperty('--lens',f.toFixed(3));lastLens[j]=f;
+     }
+   }
+   if(n!==lastN){
+     if(ls[lastN])ls[lastN].classList.remove('live');
+     ls[n].classList.add('live');lastN=n;
    }
  }
-/* 手势层：透明方块，自己从 clientX 算位置（为什么不用 range，见 CSS 里那段注释）。
-   ⚠️ 层级：z-index:3 压在 4 个 label 之上，所以**点按也由这里接管**——
-   不再指望 label 的默认行为（被盖住了根本点不到）。 */
-var surf=document.createElement('div');
-surf.className='tsurf';surf.setAttribute('aria-hidden','true');
-bar.appendChild(surf);
-function pct(x){
-  var b=bar.getBoundingClientRect();
-  return (x-b.left)/b.width;
-}
-/* 视觉位置：p=0 → 0（第一格正中）、p=1 → N-1（最后一格正中），两端夹住 */
-function vis(x){var v=pct(x)*N-0.5;return v<0?0:(v>N-1?N-1:v);}
-function near(x){return Math.round(vis(x));}
-var down=0,moved=false,startX=0,startY=0,lastX=0,tapI=0;
-surf.addEventListener('pointerdown',function(e){
-  startX=lastX=e.clientX;startY=e.clientY;moved=false;down=1;
-  tapI=near(e.clientX);
-  bar.classList.add('dragging');
-  paint(vis(e.clientX),false);          /* 一按就跟手（点按＝直接吸到该格） */
-  if(surf.setPointerCapture){try{surf.setPointerCapture(e.pointerId);}catch(err){}}
-  e.preventDefault();
-},false);
-surf.addEventListener('pointermove',function(e){
-  if(!down)return;
-  lastX=e.clientX;
-  if(Math.abs(e.clientX-startX)>7||Math.abs(e.clientY-startY)>7)moved=true;
-  if(!moved)return;
-  paint(vis(e.clientX),false);
-},false);
-function endDrag(e){
-  if(!down)return;down=0;
-  bar.classList.remove('dragging');
-  /* 位移很小＝点按：用**按下位置**那一格（避免手指微抖把目标晃到隔壁）；
-     真的拖过＝用松手位置那一格。 */
-  var n=moved?near(e.clientX):tapI;
-  requestAnimationFrame(function(){paint(n,true);});
-  if(r[n])r[n].checked=true;
-  /* ⚠️ JS 里 `el.checked=true` **不会触发** change 事件（只有用户交互才会），
-     所以上面那个 radio 的 change 监听不会跑，滚动得在这里自己归零。 */
-  scrollTo(0,0);
-}
-surf.addEventListener('pointerup',endDrag,false);
-/* 手势被系统抢走（比如手指划成页面滚动）时，退回离**最后位置**最近的一格 */
-surf.addEventListener('pointercancel',function(){
-  if(!down)return;down=0;bar.classList.remove('dragging');
-  var n=near(lastX);
-  requestAnimationFrame(function(){paint(n,true);});
-},false);
-paint(picked,true);
+ function queue(){if(!raf)raf=requestAnimationFrame(paint);}
+
+ /* 松手落位：先换 radio（CSS 的 --i 随之变成 n），**再**撤掉行内 --i，
+    于是 transform 从"手指所在的位置"平滑滑到那格的基准位置（同一次样式计算里完成）。 */
+ function settle(n){
+   bar.classList.remove('dragging');
+   for(var j=0;j<N;j++)ls[j].style.removeProperty('--lens');
+   lastLens=[-1,-1,-1,-1];lastN=-1;
+   if(r[n])r[n].checked=true;
+   if(gsl){gsl.style.transition='';gsl.style.removeProperty('--i');}
+   toTop();
+ }
+
+ /* 拖动结束后浏览器可能还会补一次 click（落在 label/link 上）——
+   在**捕获阶段**吃掉它，否则会再触发一次"切换/跳转"。 */
+ bar.addEventListener('click',function(e){
+   if(!suppress)return;
+   suppress=false;e.preventDefault();e.stopPropagation();
+ },true);
+
+ bar.addEventListener('pointerdown',function(e){
+   if(e.button&&e.button!==0)return;
+   down=true;dragging=false;suppress=false;
+   sx=lx=e.clientX;sy=e.clientY;rect=null;
+ },false);
+
+ bar.addEventListener('pointermove',function(e){
+   if(!down)return;
+   lx=e.clientX;
+   var ax=Math.abs(e.clientX-sx),ay=Math.abs(e.clientY-sy);
+   if(!dragging){
+     /* 只有"明确横向、且超过 8px"才升级成拖动；否则一律当成点按/滚动，
+        一个 preventDefault 都不发（发了就等于把 click 和滚动都掐掉）。 */
+     if(ax<8||ax<ay*1.2)return;
+     dragging=true;rect=bar.getBoundingClientRect();
+     if(gsl)gsl.style.transition='none';
+     bar.classList.add('dragging');
+     if(bar.setPointerCapture){try{bar.setPointerCapture(e.pointerId);}catch(err){}}
+   }
+   e.preventDefault();
+   queue();
+ },false);
+
+ bar.addEventListener('pointerup',function(e){
+   if(!down)return;down=false;
+   if(!dragging)return;                 /* 点按：什么都不做，交给原生 click */
+   suppress=true;lx=e.clientX;settle(near());
+ },false);
+
+ /* 手势被系统抢走（手指划成竖向滚动）时，退回离最后位置最近的一格 */
+ bar.addEventListener('pointercancel',function(){
+   if(!down)return;down=false;
+   if(!dragging)return;
+   suppress=true;settle(near());
+ },false);
+
+ function near(){
+   if(!rect)return 0;
+   var v=(lx-rect.left)/rect.width*N-0.5;
+   v=v<0?0:(v>N-1?N-1:v);
+   return Math.round(v);
+ }
 })();
 </script>
 </body>

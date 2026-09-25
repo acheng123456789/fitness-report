@@ -91,17 +91,17 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
   transition:transform .12s,opacity .16s}
 .tabbar a.live{opacity:1}
 .tabbar a span{color:#5C5668}
-/* 手势层：铺满 Dock 的透明方块，位置自己从 clientX 算（不用 range 的原因见报告页注释） */
-.tsurf{position:absolute;inset:0;z-index:3;border-radius:inherit;
-  background:transparent;touch-action:pan-y;cursor:grab;
-  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
-.tsurf:active{cursor:grabbing}
+/* 手势：**点按走原生 `<a>`**（立刻跳），脚本只接管横向拖动（详见 COVER_JS 注释）。
+   pan-y ＝ 竖直手势仍归页面滚动。 */
+.tabbar{touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:grab;
+  -webkit-touch-callout:none}
+.tabbar.dragging{cursor:grabbing}
 .tabbar a:active{transform:scale(.9)}
 .tgl{display:flex;align-items:center;justify-content:center;
   width:54px;height:36px;border-radius:18px;
   /* 透镜：--lens 由脚本按"离滑块多远"写（见报告页同段注释） */
   transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
-  transition:transform .26s cubic-bezier(.34,1.35,.5,1)}
+  transition:transform .34s cubic-bezier(.32,.72,0,1)}
 /* ⚠️ 原来这里有一串 filter + drop-shadow(红/蓝) 做"棱镜色散"，iOS 上会渲染出
    **品红色杂线**，已整体删除（详见报告页同段注释）。 */
 .tabbar svg{width:32px;height:32px;display:block;fill:none;stroke:currentColor;
@@ -112,18 +112,20 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
   border-radius:30px;
   /* 两层普通渐变（径向峰值落在胶囊内部 26% 处）＝ 玻璃"中间薄、边缘厚"，不会烧出上沿亮线 */
   background:
-    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.26),rgba(255,255,255,0) 72%),
-    linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,.13) 46%,
-      rgba(255,255,255,.18) 100%);
-  -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
-  backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
+    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.30),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.19) 46%,
+      rgba(255,255,255,.24) 100%);
+  /* ⚠️ 和报告页一样：**不要 backdrop-filter**。移动的元素带 backdrop-filter 时，
+     浏览器每帧都要重新取景身后的内容再糊一遍 —— 这是拖动卡顿的主因，而拿掉它
+     逐像素比对几乎看不出差别（详见报告页同段注释）。 */
   /* ⚠️ 无 inset、无伪元素（原因同报告页：inset 会留亮线，伪元素+filter 会出杂色线） */
   box-shadow:0 5px 16px rgba(18,45,32,.14),0 1px 3px rgba(18,45,32,.08);
-  /* --i 由封面脚本写（拖动时是小数） */
+  /* --i 由封面脚本写（拖动时是小数）；缓动与报告页一致（iOS 曲线，不过冲） */
   transform:translateX(calc(var(--i,0) * 100% / 1.14)) translateZ(0);
-  transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
+  transition:transform .42s cubic-bezier(.32,.72,0,1)}
+.tabbar.dragging .gsl{will-change:transform}
 
-/* 滑块：封面没有 radio，位移由封面脚本在点击时写 transform（先滑、再跳） */
+/* 滑块：封面没有 radio，位置由封面脚本写（拖动跟手 / 松手吸附后跳页） */
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
 </style></head><body>
   <div class="cover">
@@ -145,68 +147,88 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=0113caff#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=0113caff#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=0113caff#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=0113caff#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=96c1d4ba#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=96c1d4ba#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=96c1d4ba#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=96c1d4ba#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
 <script>
 (function(){
  var bar=document.querySelector('.tabbar');if(!bar)return;
  var gsl=bar.querySelector('.gsl'),as=bar.querySelectorAll('a.tga');
  var N=as.length;if(!N)return;
- var leaving=false;
- function paint(v,snap){
-   if(gsl){
-     /* 拖动中必须关掉过渡，否则滑块会"追着"手指慢慢走，手感发飘 */
-     gsl.style.transition=snap?'':'none';
-     gsl.style.setProperty('--i',v);
-   }
+ /* 首格（总览）标成"当前"：封面本身不属于任何板块，但滑块停在第一格，
+    灯得跟着亮，否则滑块底下是灰的、看着像坏掉。 */
+ as[0].classList.add('live');
+
+ var lastLens=[-1,-1,-1,-1],lastN=-1,raf=0,leaving=false;
+ var down=false,dragging=false,sx=0,sy=0,lx=0,rect=null,suppress=false;
+
+ function paint(){
+   raf=0;if(!rect)return;
+   var v=(lx-rect.left)/rect.width*N-0.5;
+   if(v<0)v=0;if(v>N-1)v=N-1;
+   if(gsl)gsl.style.setProperty('--i',v);
    var n=Math.round(v);
    for(var j=0;j<N;j++){
-     /* 透镜：拖动中贴着滑块的图标被放大最多 34% */
-     var d=Math.abs(j-v);
-     var f=snap?(j===n?0.3:0):(d>=1?0:Math.pow(1-d,0.75));
-     as[j].style.setProperty('--lens',f.toFixed(3));
-     as[j].classList.toggle('live',j===n);
+     var d=Math.abs(j-v),f=d>=1?0:Math.pow(1-d,0.75);
+     if(Math.abs(f-lastLens[j])>.008){as[j].style.setProperty('--lens',f.toFixed(3));lastLens[j]=f;}
+   }
+   if(n!==lastN){
+     if(as[lastN])as[lastN].classList.remove('live');
+     as[n].classList.add('live');lastN=n;
    }
  }
- function leave(i){
+ function queue(){if(!raf)raf=requestAnimationFrame(paint);}
+
+ /* 松手：先让滑块滑到那格（撤掉行内 --i，交回 :root 的默认 0——封面没有 :checked，
+     所以这里直接把 --i 写成整数），**等它滑完**再跳，否则页面瞬间切走、动画看不见。 */
+ function leave(n){
    if(leaving)return;leaving=true;
-   var a=as[i];if(!a)return;
-   setTimeout(function(){location.href=a.getAttribute('href');},260);
+   if(gsl){gsl.style.transition='';gsl.style.setProperty('--i',n);}
+   for(var j=0;j<N;j++)as[j].style.removeProperty('--lens');
+   var a=as[n];if(!a)return;
+   setTimeout(function(){location.href=a.getAttribute('href');},190);
  }
- var surf=document.createElement('div');
- surf.className='tsurf';surf.setAttribute('aria-hidden','true');
- bar.appendChild(surf);
- function pct(x){var b=bar.getBoundingClientRect();return (x-b.left)/b.width;}
- function vis(x){var v=pct(x)*N-0.5;return v<0?0:(v>N-1?N-1:v);}
- function near(x){return Math.round(vis(x));}
- var down=0,moved=false,startX=0,startY=0,lastX=0,tapI=0;
- surf.addEventListener('pointerdown',function(e){
-   startX=lastX=e.clientX;startY=e.clientY;moved=false;down=1;
-   tapI=near(e.clientX);
-   bar.classList.add('dragging');
-   paint(vis(e.clientX),false);
-   if(surf.setPointerCapture){try{surf.setPointerCapture(e.pointerId);}catch(err){}}
-   e.preventDefault();
+
+ bar.addEventListener('click',function(e){
+   if(!suppress)return;               /* 点按：原生跳转，不拦 */
+   suppress=false;e.preventDefault();e.stopPropagation();
+ },true);
+
+ bar.addEventListener('pointerdown',function(e){
+   if(e.button&&e.button!==0)return;
+   down=true;dragging=false;suppress=false;
+   sx=lx=e.clientX;sy=e.clientY;rect=null;
  },false);
- surf.addEventListener('pointermove',function(e){
+
+ bar.addEventListener('pointermove',function(e){
    if(!down)return;
-   lastX=e.clientX;
-   if(Math.abs(e.clientX-startX)>7||Math.abs(e.clientY-startY)>7)moved=true;
-   if(!moved)return;
-   paint(vis(e.clientX),false);
+   lx=e.clientX;
+   var ax=Math.abs(e.clientX-sx),ay=Math.abs(e.clientY-sy);
+   if(!dragging){
+     if(ax<8||ax<ay*1.2)return;
+     dragging=true;rect=bar.getBoundingClientRect();
+     if(gsl)gsl.style.transition='none';
+     bar.classList.add('dragging');
+     if(bar.setPointerCapture){try{bar.setPointerCapture(e.pointerId);}catch(err){}}
+   }
+   e.preventDefault();
+   queue();
  },false);
- surf.addEventListener('pointerup',function(e){
-   if(!down)return;down=0;
-   bar.classList.remove('dragging');
-   var n=moved?near(e.clientX):tapI;
-   requestAnimationFrame(function(){paint(n,true);});
-   leave(n);
+
+ function near(){
+   if(!rect)return 0;
+   var v=(lx-rect.left)/rect.width*N-0.5;
+   v=v<0?0:(v>N-1?N-1:v);
+   return Math.round(v);
+ }
+ bar.addEventListener('pointerup',function(e){
+   if(!down)return;down=false;
+   if(!dragging)return;
+   suppress=true;lx=e.clientX;bar.classList.remove('dragging');lastN=-1;leave(near());
  },false);
- surf.addEventListener('pointercancel',function(){
-   if(!down)return;down=0;bar.classList.remove('dragging');
-   var n=near(lastX);
-   requestAnimationFrame(function(){paint(n,true);});
+ bar.addEventListener('pointercancel',function(){
+   if(!down)return;down=false;
+   if(!dragging)return;
+   suppress=true;bar.classList.remove('dragging');lastN=-1;leave(near());
  },false);
- paint(0,true);
 })();
 </script>
 </body></html>
