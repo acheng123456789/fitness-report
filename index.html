@@ -90,8 +90,9 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     0 2px 6px rgba(14,40,28,.07)}
 .tabbar:before{content:'';position:absolute;inset:0;border-radius:inherit;
   pointer-events:none;
-  background:linear-gradient(163deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.14) 24%,
-    rgba(255,255,255,0) 50%,rgba(255,255,255,.12) 100%)}
+  /* 同上：这里原来是 163deg 斜角反光，也会显出斜线，改成纯垂直 */
+  background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.12) 26%,
+    rgba(255,255,255,0) 52%,rgba(255,255,255,.10) 100%)}
 .tabbar:after{content:'';position:absolute;left:16px;right:16px;bottom:1.5px;height:1px;
   border-radius:1px;pointer-events:none;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent)}
@@ -153,9 +154,14 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     rgba(255,255,255,.5),rgba(255,255,255,0) 62%)}
 .gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   padding:1.5px;
-  background:linear-gradient(160deg,
-    rgba(255,255,255,.92) 0%,rgba(255,255,255,.22) 34%,
-    rgba(255,255,255,.10) 62%,rgba(255,255,255,.42) 100%);
+  /* ⚠️ **绝不能用斜角渐变**（160deg 之类）：mask 把它裁成 1.5px 边框后，
+     斜渐变的等值线会在左右两条边框上斜着切过去 —— 看起来就是"一条斜线"（被反馈过两次）。
+     要"上亮下暗"用**纯垂直**(180deg，等值线水平 → 左右边框同色)；
+     要"一圈厚度"用**径向**（左右对称）。 */
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,0) 58%),
+    radial-gradient(128% 118% at 50% 50%,
+      rgba(255,255,255,0) 58%,rgba(255,255,255,.42) 100%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude}
 
@@ -181,7 +187,7 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=06b285a0#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=06b285a0#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=06b285a0#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=06b285a0#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=22325db6#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=22325db6#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=22325db6#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=22325db6#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
 <script>
 (function(){
  var bar=document.querySelector('.tabbar');if(!bar)return;
