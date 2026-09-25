@@ -290,6 +290,18 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
    已整体删除。现在"隔着玻璃看图标"的感觉只由 .tgl 的放大 + .live 的换色表达。 */
 .tabbar svg{width:32px;height:32px;display:block;fill:none;
   stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+/* ===== 选中态：空心 ⇄ 实心（微信那种"点中就填实、移开就空了"）=====
+   每个 svg 里叠着两套形状：.ol＝线性（空心），.fi＝实心。
+   未选中：.ol 亮、.fi 透明；选中/拖动高亮：反过来。两套形状同时在场，
+   切换只改 opacity ⇒ 不重排、不重新解析路径，点哪一格都不会掉帧。
+   ⚠️ 别再退回老做法（给选中项把 stroke-width 从 1.85 加到 2.4）：细线变粗仍然是线，
+   不是"实心"，跟微信的填充感差得远。 */
+.tabbar svg .fi,.tabbar svg .fi *{fill:currentColor;stroke:none}
+.tabbar svg .fi{opacity:0}
+.tabbar svg .ol,.tabbar svg .fi{transition:opacity .18s ease}
+/* 拖动过程中"最近的那格"会随手指频繁易主，带过渡会变成来回闪烁的 crossfade；
+   拖动期间直接关掉过渡，谁是实心就立刻是谁。 */
+.tabbar.dragging svg .ol,.tabbar.dragging svg .fi{transition:none}
 /* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
    选中态的 4 条规则在下面，一起管。 */
 .tabbar label.live{color:var(--ac)}
@@ -351,11 +363,16 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
 #tb2:checked~.tabbar .gsl{--i:1}
 #tb3:checked~.tabbar .gsl{--i:2}
 #tb4:checked~.tabbar .gsl{--i:3}
-#tb1:checked~.tabbar label[for=tb1] svg,
-#tb2:checked~.tabbar label[for=tb2] svg,
-#tb3:checked~.tabbar label[for=tb3] svg,
-#tb4:checked~.tabbar label[for=tb4] svg,
-.tabbar label.live svg{stroke-width:2.4}
+#tb1:checked~.tabbar label[for=tb1] svg .ol,
+#tb2:checked~.tabbar label[for=tb2] svg .ol,
+#tb3:checked~.tabbar label[for=tb3] svg .ol,
+#tb4:checked~.tabbar label[for=tb4] svg .ol,
+.tabbar label.live svg .ol{opacity:0}
+#tb1:checked~.tabbar label[for=tb1] svg .fi,
+#tb2:checked~.tabbar label[for=tb2] svg .fi,
+#tb3:checked~.tabbar label[for=tb3] svg .fi,
+#tb4:checked~.tabbar label[for=tb4] svg .fi,
+.tabbar label.live svg .fi{opacity:1}
 .toc-h{font-size:13.5px;font-weight:800;margin-bottom:11px;
   display:flex;align-items:center;gap:7px}
 .toc-h:before{content:'📑';font-size:14px}
@@ -923,7 +940,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
     数据来源：Apple 健康（Apple Watch / iPhone）· 静态 SVG 渲染 + 纯 CSS 点击查详情
   </div>
 
-  <nav class="tabbar"><span class="gsl" aria-hidden="true"></span><label for="tb1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></label><label for="tb2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></label><label for="tb3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></label><label for="tb4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></label></nav>
+  <nav class="tabbar"><span class="gsl" aria-hidden="true"></span><label for="tb1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><g class="ol"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></g><g class="fi"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></g></svg></i><span>总览</span></label><label for="tb2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><g class="ol"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></g><g class="fi"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></g></svg></i><span>有氧</span></label><label for="tb3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><g class="ol"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></g><g class="fi"><rect x="2.1" y="8.5" width="2.6" height="7" rx="1.2"/><rect x="5.5" y="6.1" width="2.8" height="11.8" rx="1.3"/><rect x="15.7" y="6.1" width="2.8" height="11.8" rx="1.3"/><rect x="19.3" y="8.5" width="2.6" height="7" rx="1.2"/><rect x="8.3" y="10.7" width="7.4" height="2.6" rx="1.3"/></g></svg></i><span>无氧</span></label><label for="tb4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><g class="ol"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></g><g class="fi"><circle cx="3.9" cy="6.2" r="1.55"/><circle cx="3.9" cy="12" r="1.55"/><circle cx="3.9" cy="17.8" r="1.55"/><rect x="7.6" y="5" width="13" height="2.4" rx="1.2"/><rect x="7.6" y="10.8" width="13" height="2.4" rx="1.2"/><rect x="7.6" y="16.6" width="13" height="2.4" rx="1.2"/></g></svg></i><span>记录</span></label></nav>
 
 <script>
 (function(){
