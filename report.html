@@ -214,33 +214,60 @@ html{scroll-behavior:smooth}
 .pnls>.blk{display:none}
 #tb1:checked~.pnls>.blk.p1,#tb2:checked~.pnls>.blk.p2,
 #tb3:checked~.pnls>.blk.p3,#tb4:checked~.pnls>.blk.p4{display:block}
-/* 底部留白：给「悬浮 Dock」让位（Dock 高约 68px + 距底 10px） */
-body{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
-/* 参考 iOS 停靠栏：**悬浮**的毛玻璃圆角条 + **大图标**，不要贴边那种"细条"感 */
+/* 底部留白：给「悬浮 Dock」让位（Dock 高约 72px + 距底 10px） */
+body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+/* ===== iOS 26「液态玻璃」悬浮 Dock =====
+   做法：① 高模糊 + 高饱和 + 轻微提亮的 backdrop-filter（真正的"折射"感）；
+        ② 四道 inset 高光＝玻璃边缘的厚度；
+        ③ ::before 一层斜向反光面（左上最亮）；
+        ④ ::after 底部一道更亮的折射亮边；
+        ⑤ 选中项套一枚**淡淡的彩色玻璃胶囊**。 */
 .tabbar{position:fixed;left:11px;right:11px;z-index:60;
   bottom:calc(10px + env(safe-area-inset-bottom));
   display:grid;grid-template-columns:repeat(4,1fr);
-  padding:9px 6px 7px;
-  background:rgba(252,253,255,.62);
-  -webkit-backdrop-filter:saturate(190%) blur(26px);
-  backdrop-filter:saturate(190%) blur(26px);
-  border:.5px solid rgba(255,255,255,.62);
-  border-radius:27px;
-  box-shadow:0 12px 34px rgba(18,45,32,.17),
-             inset 0 1px 0 rgba(255,255,255,.72)}
-.tabbar label,.tabbar a{display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;padding:2px;border-radius:15px;
+  padding:7px 6px 6px;border-radius:31px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.56),rgba(255,255,255,.36));
+  -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
+  backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
+  border:.5px solid rgba(255,255,255,.55);
+  box-shadow:
+    inset 0 1px 1.5px rgba(255,255,255,.92),
+    inset 0 -1px 1.5px rgba(255,255,255,.34),
+    inset 1.5px 0 1.5px rgba(255,255,255,.46),
+    inset -1.5px 0 1.5px rgba(255,255,255,.46),
+    0 14px 40px rgba(14,40,28,.20),
+    0 2px 6px rgba(14,40,28,.07)}
+.tabbar:before{content:'';position:absolute;inset:0;border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(163deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.14) 24%,
+    rgba(255,255,255,0) 50%,rgba(255,255,255,.12) 100%)}
+.tabbar:after{content:'';position:absolute;left:16px;right:16px;bottom:1.5px;height:1px;
+  border-radius:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent)}
+.tabbar label,.tabbar a{position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;padding:0;border-radius:18px;
   text-decoration:none;color:var(--ink3);font-size:11px;font-weight:700;
   letter-spacing:.2px;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  transition:color .15s,transform .12s}
+  transition:color .18s,transform .12s}
 .tabbar label:active,.tabbar a:active{transform:scale(.9)}
-/* 图标做大：参考 iOS 停靠栏，图标要"占满"格子 */
+/* 图标外面这层：既撑大图标，也是"选中胶囊"的载体 */
+.tgl{display:flex;align-items:center;justify-content:center;
+  width:54px;height:36px;border-radius:18px;transition:background .18s,box-shadow .18s}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;
   stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 #tb1:checked~.tabbar label[for=tb1]{color:#00C86F}
 #tb2:checked~.tabbar label[for=tb2]{color:#7B61FF}
 #tb3:checked~.tabbar label[for=tb3]{color:#F5A524}
 #tb4:checked~.tabbar label[for=tb4]{color:#0FA9C9}
+#tb1:checked~.tabbar label[for=tb1] .tgl{background:rgba(0,200,111,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+#tb2:checked~.tabbar label[for=tb2] .tgl{background:rgba(123,97,255,.17);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+#tb3:checked~.tabbar label[for=tb3] .tgl{background:rgba(245,165,36,.19);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+#tb4:checked~.tabbar label[for=tb4] .tgl{background:rgba(15,169,201,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
 #tb1:checked~.tabbar label[for=tb1] svg{stroke-width:2.4}
 #tb2:checked~.tabbar label[for=tb2] svg{stroke-width:2.4}
 #tb3:checked~.tabbar label[for=tb3] svg{stroke-width:2.4}
@@ -745,7 +772,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
   </div>
 </div></section>
 
-<section class="blk pnl p2" id="g2" style="--gc:#7B61FF"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><circle cx="15.3" cy="4.6" r="2.7" fill="#fff" stroke="none"/><path d="M13.5 8.1 11 12.9"/><path d="M13.4 8.7 17.7 10.8"/><path d="M13.1 9.5 9.3 10"/><path d="M11 12.9 14.2 14.9 14.7 19.1"/><path d="M11 12.9 8.3 15.8 5.3 17.3"/></svg></div><h1>有氧 · 跑步</h1><div class="hsub">跑量与配速心率 · 最长与最快</div></header><div class="cnt">
+<section class="blk pnl p2" id="g2" style="--gc:#7B61FF"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><circle cx="15.2" cy="4.4" r="2.9" fill="#fff" stroke="none"/><path d="M13.6 8.1 10.9 12.9"/><path d="M13.4 8.7 17.3 11.3"/><path d="M10.9 12.9 14.4 14.9 13.8 19.2"/><path d="M10.9 12.9 8 15.6 5.2 16.9"/></svg></div><h1>有氧 · 跑步</h1><div class="hsub">跑量与配速心率 · 最长与最快</div></header><div class="cnt">
 
 <div class="card">
   <h2>跑步 · 月度跑量</h2>
@@ -774,7 +801,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
   </div>
 </div></section>
 
-<section class="blk pnl p3" id="g3" style="--gc:#F5A524"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><rect x="2" y="16.8" width="20" height="2.2" rx="1.1"/><path d="M6 19 4.8 21.4M18 19 19.2 21.4"/><circle cx="4.9" cy="14" r="2.1" fill="#fff" stroke="none"/><path d="M7.2 15.4h6.6"/><path d="M8.7 15.2 9.9 10.9M11.9 15.2 13.1 10.9"/><path d="M3.1 10.9h17.8"/><path d="M6 8.8v4.2M3.9 9.6v2.6M18 8.8v4.2M20.1 9.6v2.6"/></svg></div><h1>无氧 · 器械训练</h1><div class="hsub">动作 · 组数 · 训练量</div></header><div class="cnt">
+<section class="blk pnl p3" id="g3" style="--gc:#F5A524"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><path d="M9.4 12h5.2"/><path d="M7 6.8v10.4M4 8.8v6.4M17 6.8v10.4M20 8.8v6.4"/></svg></div><h1>无氧 · 器械训练</h1><div class="hsub">动作 · 组数 · 训练量</div></header><div class="cnt">
 
 <div class="card">
   <h2>器械训练 · 无氧</h2>
@@ -812,7 +839,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
     数据来源：Apple 健康（Apple Watch / iPhone）· 静态 SVG 渲染 + 纯 CSS 点击查详情
   </div>
 
-  <nav class="tabbar"><label for="tb1"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg><span>总览</span></label><label for="tb2"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg><span>有氧</span></label><label for="tb3"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg><span>无氧</span></label><label for="tb4"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg><span>记录</span></label></nav>
+  <nav class="tabbar"><label for="tb1"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></label><label for="tb2"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></label><label for="tb3"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></label><label for="tb4"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></label></nav>
 
 <script>
 (function(){
