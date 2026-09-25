@@ -95,12 +95,25 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
 .tabbar:after{content:'';position:absolute;left:16px;right:16px;bottom:1.5px;height:1px;
   border-radius:1px;pointer-events:none;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent)}
-.tabbar a{position:relative;z-index:1;
+.tabbar a{position:relative;z-index:1;color:var(--ac);opacity:.62;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:1px;padding:0;border-radius:18px;text-decoration:none;
   font-size:11px;font-weight:700;letter-spacing:.2px;
-  -webkit-tap-highlight-color:transparent;transition:transform .12s}
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s,opacity .16s}
+.tabbar a.live{opacity:1}
 .tabbar a span{color:#5C5668}
+/* 拖拽层：透明原生 range 铺满 Dock（同报告页）。默认 display:none，由脚本打开 */
+.tsl{position:absolute;inset:0;z-index:3;width:100%;height:100%;
+  margin:0;padding:0;display:none;opacity:0;cursor:grab;
+  -webkit-appearance:none;appearance:none;background:transparent;
+  touch-action:pan-y}
+.tsl:active{cursor:grabbing}
+.tsl::-webkit-slider-runnable-track{height:100%;background:transparent;border:0}
+.tsl::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:25%;height:100%;background:transparent;border:0}
+.tsl::-moz-range-track{height:100%;background:transparent;border:0}
+.tsl::-moz-range-thumb{width:25%;height:100%;background:transparent;border:0}
 .tabbar a:active{transform:scale(.9)}
 .tgl{display:flex;align-items:center;justify-content:center;
   width:54px;height:36px;border-radius:18px}
@@ -147,21 +160,43 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=664ff1ed#g1" style="color:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=664ff1ed#g2" style="color:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=664ff1ed#g3" style="color:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=664ff1ed#g4" style="color:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=12e702e6#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=12e702e6#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=12e702e6#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=12e702e6#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
 <script>
 (function(){
  var bar=document.querySelector('.tabbar');if(!bar)return;
  var gsl=bar.querySelector('.gsl'),as=bar.querySelectorAll('a.tga');
- for(var j=0;j<as.length;j++)as[j].style.opacity=(j?'0.66':'1');
- for(var i=0;i<as.length;i++)(function(a,i){
-   a.addEventListener('click',function(e){
-     if(a.getAttribute('data-go'))return;          /* 第二次放行，真正跳转 */
-     e.preventDefault();
-     if(gsl)gsl.style.transform='translateX('+(i*100)+'%)';
-     for(var j=0;j<as.length;j++)as[j].style.opacity=(j===i?'1':'0.66');
-     setTimeout(function(){a.setAttribute('data-go','1');a.click();},240);
-   });
+ var N=as.length;if(!N)return;
+ var cur=0,leaving=false;
+ function paint(v,snap){
+   if(gsl){
+     /* 拖动中必须关掉过渡，否则滑块会"追着"手指慢慢走，手感发飘 */
+     gsl.style.transition=snap?'':'none';
+     gsl.style.transform='translateX('+(v*100)+'%)';
+   }
+   var n=Math.round(v);
+   for(var j=0;j<N;j++)as[j].classList.toggle('live',j===n);
+ }
+ function leave(i){
+   if(leaving)return;leaving=true;
+   var a=as[i];if(!a)return;
+   setTimeout(function(){location.href=a.getAttribute('href');},260);
+ }
+ var s=document.createElement('input');
+ s.type='range';s.min=0;s.max=N-1;s.step=0.001;s.value=0;
+ s.className='tsl';s.setAttribute('aria-label','拖动或点按切换板块');
+ bar.appendChild(s);s.style.display='block';
+ s.addEventListener('input',function(){cur=parseFloat(s.value);paint(cur,false);});
+ s.addEventListener('change',function(){
+   var n=Math.round(parseFloat(s.value));s.value=n;
+   if(gsl)gsl.style.transition='';
+   requestAnimationFrame(function(){paint(n,true);});
+   leave(n);
+ });
+ for(var i=0;i<N;i++)(function(a,i){
+   a.addEventListener('click',function(e){e.preventDefault();
+     s.value=i;cur=i;paint(i,true);leave(i);});
  })(as[i],i);
+ paint(0,true);
 })();
 </script>
 </body></html>

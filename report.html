@@ -259,10 +259,28 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
   width:54px;height:36px;border-radius:18px;transition:background .18s,box-shadow .18s}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;
   stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
-#tb1:checked~.tabbar label[for=tb1]{color:#00C86F}
-#tb2:checked~.tabbar label[for=tb2]{color:#7B61FF}
-#tb3:checked~.tabbar label[for=tb3]{color:#F5A524}
-#tb4:checked~.tabbar label[for=tb4]{color:#0FA9C9}
+/* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
+   选中态的 4 条规则在下面，一起管。 */
+.tabbar label.live{color:var(--ac)}
+/* ===== 拖拽层：一个**透明的原生 range** 铺满整个 Dock =====
+   为什么用 range：原生控件的"按住拖"手感是 JS 手搓不出来的（跟手、惯性、
+   在 iOS 上的物理反馈都是系统级）。我们用它的手势，视觉仍由 .gsl 呈现。
+   step 取 0.001 → 拖动时拿到**连续值**，滑块才能真正跟手；松手 Math.round 吸附。
+   ⚠️ 默认 display:none，由脚本打开 —— 脚本失效时点 label 照旧可用。 */
+.tsl{position:absolute;inset:0;z-index:3;width:100%;height:100%;
+  margin:0;padding:0;display:none;opacity:0;cursor:grab;
+  -webkit-appearance:none;appearance:none;background:transparent;
+  touch-action:pan-y}   /* 竖直滑动仍交给页面滚动，横向才归滑块 */
+.tsl:active{cursor:grabbing}
+.tsl::-webkit-slider-runnable-track{height:100%;background:transparent;border:0}
+.tsl::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:25%;height:100%;background:transparent;border:0}
+.tsl::-moz-range-track{height:100%;background:transparent;border:0}
+.tsl::-moz-range-thumb{width:25%;height:100%;background:transparent;border:0}
+#tb1:checked~.tabbar label[for=tb1],
+#tb2:checked~.tabbar label[for=tb2],
+#tb3:checked~.tabbar label[for=tb3],
+#tb4:checked~.tabbar label[for=tb4]{color:var(--ac)}
 /* ===== 会滑动的液态玻璃滑块（iOS 26 停止栏那颗）=====
    宽 = 一个格子宽，所以 translateX(100%) 恰好平移一格；
    ::after 做**棱镜色散**（上沿偏冷、下沿偏暖）——真实折射做不了，这是最接近的模拟。 */
@@ -289,10 +307,11 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 #tb2:checked~.tabbar .gsl{transform:translateX(100%)}
 #tb3:checked~.tabbar .gsl{transform:translateX(200%)}
 #tb4:checked~.tabbar .gsl{transform:translateX(300%)}
-#tb1:checked~.tabbar label[for=tb1] svg{stroke-width:2.4}
-#tb2:checked~.tabbar label[for=tb2] svg{stroke-width:2.4}
-#tb3:checked~.tabbar label[for=tb3] svg{stroke-width:2.4}
-#tb4:checked~.tabbar label[for=tb4] svg{stroke-width:2.4}
+#tb1:checked~.tabbar label[for=tb1] svg,
+#tb2:checked~.tabbar label[for=tb2] svg,
+#tb3:checked~.tabbar label[for=tb3] svg,
+#tb4:checked~.tabbar label[for=tb4] svg,
+.tabbar label.live svg{stroke-width:2.4}
 .toc-h{font-size:13.5px;font-weight:800;margin-bottom:11px;
   display:flex;align-items:center;gap:7px}
 .toc-h:before{content:'📑';font-size:14px}
@@ -860,18 +879,48 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
     数据来源：Apple 健康（Apple Watch / iPhone）· 静态 SVG 渲染 + 纯 CSS 点击查详情
   </div>
 
-  <nav class="tabbar"><span class="gsl" aria-hidden="true"></span><label for="tb1"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></label><label for="tb2"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></label><label for="tb3"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></label><label for="tb4"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></label></nav>
+  <nav class="tabbar"><span class="gsl" aria-hidden="true"></span><label for="tb1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></label><label for="tb2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></label><label for="tb3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></label><label for="tb4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></label></nav>
 
 <script>
 (function(){
+ var r=document.querySelectorAll('.tbi');
  var h=location.hash.match(/^#g([1-4])$/);
  if(h&&document.getElementById('tb'+h[1])){
    document.getElementById('tb'+h[1]).checked=true;
    /* 抹掉 hash：历史里只留"上一页"，于是从屏幕左缘右滑＝直接回封面 */
    history.replaceState(null,'',location.pathname+location.search);
  }
- var r=document.querySelectorAll('.tbi');
  for(var i=0;i<r.length;i++)r[i].addEventListener('change',function(){scrollTo(0,0);});
+
+ /* ===== 手动拖动滑块 ===== */
+ var bar=document.querySelector('.tabbar');if(!bar)return;
+ var gsl=bar.querySelector('.gsl'),ls=bar.querySelectorAll('label');
+ var N=ls.length;if(!N)return;
+ var picked=0;
+ for(var k=0;k<r.length;k++)if(r[k].checked)picked=k;
+ function paint(v,snap){
+   if(gsl){
+     gsl.style.transition=snap?'':'none';   /* 拖动中关过渡，才跟手 */
+     gsl.style.transform='translateX('+(v*100)+'%)';
+   }
+   var n=Math.round(v);
+   for(var j=0;j<N;j++)ls[j].classList.toggle('live',j===n);
+ }
+ var s=document.createElement('input');
+ s.type='range';s.min=0;s.max=N-1;s.step=0.001;s.value=picked;
+ s.className='tsl';s.setAttribute('aria-label','拖动或点按切换板块');
+ bar.appendChild(s);s.style.display='block';
+ s.addEventListener('input',function(){paint(parseFloat(s.value),false);});
+ s.addEventListener('change',function(){
+   var n=Math.round(parseFloat(s.value));s.value=n;
+   if(gsl)gsl.style.transition='';
+   requestAnimationFrame(function(){paint(n,true);});
+   if(r[n])r[n].checked=true;
+   /* ⚠️ JS 里 `el.checked=true` **不会触发** change 事件（只有用户交互才会），
+      所以上面那个 radio 的 change 监听不会跑，滚动得在这里自己归零。 */
+   scrollTo(0,0);
+ });
+ paint(picked,true);
 })();
 </script>
 </body>
