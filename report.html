@@ -147,7 +147,45 @@ body{
 .legend{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3);
   margin-top:12px;flex-wrap:wrap}
 .legend .d{width:12px;height:12px;flex:none;aspect-ratio:auto;max-width:none}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend span+span{margin-left:7px}
 .lg-hint{margin-left:auto;font-size:10.5px}
+/* ---- 训练手记 ---- */
+.jr{border-top:1px solid var(--line);padding:12px 0 3px}
+.jr:first-of-type{border-top:0;padding-top:2px}
+.jrh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+.jrd{font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.jrt{font-size:10.5px;color:var(--ink3)}
+.jrf{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:4px;
+  padding:2px 9px 3px;border-radius:20px;font-size:10.5px;font-weight:800}
+.jrf i{width:7px;height:7px;border-radius:50%;background:currentColor}
+/* 当天练了什么：类型链在上，量在下（小字），两行都不挤 */
+.jrl{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;font-size:12.5px;
+  line-height:1.7;color:var(--ink1)}
+.jrl b{color:var(--ink3);font-weight:700;flex:none}
+.jrl span{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.jrq,.jrsup{margin-top:6px;font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.jrq{background:#F4F7F9;border-radius:9px;padding:8px 11px}
+.jrq b,.jrsup b,.jrc b,.jrs b{color:var(--ink3);font-weight:700;margin-right:6px;
+  font-size:11px;letter-spacing:.2px}
+.jrc{margin-top:8px;font-size:12.5px;line-height:1.85;color:var(--ink2);
+  background:#F3FBF7;border-left:3px solid var(--acc);border-radius:0 9px 9px 0;
+  padding:9px 12px}
+.jrc b{color:var(--accDark);font-weight:800}
+.jrn{color:var(--ink3);font-size:11.5px;line-height:1.75;padding:6px 0 2px}
+.jrm{font-size:11.5px;color:var(--ink3);font-weight:700;margin:16px 0 2px;
+  padding-bottom:5px;border-bottom:1px solid var(--line)}
+.jrs{margin-top:8px;font-size:12px;line-height:1.8;color:var(--ink2);
+  background:#F7F5FF;border-left:3px solid #7B61FF;border-radius:0 9px 9px 0;
+  padding:9px 12px}
+.jrs b{color:#7B61FF}
+/* 更早的月份折叠：summary 沿用全局 ▸ / ▾，但压掉它那套绿色小字 */
+.jrw{margin-top:15px}
+.jrw>summary{list-style:none;cursor:pointer;font-size:11.5px;color:var(--ink3);
+  font-weight:700;padding-bottom:5px;border-bottom:1px solid var(--line);margin:0}
+.jrw>summary::-webkit-details-marker{display:none}
+.jrw>summary:before{content:'▾ '}
+.jrw:not([open])>summary:before{content:'▸ '}
 /* 月份卡 */
 .mcard{border:1px solid var(--line);border-radius:14px;padding:14px 15px;
   margin-top:12px;background:#FCFDFD}
@@ -973,7 +1011,8 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
 
 </div></section>
 
-<section class="blk pnl p4" id="g4" style="--gc:#0FA9C9"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><rect x="3.2" y="4.6" width="17.6" height="16" rx="4.2"/><path d="M3.2 9.4h17.6"/><path d="M8 3.1v3.4M16 3.1v3.4"/><circle cx="8.4" cy="14.2" r="1.5" fill="#fff" stroke="none"/><path d="M12.2 14.2h4.2M8.4 18h8"/></svg></div><h1>全部记录</h1><div class="hsub">逐月明细 · 每月练了什么</div></header><div class="cnt">
+<section class="blk pnl p4" id="g4" style="--gc:#0FA9C9"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><rect x="3.2" y="4.6" width="17.6" height="16" rx="4.2"/><path d="M3.2 9.4h17.6"/><path d="M8 3.1v3.4M16 3.1v3.4"/><circle cx="8.4" cy="14.2" r="1.5" fill="#fff" stroke="none"/><path d="M12.2 14.2h4.2M8.4 18h8"/></svg></div><h1>全部记录</h1><div class="hsub">手记 · 逐月明细</div></header><div class="cnt">
+<div class="card"><h2>训练手记</h2><div class="desc">练完随口说一句感受，攒起来看趋势　<em>没说的日子不记</em></div><div class="jrn">攒到 2 条手记，这里会连出趋势线 —— 看训练量在涨、疲劳在降，那就是真的变强了。</div><div class="jrm">2026年9月 · 手记 1 条 · 满 3 条出月度总评</div><div class="jr"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><i></i>4 · 很累</span></div><div class="jrl"><b>当天</b>骑行 → 力量训练 → 跑步 → 骑行<span>4 次 · 2 小时 42 分 · 23.6 km · 896 kcal</span></div><div class="jrq"><b>你说的</b>练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div><div class="jrsup"><b>补给</b>跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div><div class="jrc"><b>点评</b>这是目前单日最大负荷的一天：四段运动连着做，162 分钟、896 kcal、23.6 km，18:55 出门到 23:00 进家门，跨度 4 小时 05 分。判 4（很累）的判据有三条——连续四段几乎没留恢复时间、收尾时间在 23:00 远超平时作息、你自己的体感是&quot;已经困了&quot;。<br>真正把负荷推高的是「顺序」：力量 21:12 结束，21:25 就开跑，中间只歇 13 分钟。力量已经把糖原和神经募集能力耗掉一大截，紧接着又跑出 Z4 占 14'39&quot; 的强度，等于在没有补给的窗口里连做两次高强度。累不是你状态差，是这个排法本身的代价。<br>补水方向是对的、量偏保守。凉白开 300+ml + 电解质水 + 椰子水 600ml 合计约 1.4 L，对 896 kcal 的消耗来说只算及格；椰子水补钾好但钠低，出汗量大时不能替代电解质水——这次好在你两样都喝了。<br>下次建议二选一：把跑步挪到力量之前（先跑后练，力量质量会掉但疲劳感明显轻），或者力量日把跑步降成 Z2 轻松跑 20 分钟收个尾。另一个更划算的调整是早点开始——18:55 出门已经是当天第四段运动都排在一起的前提。</div></div></div>
   <div class="card">
     <h2>逐月明细</h2>
     <div class="desc">最近的月份排在前面，可展开看每次运动</div>
