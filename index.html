@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>我的运动报告 · 2025年1月 ~ 2026年9月</title>
 <meta name="description" content="21 个月运动数据 · 140 次运动 · 760 公里">
 <meta property="og:type" content="website">
@@ -24,11 +24,12 @@
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html{min-height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC",
     "Source Han Sans SC","Noto Sans CJK SC","Hiragino Sans GB","Microsoft YaHei",
     system-ui,"Segoe UI",Roboto,sans-serif;
-  min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px 20px calc(96px + env(safe-area-inset-bottom));
   background:linear-gradient(160deg,#00E08E 0%,#00C86F 46%,#009C5B 100%);
   color:#241F2E;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 .cover{width:100%;max-width:380px;background:#fff;border-radius:26px;padding:30px 24px 24px;
@@ -42,12 +43,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
 .k{flex:1;background:#F1FBF6;border-radius:14px;padding:13px 4px}
 .k b{display:block;font-size:20px;font-weight:800;color:#00A85E}
 .k span{font-size:10.5px;color:#6B6577;margin-top:4px;display:block}
-.btn{display:block;margin-top:22px;background:linear-gradient(135deg,#00D98A,#00B368);
-  color:#fff;text-decoration:none;font-size:16.5px;font-weight:700;padding:15px;
-  border-radius:16px;box-shadow:0 10px 26px rgba(0,200,111,.4);transition:.12s}
-.btn:active{transform:scale(.975)}
-.minor{margin-top:16px;font-size:12px}
-.minor a{color:#00A85E;text-decoration:none;display:inline-block;margin:0 9px;font-weight:600}
+/* 三个次级入口：做成可点的卡片（原来是三个挤在一起的小字链接） */
+.dest{margin-top:20px;display:grid;gap:9px;text-align:left}
+.dest a{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:14px;
+  background:#F7FBF9;border:1px solid #E8F4EE;text-decoration:none;color:#241F2E;
+  transition:transform .12s,background .12s;-webkit-tap-highlight-color:transparent}
+.dest a:active{transform:scale(.985);background:#EFF8F3}
+.dest .di{flex:none;width:34px;height:34px;border-radius:11px;background:#E4F7ED;
+  display:flex;align-items:center;justify-content:center;font-size:16px}
+.dest b{display:block;font-size:14px;font-weight:750}
+.dest em{display:block;font-style:normal;font-size:10.5px;color:#8A8595;margin-top:1px}
+.dest .dar{margin-left:auto;color:#C6C2CE;font-size:17px;flex:none}
+/* ---- 底部毛玻璃 Tab Bar（iOS 风）：四个板块直达 ---- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:7px 6px calc(6px + env(safe-area-inset-bottom));
+  background:rgba(250,252,253,.72);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);
+  border-top:.5px solid rgba(0,0,0,.08)}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:5px 2px 4px;border-radius:12px;text-decoration:none;
+  font-size:10.5px;font-weight:700;letter-spacing:.3px;
+  -webkit-tap-highlight-color:transparent;transition:transform .12s}
+.tabbar a:active{transform:scale(.94)}
+.tabbar svg{width:22px;height:22px;display:block;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
 </style></head><body>
   <div class="cover">
@@ -56,12 +77,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
     <h1>我的运动报告</h1>
     <div class="sub">手机可点交互 · 点开看每一次运动细节<br>统计区间 2025年1月 ~ 2026年9月</div>
     <div class="kpis"><div class="k"><b>140</b><span>次运动</span></div><div class="k"><b>760</b><span>公里</span></div><div class="k"><b>125</b><span>运动小时</span></div></div>
-    <a class="btn" href="report.html?v=02637d8e">▸ 查看完整报告</a>
-    <div class="minor">
-      <a href="overview.html?v=fa47e630">本月速览</a>
-      <a href="plan.html?v=79c9a97d">训练建议</a>
-      <a href="body.html?v=153e0513">体重体态分析</a>
+    <div class="dest">
+      <a href="overview.html?v=fa47e630"><span class="di">📅</span>
+        <span><b>本月速览</b><em>这个月练了多少、距目标还差多远</em></span>
+        <span class="dar">›</span></a>
+      <a href="plan.html?v=79c9a97d"><span class="di">🎯</span>
+        <span><b>训练建议</b><em>按现在的体成分算出的训练与饮食方案</em></span>
+        <span class="dar">›</span></a>
+      <a href="body.html?v=153e0513"><span class="di">📏</span>
+        <span><b>体重体态分析</b><em>体重 / 体脂 / 围度与目标拆解</em></span>
+        <span class="dar">›</span></a>
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
+<nav class="tabbar"><a href="report.html?v=b4c61fd9#g1" style="color:#00C86F"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg><span>总览</span></a><a href="report.html?v=b4c61fd9#g2" style="color:#7B61FF"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg><span>有氧</span></a><a href="report.html?v=b4c61fd9#g3" style="color:#F5A524"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg><span>无氧</span></a><a href="report.html?v=b4c61fd9#g4" style="color:#0FA9C9"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg><span>记录</span></a></nav>
 </body></html>
