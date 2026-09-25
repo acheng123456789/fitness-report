@@ -183,6 +183,10 @@ details.dg>summary:before{content:none}
 /* 往下读正文时整枚滑出左边缘 —— 注意是**移走**不是淡出：淡出后它还在那儿挡着字，
    仍然点得到（误触）。缓动用 iOS 曲线，跟 Safari 工具栏一个路子。 */
 .home.hide{transform:translateX(-84px);opacity:0;pointer-events:none}
+/* ⚠️ 三个次级页面的页头 `.hd` 是**左对齐**的（徽标 + 大标题），左上角正好就是标题的位置，
+   会被这枚按钮压住（实测："本月速览 · 2026-09"和"目标 140 斤"都被盖掉半截）。
+   所以把页头顶部下移一枚按钮 + 呼吸位。报告页没有 `.hd`（它的头图是居中的），不受影响。 */
+.hd{padding-top:calc(56px + env(safe-area-inset-top))}
 
 #st-0:checked ~ .tabs .tab:nth-of-type(1){background:#00C86F;color:#fff;border-color:#00C86F}
 #st-0:checked ~ .panes .pn0{display:block}
