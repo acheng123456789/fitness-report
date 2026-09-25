@@ -116,29 +116,34 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
 .tsl::-moz-range-thumb{width:25%;height:100%;background:transparent;border:0}
 .tabbar a:active{transform:scale(.9)}
 .tgl{display:flex;align-items:center;justify-content:center;
-  width:54px;height:36px;border-radius:18px}
+  width:54px;height:36px;border-radius:18px;
+  /* 透镜：--lens 由脚本按"离滑块多远"写（见报告页同段注释） */
+  transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
+  transition:transform .26s cubic-bezier(.34,1.35,.5,1)}
+.tabbar.dragging .tgl{transition:transform 0s}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 /* 滑块：封面没有 radio，位移由封面脚本在点击时写 transform（先滑、再跳） */
 .gsl{position:absolute;top:6px;bottom:5px;left:6px;z-index:0;pointer-events:none;
   width:calc((100% - 12px)/4);border-radius:26px;
-  background:rgba(255,255,255,.5);
-  -webkit-backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
-  backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
+  /* 几乎无色＝让底下的颜色透上来（折射出底色），不是涂一层死白 */
+  background:rgba(255,255,255,.17);
+  -webkit-backdrop-filter:blur(10px) saturate(285%) brightness(1.14);
+  backdrop-filter:blur(10px) saturate(285%) brightness(1.14);
   box-shadow:
-    inset 0 1px 2px rgba(255,255,255,.98),
-    inset 0 -1px 2px rgba(255,255,255,.55),
-    inset 0 0 0 .5px rgba(255,255,255,.9),
-    0 5px 16px rgba(18,45,32,.15);
-  transition:transform .3s cubic-bezier(.34,.78,.2,1)}
-.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:34%;
+    inset 0 0 0 .5px rgba(255,255,255,.72),
+    0 5px 16px rgba(18,45,32,.17);
+  transition:transform .33s cubic-bezier(.3,1.32,.45,1)}
+.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:32%;
   border-radius:999px;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0))}
-.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;
-  box-shadow:inset 0 2px 4px rgba(140,200,255,.85),
-             inset 0 -2px 4px rgba(255,150,210,.7),
-             inset 2.5px 0 5px rgba(160,255,220,.45),
-             inset -2.5px 0 5px rgba(255,240,150,.45)}
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,0))}
+/* 边缘折射环：环内几乎不模糊 + 超高饱和 + 更亮 → 光在边缘被聚焦（见报告页同段注释） */
+.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;padding:2px;
+  pointer-events:none;
+  -webkit-backdrop-filter:blur(1.5px) saturate(400%) brightness(1.32);
+  backdrop-filter:blur(1.5px) saturate(400%) brightness(1.32);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude}
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
 </style></head><body>
   <div class="cover">
@@ -160,7 +165,7 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=12e702e6#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=12e702e6#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=12e702e6#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=12e702e6#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=7d4263a9#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=7d4263a9#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=7d4263a9#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=7d4263a9#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
 <script>
 (function(){
  var bar=document.querySelector('.tabbar');if(!bar)return;
@@ -174,7 +179,13 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
      gsl.style.transform='translateX('+(v*100)+'%)';
    }
    var n=Math.round(v);
-   for(var j=0;j<N;j++)as[j].classList.toggle('live',j===n);
+   for(var j=0;j<N;j++){
+     /* 透镜：拖动中贴着滑块的图标被放大最多 34% */
+     var d=Math.abs(j-v);
+     var f=snap?(j===n?0.3:0):(d>=1?0:Math.pow(1-d,0.75));
+     as[j].style.setProperty('--lens',f.toFixed(3));
+     as[j].classList.toggle('live',j===n);
+   }
  }
  function leave(i){
    if(leaving)return;leaving=true;
@@ -185,9 +196,11 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
  s.type='range';s.min=0;s.max=N-1;s.step=0.001;s.value=0;
  s.className='tsl';s.setAttribute('aria-label','拖动或点按切换板块');
  bar.appendChild(s);s.style.display='block';
- s.addEventListener('input',function(){cur=parseFloat(s.value);paint(cur,false);});
+ s.addEventListener('input',function(){cur=parseFloat(s.value);
+   bar.classList.add('dragging');paint(cur,false);});
  s.addEventListener('change',function(){
    var n=Math.round(parseFloat(s.value));s.value=n;
+   bar.classList.remove('dragging');
    if(gsl)gsl.style.transition='';
    requestAnimationFrame(function(){paint(n,true);});
    leave(n);

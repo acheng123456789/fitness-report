@@ -216,6 +216,16 @@ html{scroll-behavior:smooth}
 #tb3:checked~.pnls>.blk.p3,#tb4:checked~.pnls>.blk.p4{display:block}
 /* 底部留白：给「悬浮 Dock」让位（Dock 高约 72px + 距底 10px） */
 body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+/* Dock 背后一层**极淡的彩色氛围光** —— 给玻璃"有颜色的东西可折射"。
+   报告页 Dock 后面平时是白卡片，玻璃折射出来只有白（看着像没做折射）。
+   层次要卡准：**在内容之上、Dock(z-index:60) 之下**才有效 ——
+   放 z-index:-1 会被白色卡片盖住，等于没加。 */
+body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:104px;
+  z-index:50;pointer-events:none;
+  background:
+    radial-gradient(58% 96% at 13% 104%,rgba(0,200,111,.20),rgba(0,200,111,0) 72%),
+    radial-gradient(56% 92% at 87% 104%,rgba(123,97,255,.18),rgba(123,97,255,0) 72%),
+    radial-gradient(46% 78% at 50% 106%,rgba(245,165,36,.15),rgba(245,165,36,0) 72%)}
 /* ===== iOS 26「液态玻璃」悬浮 Dock =====
    做法：① 高模糊 + 高饱和 + 轻微提亮的 backdrop-filter（真正的"折射"感）；
         ② 四道 inset 高光＝玻璃边缘的厚度；
@@ -256,7 +266,14 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .tabbar label:active,.tabbar a:active{transform:scale(.9)}
 /* 图标外面这层：既撑大图标，也是"选中胶囊"的载体 */
 .tgl{display:flex;align-items:center;justify-content:center;
-  width:54px;height:36px;border-radius:18px;transition:background .18s,box-shadow .18s}
+  width:54px;height:36px;border-radius:18px;
+  /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮。
+     --lens(0~1) 由脚本在拖动时按距离写；不拖时由 :checked 给一个基准值。 */
+  transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
+  transition:background .18s,box-shadow .18s,
+    transform .26s cubic-bezier(.34,1.35,.5,1)}
+/* 拖动中不做插值 → 图标紧跟着手指胀大/回落，才有"透镜扫过去"的手感 */
+.tabbar.dragging .tgl{transition:background .18s,box-shadow .18s,transform 0s}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;
   stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 /* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
@@ -280,29 +297,34 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 #tb1:checked~.tabbar label[for=tb1],
 #tb2:checked~.tabbar label[for=tb2],
 #tb3:checked~.tabbar label[for=tb3],
-#tb4:checked~.tabbar label[for=tb4]{color:var(--ac)}
-/* ===== 会滑动的液态玻璃滑块（iOS 26 停止栏那颗）=====
-   宽 = 一个格子宽，所以 translateX(100%) 恰好平移一格；
-   ::after 做**棱镜色散**（上沿偏冷、下沿偏暖）——真实折射做不了，这是最接近的模拟。 */
+#tb4:checked~.tabbar label[for=tb4]{color:var(--ac);--lens:.3}
+/* ===== 会滑动的液态玻璃滑块（iOS 26 停靠栏那颗）=====
+   宽 = 一个格子宽，所以 translateX(100%) 恰好平移一格。
+   **关键：不给滑块涂一层白** —— 涂白它就是死的、不折射。
+   改成「几乎无色 + 高饱和 + 提亮」，**让底下的颜色自己透上来**：
+   滑到绿区就偏绿、滑到紫区就偏紫，这才是"把底色折射出来"。 */
 .gsl{position:absolute;top:6px;bottom:5px;left:6px;z-index:0;pointer-events:none;
   width:calc((100% - 12px)/4);border-radius:26px;
-  background:rgba(255,255,255,.5);
-  -webkit-backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
-  backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
+  background:rgba(255,255,255,.17);
+  -webkit-backdrop-filter:blur(10px) saturate(285%) brightness(1.14);
+  backdrop-filter:blur(10px) saturate(285%) brightness(1.14);
   box-shadow:
-    inset 0 1px 2px rgba(255,255,255,.98),
-    inset 0 -1px 2px rgba(255,255,255,.55),
-    inset 0 0 0 .5px rgba(255,255,255,.9),
-    0 5px 16px rgba(18,45,32,.15);
-  transition:transform .34s cubic-bezier(.34,.78,.2,1)}
-.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:34%;
+    inset 0 0 0 .5px rgba(255,255,255,.72),
+    0 5px 16px rgba(18,45,32,.17);
+  transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
+/* 顶部一道柔和高光 —— 苹果的玻璃都有一道来自上方的光 */
+.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:32%;
   border-radius:999px;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0))}
-.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;
-  box-shadow:inset 0 2px 4px rgba(140,200,255,.85),
-             inset 0 -2px 4px rgba(255,150,210,.7),
-             inset 2.5px 0 5px rgba(160,255,220,.45),
-             inset -2.5px 0 5px rgba(255,240,150,.45)}
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,0))}
+/* **边缘折射环**：环内用「几乎不模糊 + 超高饱和 + 更亮」＝光在玻璃边缘被聚焦，
+   会把这圈底下的颜色**浓缩**出来（比中间更亮更艳），这就是折射的观感。
+   mask 两行＝只保留 2px 的边框环，中间那圈不参与。 */
+.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;padding:2px;
+  pointer-events:none;
+  -webkit-backdrop-filter:blur(1.5px) saturate(400%) brightness(1.32);
+  backdrop-filter:blur(1.5px) saturate(400%) brightness(1.32);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude}
 #tb1:checked~.tabbar .gsl{transform:translateX(0)}
 #tb2:checked~.tabbar .gsl{transform:translateX(100%)}
 #tb3:checked~.tabbar .gsl{transform:translateX(200%)}
@@ -904,15 +926,25 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
      gsl.style.transform='translateX('+(v*100)+'%)';
    }
    var n=Math.round(v);
-   for(var j=0;j<N;j++)ls[j].classList.toggle('live',j===n);
+   for(var j=0;j<N;j++){
+     /* 透镜：拖动中按"离滑块多远"放大（贴着滑块最大 34%）；不拖时只留选中格一点的基准 */
+     var d=Math.abs(j-v);
+     var f=snap?(j===n?0.3:0):(d>=1?0:Math.pow(1-d,0.75));
+     ls[j].style.setProperty('--lens',f.toFixed(3));
+     ls[j].classList.toggle('live',j===n);
+   }
  }
  var s=document.createElement('input');
  s.type='range';s.min=0;s.max=N-1;s.step=0.001;s.value=picked;
  s.className='tsl';s.setAttribute('aria-label','拖动或点按切换板块');
  bar.appendChild(s);s.style.display='block';
- s.addEventListener('input',function(){paint(parseFloat(s.value),false);});
+ s.addEventListener('input',function(){
+   bar.classList.add('dragging');
+   paint(parseFloat(s.value),false);
+ });
  s.addEventListener('change',function(){
    var n=Math.round(parseFloat(s.value));s.value=n;
+   bar.classList.remove('dragging');
    if(gsl)gsl.style.transition='';
    requestAnimationFrame(function(){paint(n,true);});
    if(r[n])r[n].checked=true;
