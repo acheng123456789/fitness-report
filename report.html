@@ -244,8 +244,8 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
   backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
   border:.5px solid rgba(255,255,255,.55);
   box-shadow:
-    inset 0 1px 1.5px rgba(255,255,255,.92),
-    inset 0 -1px 1.5px rgba(255,255,255,.34),
+    inset 0 1px 1px rgba(255,255,255,.55),
+    inset 0 -1px 1px rgba(255,255,255,.22),
     inset 1.5px 0 1.5px rgba(255,255,255,.46),
     inset -1.5px 0 1.5px rgba(255,255,255,.46),
     0 14px 40px rgba(14,40,28,.20),
@@ -256,7 +256,7 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
     rgba(255,255,255,0) 50%,rgba(255,255,255,.12) 100%)}
 .tabbar:after{content:'';position:absolute;left:16px;right:16px;bottom:1.5px;height:1px;
   border-radius:1px;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent)}
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent)}
 .tabbar label,.tabbar a{position:relative;z-index:1;
   display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:1px;padding:0;border-radius:18px;
@@ -270,18 +270,19 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
   /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮。
      --lens(0~1) 由脚本在拖动时按距离写；不拖时由 :checked 给一个基准值。 */
   transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
-  /* **折射感**：隔着玻璃看图标 —— 放大 + 极轻模糊 + 左右分开的红/蓝重影（棱镜色散）+ 提亮增艳。
-     CSS 的 backdrop-filter **不能位移背景**，所以"把背景扭歪"做不了；
-     但"透过一块厚玻璃看图标"能做出非常接近的观感，而图标正是视线焦点。 */
+  transition:background .18s,box-shadow .18s,filter .26s,
+    transform .26s cubic-bezier(.34,1.35,.5,1)}
+/* **折射感**：隔着玻璃看图标 —— 放大 + 极轻模糊 + 左右分开的红/蓝重影（棱镜色散）+ 提亮增艳。
+   CSS 的 backdrop-filter 不能位移背景，所以"把背景扭歪"做不了；
+   但"透过一块厚玻璃看图标"能做出来，而图标正是视线焦点。
+   ⚠️ **只在拖动中出现**：静止时选中项也带重影的话，图标会发紫发脏（被反馈过）。 */
+.tabbar.dragging .tgl{
   filter:blur(calc(var(--lens,0)*.32px))
          drop-shadow(calc(var(--lens,0)*1.15px) 0 calc(var(--lens,0)*.5px) rgba(255,72,132,.55))
          drop-shadow(calc(var(--lens,0)*-1.15px) 0 calc(var(--lens,0)*.5px) rgba(46,150,255,.55))
          brightness(calc(1 + var(--lens,0)*.22))
          saturate(calc(1 + var(--lens,0)*.55));
-  transition:background .18s,box-shadow .18s,filter .26s,
-    transform .26s cubic-bezier(.34,1.35,.5,1)}
-/* 拖动中不做插值 → 图标紧跟着手指胀大/回落，才有"透镜扫过去"的手感 */
-.tabbar.dragging .tgl{transition:background .18s,box-shadow .18s,filter 0s,transform 0s}
+  transition:background .18s,box-shadow .18s,filter 0s,transform 0s}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;
   stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 /* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
@@ -305,41 +306,51 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
 #tb1:checked~.tabbar label[for=tb1],
 #tb2:checked~.tabbar label[for=tb2],
 #tb3:checked~.tabbar label[for=tb3],
-#tb4:checked~.tabbar label[for=tb4]{color:var(--ac);--lens:.3}
+#tb4:checked~.tabbar label[for=tb4]{color:var(--ac);--lens:.2}
 /* ===== 会滑动的液态玻璃滑块（iOS 26 停靠栏那颗）=====
-   宽 = 一个格子宽，所以 translateX(100%) 恰好平移一格。
-   **关键：不给滑块涂一层白** —— 涂白它就是死的、不折射。
-   改成「几乎无色 + 高饱和 + 提亮」，**让底下的颜色自己透上来**：
-   滑到绿区就偏绿、滑到紫区就偏紫，这才是"把底色折射出来"。 */
-.gsl{position:absolute;top:6px;bottom:5px;left:6px;z-index:0;pointer-events:none;
-  width:calc((100% - 12px)/4);border-radius:26px;
-  /* 径向：**中心极透、边缘渐白** ＝ 玻璃"中间薄、边缘厚"，
-     光走到边上被压出一圈亮边 —— 这是折射感的主要来源之一 */
-  background:radial-gradient(122% 114% at 50% 50%,
-    rgba(255,255,255,.04) 44%,rgba(255,255,255,.34) 100%);
-  -webkit-backdrop-filter:blur(10px) saturate(300%) contrast(1.04) brightness(1.15);
-  backdrop-filter:blur(10px) saturate(300%) contrast(1.04) brightness(1.15);
+   苹果那种"液态玻璃"其实靠三条，跟"糊不糊"关系不大：
+   ① **玻璃本身几乎无色** —— 涂白就是死的、不折射。要「极低白度 + 高饱和」，
+      让底下的颜色自己透上来：滑到绿区偏绿、紫区偏紫。
+   ② **几乎不模糊** —— 苹果的玻璃后面内容是**清晰**的，靠边缘那圈光体现"厚度"，
+      不是靠糊。之前 blur 开到 10px，看着像毛玻璃，这就是"不像苹果"的主因。
+   ③ **边缘的光必须不对称** —— 上沿最亮、下沿淡、两侧更淡（光从上方来）。
+      四边一样亮会显出四条框线（之前被反馈"有两条横线好丑"就是这个）。
+   尺寸：比格子宽 14%、上下各外扩 → 视觉上更饱满。 */
+.gsl{position:absolute;top:4px;bottom:3px;z-index:0;pointer-events:none;
+  left:calc(6px - (100% - 12px)/4 * 0.07);
+  width:calc((100% - 12px)/4 * 1.14);
+  border-radius:30px;
+  /* 中心几乎全透、边缘略白 ＝ 玻璃"中间薄、边缘厚" */
+  background:radial-gradient(132% 122% at 50% 44%,
+    rgba(255,255,255,.02) 38%,rgba(255,255,255,.24) 100%);
+  -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
+  backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
   box-shadow:
-    inset 0 0 0 .5px rgba(255,255,255,.72),
-    0 5px 16px rgba(18,45,32,.17);
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -0.5px 0 rgba(255,255,255,.28),
+    inset 0 0 0 .5px rgba(255,255,255,.22),
+    0 4px 14px rgba(18,45,32,.15),
+    0 1px 3px rgba(18,45,32,.08);
+  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度" */
+  transform:translateX(calc(var(--i,0) * 100% / 1.14));
   transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
-/* 顶部一道柔和高光 —— 苹果的玻璃都有一道来自上方的光 */
-.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:32%;
-  border-radius:999px;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,0))}
-/* **边缘折射环**：环内用「几乎不模糊 + 超高饱和 + 更亮」＝光在玻璃边缘被聚焦，
-   会把这圈底下的颜色**浓缩**出来（比中间更亮更艳），这就是折射的观感。
-   mask 两行＝只保留 2px 的边框环，中间那圈不参与。 */
-.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;padding:2.5px;
-  pointer-events:none;
-  -webkit-backdrop-filter:blur(1.2px) saturate(440%) contrast(1.14) brightness(1.42);
-  backdrop-filter:blur(1.2px) saturate(440%) contrast(1.14) brightness(1.42);
+/* 顶部柔光：**径向**，不要用胶囊条 —— 小尺寸下胶囊会显成一条"横线" */
+.gsl:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(118% 82% at 50% -10%,
+    rgba(255,255,255,.5),rgba(255,255,255,0) 62%)}
+/* 边缘这圈用**渐变描边**画（不依赖 backdrop-filter+mask，Safari 上更稳），
+   上沿最亮 → 左下最暗 → 右下回一点，就是玻璃厚度的观感。 */
+.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  padding:1.5px;
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.92) 0%,rgba(255,255,255,.22) 34%,
+    rgba(255,255,255,.10) 62%,rgba(255,255,255,.42) 100%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude}
-#tb1:checked~.tabbar .gsl{transform:translateX(0)}
-#tb2:checked~.tabbar .gsl{transform:translateX(100%)}
-#tb3:checked~.tabbar .gsl{transform:translateX(200%)}
-#tb4:checked~.tabbar .gsl{transform:translateX(300%)}
+#tb1:checked~.tabbar .gsl{--i:0}
+#tb2:checked~.tabbar .gsl{--i:1}
+#tb3:checked~.tabbar .gsl{--i:2}
+#tb4:checked~.tabbar .gsl{--i:3}
 #tb1:checked~.tabbar label[for=tb1] svg,
 #tb2:checked~.tabbar label[for=tb2] svg,
 #tb3:checked~.tabbar label[for=tb3] svg,
@@ -934,7 +945,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
  function paint(v,snap){
    if(gsl){
      gsl.style.transition=snap?'':'none';   /* 拖动中关过渡，才跟手 */
-     gsl.style.transform='translateX('+(v*100)+'%)';
+     gsl.style.setProperty('--i',v);
    }
    var n=Math.round(v);
    for(var j=0;j<N;j++){

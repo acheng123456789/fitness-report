@@ -82,8 +82,8 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
   backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
   border:.5px solid rgba(255,255,255,.55);
   box-shadow:
-    inset 0 1px 1.5px rgba(255,255,255,.92),
-    inset 0 -1px 1.5px rgba(255,255,255,.34),
+    inset 0 1px 1px rgba(255,255,255,.55),
+    inset 0 -1px 1px rgba(255,255,255,.22),
     inset 1.5px 0 1.5px rgba(255,255,255,.46),
     inset -1.5px 0 1.5px rgba(255,255,255,.46),
     0 14px 40px rgba(14,40,28,.20),
@@ -119,38 +119,47 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
   width:54px;height:36px;border-radius:18px;
   /* 透镜：--lens 由脚本按"离滑块多远"写（见报告页同段注释） */
   transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
-  /* 折射感：隔着玻璃看图标（红/蓝重影＝棱镜色散）。详见报告页同段注释。 */
+  transition:filter .26s,transform .26s cubic-bezier(.34,1.35,.5,1)}
+/* 折射感（红/蓝重影＝棱镜色散）**只在拖动中出现**，静止时不加（否则图标发紫发脏） */
+.tabbar.dragging .tgl{
   filter:blur(calc(var(--lens,0)*.32px))
          drop-shadow(calc(var(--lens,0)*1.15px) 0 calc(var(--lens,0)*.5px) rgba(255,72,132,.55))
          drop-shadow(calc(var(--lens,0)*-1.15px) 0 calc(var(--lens,0)*.5px) rgba(46,150,255,.55))
          brightness(calc(1 + var(--lens,0)*.22))
          saturate(calc(1 + var(--lens,0)*.55));
-  transition:filter .26s,transform .26s cubic-bezier(.34,1.35,.5,1)}
-.tabbar.dragging .tgl{transition:filter 0s,transform 0s}
+  transition:filter 0s,transform 0s}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
-/* 滑块：封面没有 radio，位移由封面脚本在点击时写 transform（先滑、再跳） */
-.gsl{position:absolute;top:6px;bottom:5px;left:6px;z-index:0;pointer-events:none;
-  width:calc((100% - 12px)/4);border-radius:26px;
-  /* 径向：中心极透、边缘渐白 ＝ 玻璃"中间薄、边缘厚"（见报告页同段注释） */
-  background:radial-gradient(122% 114% at 50% 50%,
-    rgba(255,255,255,.04) 44%,rgba(255,255,255,.34) 100%);
-  -webkit-backdrop-filter:blur(10px) saturate(300%) contrast(1.04) brightness(1.15);
-  backdrop-filter:blur(10px) saturate(300%) contrast(1.04) brightness(1.15);
+.gsl{position:absolute;top:4px;bottom:3px;z-index:0;pointer-events:none;
+  left:calc(6px - (100% - 12px)/4 * 0.07);
+  width:calc((100% - 12px)/4 * 1.14);
+  border-radius:30px;
+  /* 中心几乎全透、边缘略白 ＝ 玻璃"中间薄、边缘厚"（详见报告页同段注释） */
+  background:radial-gradient(132% 122% at 50% 44%,
+    rgba(255,255,255,.02) 38%,rgba(255,255,255,.24) 100%);
+  -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
+  backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
   box-shadow:
-    inset 0 0 0 .5px rgba(255,255,255,.72),
-    0 5px 16px rgba(18,45,32,.17);
-  transition:transform .33s cubic-bezier(.3,1.32,.45,1)}
-.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:32%;
-  border-radius:999px;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,0))}
-/* 边缘折射环：环内几乎不模糊 + 超高饱和 + 更亮 → 光在边缘被聚焦（见报告页同段注释） */
-.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;padding:2.5px;
-  pointer-events:none;
-  -webkit-backdrop-filter:blur(1.2px) saturate(440%) contrast(1.14) brightness(1.42);
-  backdrop-filter:blur(1.2px) saturate(440%) contrast(1.14) brightness(1.42);
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -0.5px 0 rgba(255,255,255,.28),
+    inset 0 0 0 .5px rgba(255,255,255,.22),
+    0 4px 14px rgba(18,45,32,.15),
+    0 1px 3px rgba(18,45,32,.08);
+  /* --i 由封面脚本写（拖动时是小数） */
+  transform:translateX(calc(var(--i,0) * 100% / 1.14));
+  transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
+.gsl:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(118% 82% at 50% -10%,
+    rgba(255,255,255,.5),rgba(255,255,255,0) 62%)}
+.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  padding:1.5px;
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.92) 0%,rgba(255,255,255,.22) 34%,
+    rgba(255,255,255,.10) 62%,rgba(255,255,255,.42) 100%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude}
+
+/* 滑块：封面没有 radio，位移由封面脚本在点击时写 transform（先滑、再跳） */
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
 </style></head><body>
   <div class="cover">
@@ -172,7 +181,7 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=ca324449#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=ca324449#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=ca324449#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=ca324449#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=06b285a0#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=06b285a0#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=06b285a0#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=06b285a0#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
 <script>
 (function(){
  var bar=document.querySelector('.tabbar');if(!bar)return;
@@ -183,7 +192,7 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
    if(gsl){
      /* 拖动中必须关掉过渡，否则滑块会"追着"手指慢慢走，手感发飘 */
      gsl.style.transition=snap?'':'none';
-     gsl.style.transform='translateX('+(v*100)+'%)';
+     gsl.style.setProperty('--i',v);
    }
    var n=Math.round(v);
    for(var j=0;j<N;j++){
