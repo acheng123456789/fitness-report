@@ -29,7 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
     "Source Han Sans SC","Noto Sans CJK SC","Hiragino Sans GB","Microsoft YaHei",
     system-ui,"Segoe UI",Roboto,sans-serif;
   min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:24px 20px calc(96px + env(safe-area-inset-bottom));
+  padding:24px 20px calc(108px + env(safe-area-inset-bottom));
   background:linear-gradient(160deg,#00E08E 0%,#00C86F 46%,#009C5B 100%);
   color:#241F2E;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 .cover{width:100%;max-width:380px;background:#fff;border-radius:26px;padding:30px 24px 24px;
@@ -55,20 +55,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
 .dest em{display:block;font-style:normal;font-size:10.5px;color:#8A8595;margin-top:1px}
 .dest .dar{margin-left:auto;color:#C6C2CE;font-size:17px;flex:none}
 /* ---- 底部毛玻璃 Tab Bar（iOS 风）：四个板块直达 ---- */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;
+.tabbar{position:fixed;left:11px;right:11px;z-index:60;
+  bottom:calc(10px + env(safe-area-inset-bottom));
   display:grid;grid-template-columns:repeat(4,1fr);
-  padding:7px 6px calc(6px + env(safe-area-inset-bottom));
-  background:rgba(250,252,253,.72);
-  -webkit-backdrop-filter:saturate(180%) blur(20px);
-  backdrop-filter:saturate(180%) blur(20px);
-  border-top:.5px solid rgba(0,0,0,.08)}
+  padding:9px 6px 7px;
+  background:rgba(252,253,255,.62);
+  -webkit-backdrop-filter:saturate(190%) blur(26px);
+  backdrop-filter:saturate(190%) blur(26px);
+  border:.5px solid rgba(255,255,255,.62);
+  border-radius:27px;
+  box-shadow:0 12px 34px rgba(18,45,32,.17),
+             inset 0 1px 0 rgba(255,255,255,.72)}
 .tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;padding:5px 2px 3px;border-radius:13px;text-decoration:none;
+  gap:3px;padding:2px;border-radius:15px;text-decoration:none;
   font-size:11px;font-weight:700;letter-spacing:.2px;
   -webkit-tap-highlight-color:transparent;transition:transform .12s}
-.tabbar a:active{transform:scale(.92)}
-.tabbar svg{width:27px;height:27px;display:block;fill:none;stroke:currentColor;
-  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tabbar a:active{transform:scale(.9)}
+.tabbar svg{width:32px;height:32px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
 </style></head><body>
   <div class="cover">
@@ -90,5 +94,5 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><a href="report.html?v=f1d08da4#g1" style="color:#00C86F"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg><span>总览</span></a><a href="report.html?v=f1d08da4#g2" style="color:#7B61FF"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg><span>有氧</span></a><a href="report.html?v=f1d08da4#g3" style="color:#F5A524"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg><span>无氧</span></a><a href="report.html?v=f1d08da4#g4" style="color:#0FA9C9"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg><span>记录</span></a></nav>
+<nav class="tabbar"><a href="report.html?v=4ebe6e08#g1" style="color:#00C86F"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg><span>总览</span></a><a href="report.html?v=4ebe6e08#g2" style="color:#7B61FF"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg><span>有氧</span></a><a href="report.html?v=4ebe6e08#g3" style="color:#F5A524"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg><span>无氧</span></a><a href="report.html?v=4ebe6e08#g4" style="color:#0FA9C9"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg><span>记录</span></a></nav>
 </body></html>
