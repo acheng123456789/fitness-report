@@ -237,25 +237,21 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
   display:grid;grid-template-columns:repeat(4,1fr);
   padding:7px 6px 6px;border-radius:31px;
   /* ⚠️ 这里**不能**加 overflow:hidden —— Safari 上祖先 overflow:hidden 会让
-     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。
-     圆角交给各伪元素自带的 border-radius:inherit 去裁。 */
-  background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.4));
+     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。 */
+  background:linear-gradient(180deg,rgba(255,255,255,.54),rgba(255,255,255,.34));
   -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
   backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
-  /* ⚠️⚠️ **这里绝不能用 border**：`.5px solid` 在 3x 屏上就是一条**实心亮线**，
-     它沿着 Dock 的上沿和下沿各画一道横贯全宽的亮线 —— 这就是被投诉三次的"横线"。
-     （之前一直在查 box-shadow 的 inset，其实真正的凶手是这圈 border。）
-     玻璃的"厚度"改由 :after 那圈**整圈模糊过**的描边表达（模糊过的东西不可能成线）。
-     高光也只能用"会衰减到 0"的柔光，见下面的 :before。 */
+  /* ⚠️⚠️⚠️ 这个 Dock 出过三次"横线"，最后查清是**三类东西**，现在一个都不剩：
+     ① 一圈 `.5px solid` 的 border（3x 屏上就是一条实心亮线，压在上/下沿）；
+     ② 一条 `height:1px` 的亮白渐变（货真价实的横线，还压在画面最下沿）；
+     ③ `.tabbar:after{box-shadow:inset …;filter:blur()}` 这种"伪元素＋滤镜＋inset"的
+        组合 —— 它在 iOS 上不止会留边线，还会渲染出**纯品红(#FF00FF)的杂色线**
+        （截图实测：横线 / 竖线各出现过一次，颜色是 100% 品红，属于 WebKit 的
+        "滤镜离屏缓冲没被清干净"的合成 bug，不是设计问题）。
+     ⚠️ **本规则**：Dock 与其子元素（.gsl / .tgl）**不许出现 filter / mask / inset 阴影**。
+        玻璃质感只靠「半透明渐变底 + backdrop-filter + 外投影」表达 ——
+        这三样在任何版本 iOS 上都不会画出线来。 */
   box-shadow:0 14px 40px rgba(14,40,28,.2),0 2px 6px rgba(14,40,28,.07)}
-/* 上沿只放**一团柔光**（径向、峰值在框外，边缘自然衰减），不是一条亮带 */
-.tabbar:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(128% 86% at 50% -20%,rgba(255,255,255,.42),rgba(255,255,255,0) 74%)}
-/* 玻璃厚度＝一圈描边，但**整圈 blur(1.6px)**：糊开之后就是一圈柔和的边光。
-   （这里原来是一条 height:1px 的底部亮线，而且 bottom:1.5px 正好压在画面最下沿，
-   在手机上就是一道明晃晃的横线 —— 已删除。） */
-.tabbar:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.42);filter:blur(1.7px)}
 .tabbar label,.tabbar a{position:relative;z-index:1;
   display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:1px;padding:0;border-radius:18px;
@@ -266,42 +262,28 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
 /* 图标外面这层：既撑大图标，也是"选中胶囊"的载体 */
 .tgl{display:flex;align-items:center;justify-content:center;
   width:54px;height:36px;border-radius:18px;
-  /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮。
-     --lens(0~1) 由脚本在拖动时按距离写；不拖时由 :checked 给一个基准值。 */
+  /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮（只有 transform，最稳）。 */
   transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
-  transition:background .18s,box-shadow .18s,filter .26s,
-    transform .26s cubic-bezier(.34,1.35,.5,1)}
-/* **折射感**：隔着玻璃看图标 —— 放大 + 极轻模糊 + 左右分开的红/蓝重影（棱镜色散）+ 提亮增艳。
-   CSS 的 backdrop-filter 不能位移背景，所以"把背景扭歪"做不了；
-   但"透过一块厚玻璃看图标"能做出来，而图标正是视线焦点。
-   ⚠️ **只在拖动中出现**：静止时选中项也带重影的话，图标会发紫发脏（被反馈过）。 */
-.tabbar.dragging .tgl{
-  filter:blur(calc(var(--lens,0)*.32px))
-         drop-shadow(calc(var(--lens,0)*1.15px) 0 calc(var(--lens,0)*.5px) rgba(255,72,132,.55))
-         drop-shadow(calc(var(--lens,0)*-1.15px) 0 calc(var(--lens,0)*.5px) rgba(46,150,255,.55))
-         brightness(calc(1 + var(--lens,0)*.22))
-         saturate(calc(1 + var(--lens,0)*.55));
-  transition:background .18s,box-shadow .18s,filter 0s,transform 0s}
+  transition:transform .26s cubic-bezier(.34,1.35,.5,1)}
+/* ⚠️ 这里原来挂了一串 `filter: blur() + drop-shadow(红) + drop-shadow(蓝)` 做"棱镜色散"。
+   iOS 上会渲染出**品红色杂线**（与上面 tabbar 注释里的 ③ 同一类合成本 bug），
+   已整体删除。现在"隔着玻璃看图标"的感觉只由 .tgl 的放大 + .live 的换色表达。 */
 .tabbar svg{width:32px;height:32px;display:block;fill:none;
   stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 /* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
    选中态的 4 条规则在下面，一起管。 */
 .tabbar label.live{color:var(--ac)}
-/* ===== 拖拽层：一个**透明的原生 range** 铺满整个 Dock =====
-   为什么用 range：原生控件的"按住拖"手感是 JS 手搓不出来的（跟手、惯性、
-   在 iOS 上的物理反馈都是系统级）。我们用它的手势，视觉仍由 .gsl 呈现。
-   step 取 0.001 → 拖动时拿到**连续值**，滑块才能真正跟手；松手 Math.round 吸附。
-   ⚠️ 默认 display:none，由脚本打开 —— 脚本失效时点 label 照旧可用。 */
-.tsl{position:absolute;inset:0;z-index:3;width:100%;height:100%;
-  margin:0;padding:0;display:none;opacity:0;cursor:grab;
-  -webkit-appearance:none;appearance:none;background:transparent;
-  touch-action:pan-y}   /* 竖直滑动仍交给页面滚动，横向才归滑块 */
-.tsl:active{cursor:grabbing}
-.tsl::-webkit-slider-runnable-track{height:100%;background:transparent;border:0}
-.tsl::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
-  width:25%;height:100%;background:transparent;border:0}
-.tsl::-moz-range-track{height:100%;background:transparent;border:0}
-.tsl::-moz-range-thumb{width:25%;height:100%;background:transparent;border:0}
+/* ===== 手势层：铺满整个 Dock 的一层透明方块 =====
+   ⚠️ 这里**赔过两次教训**，所以不用 `<input type=range>` 了：
+   原生 range 的"点哪跳哪"是把**滑块（thumb）中心**对到手指上，而 thumb 有宽度（25%），
+   于是「手指位置 → value」中间隔着一层 (trackW−thumbW) 的映射：
+   点第 i 个 Tab 的**正中**，拿到的 value ≠ i（实测是 i−1 那一档，且越靠左偏得越狠），
+   结果就是**点"总览"没反应**（value 原地不动 ⇒ 连 input/change 都不触发）。
+   直接读 `clientX` 自己算坐标，映射 100% 可预期，跟手也不输原生。 */
+.tsurf{position:absolute;inset:0;z-index:3;border-radius:inherit;
+  background:transparent;touch-action:pan-y;cursor:grab;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.tsurf:active{cursor:grabbing}
 #tb1:checked~.tabbar label[for=tb1],
 #tb2:checked~.tabbar label[for=tb2],
 #tb3:checked~.tabbar label[for=tb3],
@@ -319,32 +301,22 @@ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
   left:calc(6px - (100% - 12px)/4 * 0.07);
   width:calc((100% - 12px)/4 * 1.14);
   border-radius:30px;
-  /* 中心几乎全透、边缘略白 ＝ 玻璃"中间薄、边缘厚" */
-  background:radial-gradient(132% 122% at 50% 44%,
-    rgba(255,255,255,.02) 38%,rgba(255,255,255,.17) 100%);
+  /* 玻璃"中间薄、边缘厚"的观感：两层**普通渐变**叠出来（不许用 filter/mask/inset，见 .tabbar 注释）。
+     第一层径向的**峰值放在 26% 高度 —— 落在胶囊内部**，不在上沿，所以不会烧出一条亮线。 */
+  background:
+    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.26),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,.13) 46%,
+      rgba(255,255,255,.18) 100%);
   -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
   backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
-  /* ⚠️ inset 阴影在**元素边界处正好最亮**，而它又被边界硬裁 —— 所以只要用 inset
-     画高光，胶囊的上沿就会留一道 1px 亮线（blur 多大都没用）。这里索性一条 inset 都不留，
-     只留不会碰边界的外投影；高光/厚度全部交给 :before / :after 两个伪元素，
-     一个用 mask 让亮度在上沿衰减到 0，一个把整圈描边糊开。 */
+  /* ⚠️ 一条 inset 都没有，也**没有伪元素**：inset 阴影在元素边界处最亮又被硬裁，
+     必然在胶囊上沿留一道 1px 亮线；而"伪元素 + filter/mask"在 iOS 上会渲染出
+     品红杂线（详见上面 .tabbar 的注释）。只用外投影 + 渐变底色，最稳。
+     translateZ(0)：提到独立合成层，避免拖动时亚像素重绘出接缝。 */
   box-shadow:0 5px 16px rgba(18,45,32,.14),0 1px 3px rgba(18,45,32,.08);
-  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度"
-     translateZ(0)：把滑块提到独立合成层，避免拖动时亚像素重绘出接缝。 */
+  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度" */
   transform:translateX(calc(var(--i,0) * 100% / 1.14)) translateZ(0);
   transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
-/* 顶部柔光：亮度在上沿处**被 mask 压到 0** → 边界上不可能出现硬线，
-   亮的部分落在胶囊内部（就是隔着玻璃看到的那层厚边）。 */
-.gsl:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.08) 44%,
-    rgba(255,255,255,0) 72%);
-  -webkit-mask:linear-gradient(180deg,transparent 0,#000 24%);
-          mask:linear-gradient(180deg,transparent 0,#000 24%);
-  filter:blur(1.2px)}
-/* 边缘这圈用「描边 + 整圈模糊」画：糊开之后只剩柔和的边光，
-   跟原来那种 mask 裁出来的 1.5px 硬描边（上沿一条亮线）完全不同。 */
-.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:inset 0 0 0 1.3px rgba(255,255,255,.4);filter:blur(1.4px)}
 #tb1:checked~.tabbar .gsl{--i:0}
 #tb2:checked~.tabbar .gsl{--i:1}
 #tb3:checked~.tabbar .gsl{--i:2}
@@ -954,25 +926,55 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
      ls[j].classList.toggle('live',j===n);
    }
  }
- var s=document.createElement('input');
- s.type='range';s.min=0;s.max=N-1;s.step=0.001;s.value=picked;
- s.className='tsl';s.setAttribute('aria-label','拖动或点按切换板块');
- bar.appendChild(s);s.style.display='block';
- s.addEventListener('input',function(){
-   bar.classList.add('dragging');
-   paint(parseFloat(s.value),false);
- });
- s.addEventListener('change',function(){
-   var n=Math.round(parseFloat(s.value));s.value=n;
-   bar.classList.remove('dragging');
-   if(gsl)gsl.style.transition='';
-   requestAnimationFrame(function(){paint(n,true);});
-   if(r[n])r[n].checked=true;
-   /* ⚠️ JS 里 `el.checked=true` **不会触发** change 事件（只有用户交互才会），
-      所以上面那个 radio 的 change 监听不会跑，滚动得在这里自己归零。 */
-   scrollTo(0,0);
- });
- paint(picked,true);
+/* 手势层：透明方块，自己从 clientX 算位置（为什么不用 range，见 CSS 里那段注释）。
+   ⚠️ 层级：z-index:3 压在 4 个 label 之上，所以**点按也由这里接管**——
+   不再指望 label 的默认行为（被盖住了根本点不到）。 */
+var surf=document.createElement('div');
+surf.className='tsurf';surf.setAttribute('aria-hidden','true');
+bar.appendChild(surf);
+function pct(x){
+  var b=bar.getBoundingClientRect();
+  return (x-b.left)/b.width;
+}
+/* 视觉位置：p=0 → 0（第一格正中）、p=1 → N-1（最后一格正中），两端夹住 */
+function vis(x){var v=pct(x)*N-0.5;return v<0?0:(v>N-1?N-1:v);}
+function near(x){return Math.round(vis(x));}
+var down=0,moved=false,startX=0,startY=0,lastX=0,tapI=0;
+surf.addEventListener('pointerdown',function(e){
+  startX=lastX=e.clientX;startY=e.clientY;moved=false;down=1;
+  tapI=near(e.clientX);
+  bar.classList.add('dragging');
+  paint(vis(e.clientX),false);          /* 一按就跟手（点按＝直接吸到该格） */
+  if(surf.setPointerCapture){try{surf.setPointerCapture(e.pointerId);}catch(err){}}
+  e.preventDefault();
+},false);
+surf.addEventListener('pointermove',function(e){
+  if(!down)return;
+  lastX=e.clientX;
+  if(Math.abs(e.clientX-startX)>7||Math.abs(e.clientY-startY)>7)moved=true;
+  if(!moved)return;
+  paint(vis(e.clientX),false);
+},false);
+function endDrag(e){
+  if(!down)return;down=0;
+  bar.classList.remove('dragging');
+  /* 位移很小＝点按：用**按下位置**那一格（避免手指微抖把目标晃到隔壁）；
+     真的拖过＝用松手位置那一格。 */
+  var n=moved?near(e.clientX):tapI;
+  requestAnimationFrame(function(){paint(n,true);});
+  if(r[n])r[n].checked=true;
+  /* ⚠️ JS 里 `el.checked=true` **不会触发** change 事件（只有用户交互才会），
+     所以上面那个 radio 的 change 监听不会跑，滚动得在这里自己归零。 */
+  scrollTo(0,0);
+}
+surf.addEventListener('pointerup',endDrag,false);
+/* 手势被系统抢走（比如手指划成页面滚动）时，退回离**最后位置**最近的一格 */
+surf.addEventListener('pointercancel',function(){
+  if(!down)return;down=0;bar.classList.remove('dragging');
+  var n=near(lastX);
+  requestAnimationFrame(function(){paint(n,true);});
+},false);
+paint(picked,true);
 })();
 </script>
 </body>

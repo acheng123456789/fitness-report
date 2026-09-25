@@ -75,20 +75,14 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
   display:grid;grid-template-columns:repeat(4,1fr);
   padding:7px 6px 6px;border-radius:31px;
   /* ⚠️ 这里**不能**加 overflow:hidden —— Safari 上祖先 overflow:hidden 会让
-     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。
-     圆角交给各伪元素自带的 border-radius:inherit 去裁。 */
-  background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.4));
+     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。 */
+  background:linear-gradient(180deg,rgba(255,255,255,.54),rgba(255,255,255,.34));
   -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
   backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
-  /* ⚠️⚠️ **绝不能用 border**：`.5px solid` 在 3x 屏上就是一条实心亮线，
-     沿 Dock 上下沿各画一道横贯全宽的横线（详见报告页同段注释） */
+  /* ⚠️⚠️⚠️ 常见的三种"横线"来源这里一个都没有：border / height:1px 亮线 /
+     「伪元素＋inset＋filter」组合（后者在 iOS 上还会渲染出**品红色杂线**）。
+     详见报告页 .tabbar 那段长注释（本段必须与它保持一致）。 */
   box-shadow:0 14px 40px rgba(14,40,28,.2),0 2px 6px rgba(14,40,28,.07)}
-/* 上沿：只放一团柔光（径向、峰值在框外），不是一条亮带 */
-.tabbar:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(128% 86% at 50% -20%,rgba(255,255,255,.42),rgba(255,255,255,0) 74%)}
-/* 玻璃厚度＝一圈描边 + 整圈模糊（原来是一条 height:1px 的底部亮线，已删除） */
-.tabbar:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.42);filter:blur(1.7px)}
 .tabbar a{position:relative;z-index:1;color:var(--ac);opacity:.62;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:1px;padding:0;border-radius:18px;text-decoration:none;
@@ -97,58 +91,37 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
   transition:transform .12s,opacity .16s}
 .tabbar a.live{opacity:1}
 .tabbar a span{color:#5C5668}
-/* 拖拽层：透明原生 range 铺满 Dock（同报告页）。默认 display:none，由脚本打开 */
-.tsl{position:absolute;inset:0;z-index:3;width:100%;height:100%;
-  margin:0;padding:0;display:none;opacity:0;cursor:grab;
-  -webkit-appearance:none;appearance:none;background:transparent;
-  touch-action:pan-y}
-.tsl:active{cursor:grabbing}
-.tsl::-webkit-slider-runnable-track{height:100%;background:transparent;border:0}
-.tsl::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
-  width:25%;height:100%;background:transparent;border:0}
-.tsl::-moz-range-track{height:100%;background:transparent;border:0}
-.tsl::-moz-range-thumb{width:25%;height:100%;background:transparent;border:0}
+/* 手势层：铺满 Dock 的透明方块，位置自己从 clientX 算（不用 range 的原因见报告页注释） */
+.tsurf{position:absolute;inset:0;z-index:3;border-radius:inherit;
+  background:transparent;touch-action:pan-y;cursor:grab;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.tsurf:active{cursor:grabbing}
 .tabbar a:active{transform:scale(.9)}
 .tgl{display:flex;align-items:center;justify-content:center;
   width:54px;height:36px;border-radius:18px;
   /* 透镜：--lens 由脚本按"离滑块多远"写（见报告页同段注释） */
   transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
-  transition:filter .26s,transform .26s cubic-bezier(.34,1.35,.5,1)}
-/* 折射感（红/蓝重影＝棱镜色散）**只在拖动中出现**，静止时不加（否则图标发紫发脏） */
-.tabbar.dragging .tgl{
-  filter:blur(calc(var(--lens,0)*.32px))
-         drop-shadow(calc(var(--lens,0)*1.15px) 0 calc(var(--lens,0)*.5px) rgba(255,72,132,.55))
-         drop-shadow(calc(var(--lens,0)*-1.15px) 0 calc(var(--lens,0)*.5px) rgba(46,150,255,.55))
-         brightness(calc(1 + var(--lens,0)*.22))
-         saturate(calc(1 + var(--lens,0)*.55));
-  transition:filter 0s,transform 0s}
+  transition:transform .26s cubic-bezier(.34,1.35,.5,1)}
+/* ⚠️ 原来这里有一串 filter + drop-shadow(红/蓝) 做"棱镜色散"，iOS 上会渲染出
+   **品红色杂线**，已整体删除（详见报告页同段注释）。 */
 .tabbar svg{width:32px;height:32px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
 .gsl{position:absolute;top:4px;bottom:3px;z-index:0;pointer-events:none;
   left:calc(6px - (100% - 12px)/4 * 0.07);
   width:calc((100% - 12px)/4 * 1.14);
   border-radius:30px;
-  /* 中心几乎全透、边缘略白 ＝ 玻璃"中间薄、边缘厚"（详见报告页同段注释） */
-  background:radial-gradient(132% 122% at 50% 44%,
-    rgba(255,255,255,.02) 38%,rgba(255,255,255,.17) 100%);
+  /* 两层普通渐变（径向峰值落在胶囊内部 26% 处）＝ 玻璃"中间薄、边缘厚"，不会烧出上沿亮线 */
+  background:
+    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.26),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,.13) 46%,
+      rgba(255,255,255,.18) 100%);
   -webkit-backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
   backdrop-filter:blur(3px) saturate(190%) brightness(1.06);
-  /* ⚠️ 一条 inset 都不留：inset 阴影在元素边界处最亮且被硬裁，会在胶囊上沿留 1px 亮线。
-     高光/厚度全部交给下面两个伪元素（详见报告页同段注释）。 */
+  /* ⚠️ 无 inset、无伪元素（原因同报告页：inset 会留亮线，伪元素+filter 会出杂色线） */
   box-shadow:0 5px 16px rgba(18,45,32,.14),0 1px 3px rgba(18,45,32,.08);
   /* --i 由封面脚本写（拖动时是小数） */
   transform:translateX(calc(var(--i,0) * 100% / 1.14)) translateZ(0);
   transition:transform .36s cubic-bezier(.3,1.32,.45,1)}
-/* 顶部柔光：亮度在上沿被 mask 压到 0 → 边界上不可能出现硬线 */
-.gsl:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.08) 44%,
-    rgba(255,255,255,0) 72%);
-  -webkit-mask:linear-gradient(180deg,transparent 0,#000 24%);
-          mask:linear-gradient(180deg,transparent 0,#000 24%);
-  filter:blur(1.2px)}
-/* 边缘这圈＝描边 + 整圈模糊，糊开之后只剩柔和边光（不是 1.5px 硬描边） */
-.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:inset 0 0 0 1.3px rgba(255,255,255,.4);filter:blur(1.4px)}
 
 /* 滑块：封面没有 radio，位移由封面脚本在点击时写 transform（先滑、再跳） */
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
@@ -172,13 +145,13 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=03361f26#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=03361f26#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=03361f26#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=03361f26#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=0113caff#g1" style="--ac:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=0113caff#g2" style="--ac:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z" fill="currentColor" stroke="none"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=0113caff#g3" style="--ac:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=0113caff#g4" style="--ac:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
 <script>
 (function(){
  var bar=document.querySelector('.tabbar');if(!bar)return;
  var gsl=bar.querySelector('.gsl'),as=bar.querySelectorAll('a.tga');
  var N=as.length;if(!N)return;
- var cur=0,leaving=false;
+ var leaving=false;
  function paint(v,snap){
    if(gsl){
      /* 拖动中必须关掉过渡，否则滑块会"追着"手指慢慢走，手感发飘 */
@@ -199,23 +172,40 @@ body:after{content:'';position:fixed;z-index:0;pointer-events:none;
    var a=as[i];if(!a)return;
    setTimeout(function(){location.href=a.getAttribute('href');},260);
  }
- var s=document.createElement('input');
- s.type='range';s.min=0;s.max=N-1;s.step=0.001;s.value=0;
- s.className='tsl';s.setAttribute('aria-label','拖动或点按切换板块');
- bar.appendChild(s);s.style.display='block';
- s.addEventListener('input',function(){cur=parseFloat(s.value);
-   bar.classList.add('dragging');paint(cur,false);});
- s.addEventListener('change',function(){
-   var n=Math.round(parseFloat(s.value));s.value=n;
+ var surf=document.createElement('div');
+ surf.className='tsurf';surf.setAttribute('aria-hidden','true');
+ bar.appendChild(surf);
+ function pct(x){var b=bar.getBoundingClientRect();return (x-b.left)/b.width;}
+ function vis(x){var v=pct(x)*N-0.5;return v<0?0:(v>N-1?N-1:v);}
+ function near(x){return Math.round(vis(x));}
+ var down=0,moved=false,startX=0,startY=0,lastX=0,tapI=0;
+ surf.addEventListener('pointerdown',function(e){
+   startX=lastX=e.clientX;startY=e.clientY;moved=false;down=1;
+   tapI=near(e.clientX);
+   bar.classList.add('dragging');
+   paint(vis(e.clientX),false);
+   if(surf.setPointerCapture){try{surf.setPointerCapture(e.pointerId);}catch(err){}}
+   e.preventDefault();
+ },false);
+ surf.addEventListener('pointermove',function(e){
+   if(!down)return;
+   lastX=e.clientX;
+   if(Math.abs(e.clientX-startX)>7||Math.abs(e.clientY-startY)>7)moved=true;
+   if(!moved)return;
+   paint(vis(e.clientX),false);
+ },false);
+ surf.addEventListener('pointerup',function(e){
+   if(!down)return;down=0;
    bar.classList.remove('dragging');
-   if(gsl)gsl.style.transition='';
+   var n=moved?near(e.clientX):tapI;
    requestAnimationFrame(function(){paint(n,true);});
    leave(n);
- });
- for(var i=0;i<N;i++)(function(a,i){
-   a.addEventListener('click',function(e){e.preventDefault();
-     s.value=i;cur=i;paint(i,true);leave(i);});
- })(as[i],i);
+ },false);
+ surf.addEventListener('pointercancel',function(){
+   if(!down)return;down=0;bar.classList.remove('dragging');
+   var n=near(lastX);
+   requestAnimationFrame(function(){paint(n,true);});
+ },false);
  paint(0,true);
 })();
 </script>
