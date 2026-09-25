@@ -225,7 +225,10 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .tabbar{position:fixed;left:11px;right:11px;z-index:60;
   bottom:calc(10px + env(safe-area-inset-bottom));
   display:grid;grid-template-columns:repeat(4,1fr);
-  padding:7px 6px 6px;border-radius:31px;overflow:hidden;
+  padding:7px 6px 6px;border-radius:31px;
+  /* ⚠️ 这里**不能**加 overflow:hidden —— Safari 上祖先 overflow:hidden 会让
+     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。
+     圆角交给各伪元素自带的 border-radius:inherit 去裁。 */
   background:linear-gradient(180deg,rgba(255,255,255,.56),rgba(255,255,255,.36));
   -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
   backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
@@ -274,9 +277,14 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
     inset 0 0 0 .5px rgba(255,255,255,.9),
     0 5px 16px rgba(18,45,32,.15);
   transition:transform .34s cubic-bezier(.34,.78,.2,1)}
+.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:34%;
+  border-radius:999px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0))}
 .gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;
-  box-shadow:inset 0 1.5px 3px rgba(150,205,255,.5),
-             inset 0 -1.5px 3px rgba(255,170,220,.42)}
+  box-shadow:inset 0 2px 4px rgba(140,200,255,.85),
+             inset 0 -2px 4px rgba(255,150,210,.7),
+             inset 2.5px 0 5px rgba(160,255,220,.45),
+             inset -2.5px 0 5px rgba(255,240,150,.45)}
 #tb1:checked~.tabbar .gsl{transform:translateX(0)}
 #tb2:checked~.tabbar .gsl{transform:translateX(100%)}
 #tb3:checked~.tabbar .gsl{transform:translateX(200%)}

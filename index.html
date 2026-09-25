@@ -32,7 +32,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
   padding:24px 20px calc(118px + env(safe-area-inset-bottom));
   background:linear-gradient(160deg,#00E08E 0%,#00C86F 46%,#009C5B 100%);
   color:#241F2E;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+/* 底部装饰光：让 Dock 的 backdrop-filter **有东西可以模糊**。
+   封面背景原本是纯色渐变，玻璃后面什么都没有 → 看起来就是一块死白，
+   所以"折射感"根本出不来。加一条斜光带 + 两个光斑就有了。 */
+html:before{content:'';position:fixed;z-index:0;pointer-events:none;
+  left:-30%;right:-30%;bottom:6%;height:190px;transform:rotate(-7deg);
+  background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.20) 28%,
+    rgba(255,255,255,.36) 50%,rgba(255,255,255,.16) 72%,rgba(255,255,255,0) 100%)}
+body:before{content:'';position:fixed;z-index:0;pointer-events:none;
+  left:-64px;bottom:26px;width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 68%)}
+body:after{content:'';position:fixed;z-index:0;pointer-events:none;
+  right:-76px;bottom:96px;width:270px;height:270px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.42) 0%,rgba(255,255,255,0) 68%)}
 .cover{width:100%;max-width:380px;background:#fff;border-radius:26px;padding:30px 24px 24px;
+  position:relative;z-index:1;
   box-shadow:0 24px 60px rgba(0,90,50,.28);text-align:center}
 .badge{display:inline-block;font-size:11.5px;letter-spacing:.5px;color:#00A85E;
   background:#E9F9F1;padding:5px 14px;border-radius:20px;margin-bottom:16px;font-weight:600}
@@ -59,7 +73,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
 .tabbar{position:fixed;left:11px;right:11px;z-index:60;
   bottom:calc(10px + env(safe-area-inset-bottom));
   display:grid;grid-template-columns:repeat(4,1fr);
-  padding:7px 6px 6px;border-radius:31px;overflow:hidden;
+  padding:7px 6px 6px;border-radius:31px;
+  /* ⚠️ 这里**不能**加 overflow:hidden —— Safari 上祖先 overflow:hidden 会让
+     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。
+     圆角交给各伪元素自带的 border-radius:inherit 去裁。 */
   background:linear-gradient(180deg,rgba(255,255,255,.56),rgba(255,255,255,.36));
   -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
   backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
@@ -89,6 +106,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
   width:54px;height:36px;border-radius:18px}
 .tabbar svg{width:32px;height:32px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+/* 滑块：封面没有 radio，位移由封面脚本在点击时写 transform（先滑、再跳） */
+.gsl{position:absolute;top:6px;bottom:5px;left:6px;z-index:0;pointer-events:none;
+  width:calc((100% - 12px)/4);border-radius:26px;
+  background:rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
+  backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.98),
+    inset 0 -1px 2px rgba(255,255,255,.55),
+    inset 0 0 0 .5px rgba(255,255,255,.9),
+    0 5px 16px rgba(18,45,32,.15);
+  transition:transform .3s cubic-bezier(.34,.78,.2,1)}
+.gsl:before{content:'';position:absolute;left:11%;right:11%;top:2px;height:34%;
+  border-radius:999px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0))}
+.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 2px 4px rgba(140,200,255,.85),
+             inset 0 -2px 4px rgba(255,150,210,.7),
+             inset 2.5px 0 5px rgba(160,255,220,.45),
+             inset -2.5px 0 5px rgba(255,240,150,.45)}
 .foot{margin-top:18px;font-size:10.5px;color:#9E99A8;line-height:1.6}
 </style></head><body>
   <div class="cover">
@@ -110,5 +147,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans 
     </div>
     <div class="foot">数据截止 2026-09 · 共 140 次运动</div>
   </div>
-<nav class="tabbar"><a href="report.html?v=5b16c6fc#g1" style="color:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a href="report.html?v=5b16c6fc#g2" style="color:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></a><a href="report.html?v=5b16c6fc#g3" style="color:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a href="report.html?v=5b16c6fc#g4" style="color:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<nav class="tabbar"><span class="gsl" aria-hidden="true"></span><a class="tga" data-i="0" href="report.html?v=664ff1ed#g1" style="color:#00C86F"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></a><a class="tga" data-i="1" href="report.html?v=664ff1ed#g2" style="color:#7B61FF"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></a><a class="tga" data-i="2" href="report.html?v=664ff1ed#g3" style="color:#F5A524"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></a><a class="tga" data-i="3" href="report.html?v=664ff1ed#g4" style="color:#0FA9C9"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></a></nav>
+<script>
+(function(){
+ var bar=document.querySelector('.tabbar');if(!bar)return;
+ var gsl=bar.querySelector('.gsl'),as=bar.querySelectorAll('a.tga');
+ for(var j=0;j<as.length;j++)as[j].style.opacity=(j?'0.66':'1');
+ for(var i=0;i<as.length;i++)(function(a,i){
+   a.addEventListener('click',function(e){
+     if(a.getAttribute('data-go'))return;          /* 第二次放行，真正跳转 */
+     e.preventDefault();
+     if(gsl)gsl.style.transform='translateX('+(i*100)+'%)';
+     for(var j=0;j<as.length;j++)as[j].style.opacity=(j===i?'1':'0.66');
+     setTimeout(function(){a.setAttribute('data-go','1');a.click();},240);
+   });
+ })(as[i],i);
+})();
+</script>
 </body></html>
