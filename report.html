@@ -260,14 +260,27 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 #tb2:checked~.tabbar label[for=tb2]{color:#7B61FF}
 #tb3:checked~.tabbar label[for=tb3]{color:#F5A524}
 #tb4:checked~.tabbar label[for=tb4]{color:#0FA9C9}
-#tb1:checked~.tabbar label[for=tb1] .tgl{background:rgba(0,200,111,.16);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
-#tb2:checked~.tabbar label[for=tb2] .tgl{background:rgba(123,97,255,.17);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
-#tb3:checked~.tabbar label[for=tb3] .tgl{background:rgba(245,165,36,.19);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
-#tb4:checked~.tabbar label[for=tb4] .tgl{background:rgba(15,169,201,.18);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+/* ===== 会滑动的液态玻璃滑块（iOS 26 停止栏那颗）=====
+   宽 = 一个格子宽，所以 translateX(100%) 恰好平移一格；
+   ::after 做**棱镜色散**（上沿偏冷、下沿偏暖）——真实折射做不了，这是最接近的模拟。 */
+.gsl{position:absolute;top:6px;bottom:5px;left:6px;z-index:0;pointer-events:none;
+  width:calc((100% - 12px)/4);border-radius:26px;
+  background:rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
+  backdrop-filter:blur(16px) saturate(230%) brightness(1.16);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.98),
+    inset 0 -1px 2px rgba(255,255,255,.55),
+    inset 0 0 0 .5px rgba(255,255,255,.9),
+    0 5px 16px rgba(18,45,32,.15);
+  transition:transform .34s cubic-bezier(.34,.78,.2,1)}
+.gsl:after{content:'';position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1.5px 3px rgba(150,205,255,.5),
+             inset 0 -1.5px 3px rgba(255,170,220,.42)}
+#tb1:checked~.tabbar .gsl{transform:translateX(0)}
+#tb2:checked~.tabbar .gsl{transform:translateX(100%)}
+#tb3:checked~.tabbar .gsl{transform:translateX(200%)}
+#tb4:checked~.tabbar .gsl{transform:translateX(300%)}
 #tb1:checked~.tabbar label[for=tb1] svg{stroke-width:2.4}
 #tb2:checked~.tabbar label[for=tb2] svg{stroke-width:2.4}
 #tb3:checked~.tabbar label[for=tb3] svg{stroke-width:2.4}
@@ -772,7 +785,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
   </div>
 </div></section>
 
-<section class="blk pnl p2" id="g2" style="--gc:#7B61FF"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><circle cx="15.2" cy="4.4" r="2.9" fill="#fff" stroke="none"/><path d="M13.6 8.1 10.9 12.9"/><path d="M13.4 8.7 17.3 11.3"/><path d="M10.9 12.9 14.4 14.9 13.8 19.2"/><path d="M10.9 12.9 8 15.6 5.2 16.9"/></svg></div><h1>有氧 · 跑步</h1><div class="hsub">跑量与配速心率 · 最长与最快</div></header><div class="cnt">
+<section class="blk pnl p2" id="g2" style="--gc:#7B61FF"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><circle cx="16" cy="5" r="2.9" fill="#fff" stroke="none"/><path d="M14.7 8.6 12.1 13.2"/><path d="M14.6 9.2 17.7 11.8"/><path d="M12.1 13.2 15.5 15.3 15.3 19.5"/><path d="M12.1 13.2 9 16 6.1 17.4"/><path d="M4.4 6.6h4.4M3 10.2h3.6"/></svg></div><h1>有氧 · 跑步</h1><div class="hsub">跑量与配速心率 · 最长与最快</div></header><div class="cnt">
 
 <div class="card">
   <h2>跑步 · 月度跑量</h2>
@@ -839,7 +852,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
     数据来源：Apple 健康（Apple Watch / iPhone）· 静态 SVG 渲染 + 纯 CSS 点击查详情
   </div>
 
-  <nav class="tabbar"><label for="tb1"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></label><label for="tb2"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></label><label for="tb3"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></label><label for="tb4"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></label></nav>
+  <nav class="tabbar"><span class="gsl" aria-hidden="true"></span><label for="tb1"><i class="tgl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="2.1"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="2.1"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="2.1"/></svg></i><span>总览</span></label><label for="tb2"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M12 20.3 4.1 12.4a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg></i><span>有氧</span></label><label for="tb3"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M6.6 6.9v10.2M17.4 6.9v10.2M3 9.6v4.8M21 9.6v4.8M6.6 12h10.8"/></svg></i><span>无氧</span></label><label for="tb4"><i class="tgl"><svg viewBox="0 0 24 24"><path d="M8.6 6.2h11.8M8.6 12h11.8M8.6 17.8h11.8"/><path d="M3.7 6.2h.01M3.7 12h.01M3.7 17.8h.01"/></svg></i><span>记录</span></label></nav>
 
 <script>
 (function(){
