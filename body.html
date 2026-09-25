@@ -164,6 +164,26 @@ details.dg>summary:before{content:none}
   line-height:1.8}
 @media (min-width:560px){.hd h1{font-size:30px}.stage-w{grid-template-columns:repeat(4,1fr)}}
 
+/* ===== 悬浮「首页」键：随时能退回封面 =====
+   ⚠️ 白底**几乎不透明**（.96）而不是毛玻璃：它会随滚动滑进滑出，
+      移动的 backdrop-filter 元素每帧都要重新取景身后内容（卡顿 + WebKit 合成 bug 出品红杂线），
+      详见 home_btn.py 顶部注释。视觉差别小到看不出，稳得多。 */
+.home{position:fixed;left:13px;top:calc(11px + env(safe-area-inset-top));z-index:58;
+  display:inline-flex;align-items:center;gap:3px;height:35px;
+  padding:0 13px 0 9px;border-radius:18px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 6px 18px rgba(14,40,28,.17),0 1px 3px rgba(14,40,28,.07);
+  color:#0A8F55;font-size:13px;font-weight:700;letter-spacing:.4px;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:transform .28s cubic-bezier(.32,.72,0,1),opacity .2s}
+.home svg{width:17px;height:17px;flex:none;display:block;fill:none;stroke:currentColor;
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+/* 按下去：`.press` 由 HOME_JS 驱动，`:active` 只当兜底（iOS 上 :active 不可靠，见文件头注释） */
+.home:active,.home.press{transform:translateY(1px) scale(.95);transition-duration:.08s}
+/* 往下读正文时整枚滑出左边缘 —— 注意是**移走**不是淡出：淡出后它还在那儿挡着字，
+   仍然点得到（误触）。缓动用 iOS 曲线，跟 Safari 工具栏一个路子。 */
+.home.hide{transform:translateX(-84px);opacity:0;pointer-events:none}
+
 #st-0:checked ~ .tabs .tab:nth-of-type(1){background:#00C86F;color:#fff;border-color:#00C86F}
 #st-0:checked ~ .panes .pn0{display:block}
 #st-1:checked ~ .tabs .tab:nth-of-type(2){background:#00C86F;color:#fff;border-color:#00C86F}
@@ -171,6 +191,7 @@ details.dg>summary:before{content:none}
 #st-2:checked ~ .tabs .tab:nth-of-type(3){background:#00C86F;color:#fff;border-color:#00C86F}
 #st-2:checked ~ .panes .pn2{display:block}
 </style></head><body>
+<a class="home" href="index.html" aria-label="回到封面首页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.6 5.4 8 12l6.6 6.6"/></svg><span>首页</span></a>
 
 <div class="hd">
   <div class="badge">163.2 斤 → 目标 140 斤 · 要减 23.2 斤</div>
@@ -333,6 +354,29 @@ details.dg>summary:before{content:none}
   </ul>
 </div>
 <div class="foot">数据来源：薄荷健康体脂秤 · Apple Watch 运动记录<br>
-纯静态页面 · 无 JavaScript</div>
+纯静态页面 · 断网可用</div>
 </div>
+<script>
+(function(){
+ var h=document.querySelector('.home');if(!h)return;
+ /* ① 按压反馈：pointerdown 立刻下沉，up/cancel/leave 任一到达就弹回。
+    ⚠️ pointercancel 必须监听（iOS 判成滚动时只发 cancel、不发 up），漏了会永远"按着"。 */
+ h.addEventListener('pointerdown',function(){h.classList.add('press');});
+ var off=function(){h.classList.remove('press');};
+ h.addEventListener('pointerup',off);
+ h.addEventListener('pointercancel',off);
+ h.addEventListener('pointerleave',off);
+ /* ② 收起/滑出：向下滚正文就收进左边缘（不挡字），向上滚或回到顶部立刻滑出来。 */
+ var last=0,busy=false;
+ addEventListener('scroll',function(){
+   if(busy)return;busy=true;
+   requestAnimationFrame(function(){
+     var y=scrollY||document.documentElement.scrollTop||0;
+     if(y<120){h.classList.remove('hide');}
+     else if(y>last+4){h.classList.add('hide');}
+     else if(y<last-4){h.classList.remove('hide');}
+     last=y;busy=false;});
+ },{passive:true});
+})();
+</script>
 </body></html>
