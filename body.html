@@ -78,29 +78,29 @@ h2{font-size:15px;margin:0 0 12px;padding-left:9px;border-left:3px solid var(--a
 .gv.ok{color:#0B8A50;background:#E9F9F1}
 .gv.bad{color:#D9534F;background:#FDEEEE}
 .grr{text-align:right;color:var(--dim2);font-size:10.5px;white-space:nowrap}
-/* 体重列表 */
-.trh{display:flex;gap:7px;font-size:10.5px;color:var(--dim2);padding:0 0 5px}
-.trh span{flex:none;text-align:right}
-.trh span:nth-child(1){width:46px;text-align:right}
-.trh span:nth-child(2){flex:1}
-.trh span:nth-child(3){width:50px}
-.trh span:nth-child(4){width:58px}
-.trh span:nth-child(5){width:56px}
-.tr{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:11.5px}
-.tr-i{flex:none;width:46px;text-align:right;color:var(--dim2);font-size:9.5px;
-  font-variant-numeric:tabular-nums}
-.tr-b{flex:1;min-width:30px;height:9px;border-radius:5px;background:#EEF1F4;
-  overflow:hidden}
-.tr-b i{display:block;height:100%;border-radius:5px}
-.tr-v{flex:none;width:50px;text-align:right;font-weight:700;
-  font-variant-numeric:tabular-nums}
+/* 体重列表 —— 6 列固定网格 + 行间/列间虚线。
+   ⚠️ 标签（现在/最轻/最重）必须**单独占一列**：原先它贴在行尾当第 6 个 flex 子元素，
+   会把 flex:1 的进度条挤短、后面三列数字跟着位移，整块看着乱。
+   数字一律 tabular-nums，否则 149.2 和 169.2 的宽度不同、右对齐也白搭。 */
+.wtc{display:block;margin:2px 0 12px}
+.trh,.tr{display:grid;align-items:center;
+  grid-template-columns:46px minmax(0,1fr) 54px 46px 52px 34px}
+.trh{font-size:10.5px;color:var(--dim2);border-bottom:1px dashed #E1E4EA}
+.trh span{padding:0 0 5px 8px;text-align:right;white-space:nowrap}
+.trh span:first-child{padding-left:0;text-align:left}
+.tr{border-top:1px dashed #E1E4EA;font-size:11.5px}
+.trh+.tr{border-top:0}
+.tr>span{padding:7px 0 7px 8px;border-left:1px dashed #E1E4EA;text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.tr>span:first-child{border-left:0;padding-left:0;text-align:left}
+.tr>span:last-child{padding-left:2px}
+.tr-i{color:var(--dim2);font-size:9.5px}
+.tr>span.tr-b{padding:0 8px}   /* 必须带 .tr>span 前缀，否则被 .tr>span 的 padding 覆盖 */
+.tr-b i{display:block;height:9px;border-radius:5px}
+.tr-v{font-weight:700}
 .tr-v small{font-size:9px;font-weight:600;color:var(--dim);margin-left:1px}
-.tr-f{flex:none;width:58px;text-align:right;color:var(--ink3);font-size:10.5px;
-  font-variant-numeric:tabular-nums}
-.tr-l{flex:none;width:56px;text-align:right;color:var(--ink3);font-size:10.5px;
-  font-variant-numeric:tabular-nums}
-.tg{flex:none;font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 6px;
-  margin-left:3px}
+.tr-f,.tr-l{color:var(--dim2);font-size:10.5px}
+.tg{font-size:9px;font-weight:700;border-radius:20px;padding:1px 5px}
 .tg.now{background:#E9F9F1;color:var(--acc)}
 .tg.lo{background:#EAF4FD;color:#2C7FBF}
 .tg.hi{background:#FDEEEE;color:#D9534F}
@@ -243,11 +243,14 @@ details.dg>summary:before{content:none}
 </div>
 <div class="card">
   <h2>② 这些次称重的变化</h2>
-  <div class="desc">按称重日期倒序（最新在上）。条越长体重越大　
-  <em>共 12 次称重 · 25/02/24 ~ 26/09/26</em></div>
+  <div class="desc">折线<b>从左到右按称重先后</b>，一眼看趋势；下表<b>按日期倒序</b>（最新在上），
+  条长＝体重、条色＝体脂率（<span style="color:#F5A524;font-weight:700">橙 ≥27%</span> ·
+  <span style="color:#3B9BE8;font-weight:700">蓝 25~27%</span> ·
+  <span style="color:#00C86F;font-weight:700">绿 &lt;25%</span>）　<em>共 12 次称重 · 25/02/24 ~ 26/09/26</em></div>
+  <svg class="wtc" viewBox="0 0 340 154" width="100%" height="auto" role="img" aria-label="体重折线趋势"><line x1="27" y1="107.0" x2="329" y2="107.0" stroke="#EDEFF3"/><text x="22" y="110.0" text-anchor="end" font-size="8" fill="#9E99A8">150</text><line x1="27" y1="73.0" x2="329" y2="73.0" stroke="#EDEFF3"/><text x="22" y="76.0" text-anchor="end" font-size="8" fill="#9E99A8">160</text><line x1="27" y1="39.0" x2="329" y2="39.0" stroke="#EDEFF3"/><text x="22" y="42.0" text-anchor="end" font-size="8" fill="#9E99A8">170</text><polyline points="39.6,101.6 64.8,109.7 89.9,41.7 115.1,47.2 140.2,48.2 165.4,42.1 190.6,46.8 215.8,54.3 240.9,63.5 266.1,62.1 291.2,62.1 316.4,63.5" fill="none" stroke="#2C7FBF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="39.6" cy="101.6" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="39.6" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">25/2/24</text><circle cx="64.8" cy="109.7" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="64.8" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">3/5</text><circle cx="89.9" cy="41.7" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="89.9" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">26/3/18</text><line x1="77.3" y1="17" x2="77.3" y2="124" stroke="#C9CDD6" stroke-dasharray="3 3"/><text x="77.3" y="14.0" text-anchor="middle" font-size="7" fill="#9E99A8">隔 12 个月</text><circle cx="115.1" cy="47.2" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="115.1" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">3/26</text><circle cx="140.2" cy="48.2" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="140.2" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">4/11</text><circle cx="165.4" cy="42.1" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="165.4" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">5/21</text><circle cx="190.6" cy="46.8" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="190.6" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">7/2</text><circle cx="215.8" cy="54.3" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="215.8" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">7/11</text><circle cx="240.9" cy="63.5" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="240.9" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">7/31</text><circle cx="266.1" cy="62.1" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="266.1" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">8/4</text><circle cx="291.2" cy="62.1" r="2.6" fill="#fff" stroke="#2C7FBF" stroke-width="1.6"/><text x="291.2" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">9/9</text><circle cx="316.4" cy="63.5" r="4" fill="#00C86F" stroke="#2C7FBF" stroke-width="1.6"/><text x="316.4" y="136.0" text-anchor="middle" font-size="7.5" fill="#9E99A8">9/26</text><text x="89.9" y="33.7" text-anchor="middle" font-size="8.5" font-weight="700" fill="#D9534F">最高 169.2</text><text x="316.4" y="55.5" text-anchor="end" font-size="8.5" font-weight="700" fill="#00C86F">现在 162.8</text></svg>
   <div class="trh"><span>日期</span><span></span><span>体重</span><span>体脂率</span>
-    <span>去脂体重</span></div>
-  <div class="tr"><span class="tr-i">26/09/26</span><span class="tr-b"><i style="width:96.2%;background:#F5A524"></i></span><span class="tr-v">162.8<small>斤</small></span><span class="tr-f">体脂 27.2%</span><span class="tr-l">去脂 118.6</span><span class="tg now">现在</span></div><div class="tr"><span class="tr-i">26/09/09</span><span class="tr-b"><i style="width:96.5%;background:#F5A524"></i></span><span class="tr-v">163.2<small>斤</small></span><span class="tr-f">体脂 27.4%</span><span class="tr-l">去脂 118.4</span></div><div class="tr"><span class="tr-i">26/08/04</span><span class="tr-b"><i style="width:96.5%;background:#3B9BE8"></i></span><span class="tr-v">163.2<small>斤</small></span><span class="tr-f">体脂 26.7%</span><span class="tr-l">去脂 119.6</span></div><div class="tr"><span class="tr-i">26/07/31</span><span class="tr-b"><i style="width:96.2%;background:#F5A524"></i></span><span class="tr-v">162.8<small>斤</small></span><span class="tr-f">体脂 27.2%</span><span class="tr-l">去脂 118.6</span></div><div class="tr"><span class="tr-i">26/07/11</span><span class="tr-b"><i style="width:97.8%;background:#F5A524"></i></span><span class="tr-v">165.5<small>斤</small></span><span class="tr-f">体脂 27.6%</span><span class="tr-l">去脂 119.8</span></div><div class="tr"><span class="tr-i">26/07/02</span><span class="tr-b"><i style="width:99.1%;background:#F5A524"></i></span><span class="tr-v">167.7<small>斤</small></span><span class="tr-f">体脂 28.2%</span><span class="tr-l">去脂 120.4</span></div><div class="tr"><span class="tr-i">26/05/21</span><span class="tr-b"><i style="width:99.9%;background:#F5A524"></i></span><span class="tr-v">169.1<small>斤</small></span><span class="tr-f">体脂 28.2%</span><span class="tr-l">去脂 121.4</span></div><div class="tr"><span class="tr-i">26/04/11</span><span class="tr-b"><i style="width:98.9%;background:#F5A524"></i></span><span class="tr-v">167.3<small>斤</small></span><span class="tr-f">体脂 28.1%</span><span class="tr-l">去脂 120.2</span></div><div class="tr"><span class="tr-i">26/03/26</span><span class="tr-b"><i style="width:99.1%;background:#3B9BE8"></i></span><span class="tr-v">167.6<small>斤</small></span><span class="tr-f">体脂 26.6%</span><span class="tr-l">去脂 123.0</span></div><div class="tr"><span class="tr-i">26/03/18</span><span class="tr-b"><i style="width:100.0%;background:#F5A524"></i></span><span class="tr-v">169.2<small>斤</small></span><span class="tr-f">体脂 28.4%</span><span class="tr-l">去脂 121.2</span><span class="tg hi">最重</span></div><div class="tr"><span class="tr-i">25/03/05</span><span class="tr-b"><i style="width:88.2%;background:#00C86F"></i></span><span class="tr-v">149.2<small>斤</small></span><span class="tr-f">体脂 21.1%</span><span class="tr-l">去脂 117.8</span><span class="tg lo">最轻</span></div><div class="tr"><span class="tr-i">25/02/24</span><span class="tr-b"><i style="width:89.6%;background:#00C86F"></i></span><span class="tr-v">151.6<small>斤</small></span><span class="tr-f">体脂 22.5%</span><span class="tr-l">去脂 117.4</span></div>
+    <span>去脂体重</span><span></span></div>
+  <div class="tr"><span class="tr-i">26/09/26</span><span class="tr-b"><i style="width:73.8%;background:#F5A524"></i></span><span class="tr-v">162.8<small>斤</small></span><span class="tr-f">27.2%</span><span class="tr-l">118.6</span><span class="tg now">现在</span></div><div class="tr"><span class="tr-i">26/09/09</span><span class="tr-b"><i style="width:75.4%;background:#F5A524"></i></span><span class="tr-v">163.2<small>斤</small></span><span class="tr-f">27.4%</span><span class="tr-l">118.4</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/08/04</span><span class="tr-b"><i style="width:75.4%;background:#3B9BE8"></i></span><span class="tr-v">163.2<small>斤</small></span><span class="tr-f">26.7%</span><span class="tr-l">119.6</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/07/31</span><span class="tr-b"><i style="width:73.8%;background:#F5A524"></i></span><span class="tr-v">162.8<small>斤</small></span><span class="tr-f">27.2%</span><span class="tr-l">118.6</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/07/11</span><span class="tr-b"><i style="width:84.8%;background:#F5A524"></i></span><span class="tr-v">165.5<small>斤</small></span><span class="tr-f">27.6%</span><span class="tr-l">119.8</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/07/02</span><span class="tr-b"><i style="width:93.9%;background:#F5A524"></i></span><span class="tr-v">167.7<small>斤</small></span><span class="tr-f">28.2%</span><span class="tr-l">120.4</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/05/21</span><span class="tr-b"><i style="width:99.6%;background:#F5A524"></i></span><span class="tr-v">169.1<small>斤</small></span><span class="tr-f">28.2%</span><span class="tr-l">121.4</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/04/11</span><span class="tr-b"><i style="width:92.2%;background:#F5A524"></i></span><span class="tr-v">167.3<small>斤</small></span><span class="tr-f">28.1%</span><span class="tr-l">120.2</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/03/26</span><span class="tr-b"><i style="width:93.4%;background:#3B9BE8"></i></span><span class="tr-v">167.6<small>斤</small></span><span class="tr-f">26.6%</span><span class="tr-l">123.0</span><span class="tg"></span></div><div class="tr"><span class="tr-i">26/03/18</span><span class="tr-b"><i style="width:100.0%;background:#F5A524"></i></span><span class="tr-v">169.2<small>斤</small></span><span class="tr-f">28.4%</span><span class="tr-l">121.2</span><span class="tg hi">最重</span></div><div class="tr"><span class="tr-i">25/03/05</span><span class="tr-b"><i style="width:18.0%;background:#00C86F"></i></span><span class="tr-v">149.2<small>斤</small></span><span class="tr-f">21.1%</span><span class="tr-l">117.8</span><span class="tg lo">最轻</span></div><div class="tr"><span class="tr-i">25/02/24</span><span class="tr-b"><i style="width:27.8%;background:#00C86F"></i></span><span class="tr-v">151.6<small>斤</small></span><span class="tr-f">22.5%</span><span class="tr-l">117.4</span><span class="tg"></span></div>
   <div class="note">
     从最轻那次到现在：<br>
     · 去脂体重（肌肉+骨骼+水分）<b>+0.8 斤</b>
