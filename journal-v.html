@@ -1,0 +1,1046 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00C86F">
+<meta name="robots" content="noindex,nofollow">
+<title>训练手记 · 改版候选</title>
+<style>
+
+:root{
+  --bg:#F4F5F7;--card:#fff;--ink:#241F2E;--ink1:#241F2E;--ink2:#6B6577;--ink3:#9E99A8;
+  --line:#ECEDF1;--acc:#00C86F;--accDark:#00A85E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
+.ic{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;
+  flex:none;vertical-align:middle;margin-right:6px;line-height:1}
+html,body{max-width:100%;overflow-x:hidden}
+svg text{font-family:inherit}
+body{
+  background:var(--bg);color:var(--ink);line-height:1.5;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC",
+    "Source Han Sans SC","Noto Sans CJK SC","Hiragino Sans GB","Microsoft YaHei",
+    system-ui,"Segoe UI",Roboto,sans-serif;
+  padding:0 0 60px;-webkit-font-smoothing:antialiased;
+}
+/* 每个板块**自己的头图**：底色仍是绿色主渐变，再叠一层该板块主色(--gc)的柔光，
+   于是四个板块各有颜色、整站又以绿为主。 */
+/* 注意：.hero **不要**设 position:relative —— 那会让它盖住负边距拉上来的 .cnt */
+.hero{overflow:hidden;border-radius:0 0 28px 28px;
+  padding:28px 20px 86px;text-align:center;color:#fff;
+  background:
+    radial-gradient(125% 90% at 84% -14%, var(--gc) 0%, rgba(255,255,255,0) 62%),
+    linear-gradient(150deg,#00DB8B 0%,#00C86F 46%,#00A862 100%)}
+.hico{width:64px;height:64px;margin:0 auto 14px;border-radius:21px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.34);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 6px 18px rgba(0,70,40,.14)}
+.hico svg{width:42px;height:42px;fill:none;stroke:#fff;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.hero h1{font-size:23px;font-weight:800;letter-spacing:1px}
+.hero .hsub{margin-top:7px;font-size:12px;opacity:.88;line-height:1.6}
+.cnt{position:relative;z-index:1;max-width:720px;margin:-60px auto 0;padding:0 14px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--card);border-radius:16px;padding:15px 14px;
+  box-shadow:0 6px 18px rgba(90,105,180,.08);min-width:0}
+.kpi .v{font-size:23px;font-weight:800;color:var(--ink);letter-spacing:-.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v small{font-size:12px;font-weight:700;margin-left:3px;color:var(--acc)}
+.kpi .l{color:var(--ink3);font-size:11.5px;margin-top:3px}
+.card{background:var(--card);border-radius:18px;padding:18px 15px;margin-top:14px;
+  box-shadow:0 6px 18px rgba(90,105,180,.08);min-width:0}
+.card>h2{font-size:16px;font-weight:750;margin-bottom:4px;display:flex;
+  align-items:center;gap:8px}
+.card>h2:before{content:'';width:4px;height:17px;border-radius:3px;flex:none;
+  background:linear-gradient(#00DB8B,#00A862)}
+.card .desc{color:var(--ink3);font-size:11.5px;margin-bottom:14px}
+.desc em{font-style:normal;color:var(--acc);font-weight:600}
+.fig{width:100%;position:relative}
+/* ---- 纯 CSS 交互核心 ---- */
+.chart{position:relative}
+/* ⚠️ position 必须是 fixed、不能是 absolute：
+   这些 radio 是给 <label> 点按用的，而点 <label> 会让浏览器**聚焦**关联的 radio，
+   并按"把聚焦元素滚进视野"处理 —— absolute + 0 尺寸时它躺在图表自己的位置上，
+   于是每次点热区页面都会自己往上跳一下（实测点在屏幕顶端时整页跳 527px）。
+   fixed 的元素永远算"已在视野内"，focus 不再触发滚动；
+   0 尺寸 + opacity:0 照旧完全不可见、点不到。 */
+.r{position:fixed;top:0;left:0;opacity:0;width:0;height:0;pointer-events:none}
+.plot{position:relative;overflow:visible}
+.plot>svg{display:block;width:100%;height:auto}
+.hot{position:absolute;z-index:3;cursor:pointer}
+.off{position:absolute;inset:0;z-index:2;cursor:default}
+.seg{transition:transform .18s ease,filter .18s ease,opacity .18s ease;
+  transform-box:fill-box;transform-origin:center}
+.tip{position:absolute;left:50%;top:6px;transform:translateX(-50%);display:none;
+  z-index:10;max-width:88%;background:rgba(28,24,36,.96);color:#fff;border-radius:12px;
+  padding:9px 24px 9px 12px;font-size:11.5px;line-height:1.65;
+  box-shadow:0 8px 22px rgba(0,0,0,.22);
+  pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  white-space:normal;word-break:break-word;text-align:left}
+.tip:after{content:'✕';position:absolute;top:9px;right:10px;font-size:10px;
+  line-height:1;opacity:.5;font-weight:400}
+.tip .tt b{font-size:12.5px}
+.tip .td{display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:5px;vertical-align:1px}
+/* 环形图中心数字：HTML 叠层，字号固定、不随圆形放大；排版与 KPI 卡片一致 */
+.dc{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;text-align:center}
+/* 全部用 Keep 绿，且"次"的字号与数字拉近，读起来是「135次」一个整体，不再割裂 */
+.dc-n{font-size:25px;font-weight:800;color:var(--acc);letter-spacing:-.4px;
+  line-height:1;font-variant-numeric:tabular-nums}
+.dc-n small{font-size:18px;font-weight:700;color:var(--acc);margin-left:2px;
+  letter-spacing:0}
+.dc-l{margin-top:6px;font-size:11px;color:var(--ink3);letter-spacing:.2px}
+/* 环形图图例（可点） */
+.lg{position:relative;z-index:4;min-width:120px}
+.lg-row{display:flex;align-items:center;gap:7px;font-size:12px;padding:5px 4px;
+  cursor:pointer;border-radius:8px}
+.lg-row:active{background:#E9F9F1}
+.lg-row i{width:9px;height:9px;border-radius:50%;flex:none}
+.lg-n{flex:1;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg-v{font-weight:700;font-variant-numeric:tabular-nums}
+/* 日历：31 列定宽网格，保证各月纵向对齐，表头 1~31 日 */
+.cal{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.calrow{display:flex;align-items:center;gap:3px;margin-bottom:4px;min-width:0}
+.cl{width:26px;flex:none;font-size:10px;color:var(--ink2);text-align:right}
+.cy{width:18px;flex:none;font-size:9px;color:var(--ink3)}
+.cdays{display:grid;grid-template-columns:repeat(31,minmax(0,1fr));gap:1px;
+  flex:1;min-width:0}
+.calrow b{flex:none;min-width:20px;padding-left:4px;text-align:right;font-size:11px;
+  font-weight:600;color:var(--acc);font-variant-numeric:tabular-nums;letter-spacing:.2px}
+.d{width:100%;max-width:14px;margin:0 auto;aspect-ratio:1/1;border-radius:3px;
+  background:#EEF1F4;display:block}
+.d.void{background:transparent}
+.d.l1{background:#C7F0DB}.d.l2{background:#7EDDAF}
+.d.l3{background:#34CE86}.d.l4{background:#00C86F}
+/* 日历表头：日期数字 */
+.chead{margin-bottom:3px}
+.chead .cl,.chead .cy{font-size:8.5px;color:var(--ink3);font-weight:400}
+/* 刻度数字允许溢出窄列居中显示（相邻刻度相隔 5 格，不会撞上） */
+.dn{font-size:7px;line-height:1;color:var(--ink3);text-align:center;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.chead b{color:var(--ink3);font-weight:600;font-size:9.5px}
+.legend{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3);
+  margin-top:12px;flex-wrap:wrap}
+.legend .d{width:12px;height:12px;flex:none;aspect-ratio:auto;max-width:none}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend span+span{margin-left:7px}
+.lg-hint{margin-left:auto;font-size:10.5px}
+/* ---- 训练手记 ---- */
+.jr{border-top:1px solid var(--line);padding:14px 0 4px}
+.jr:first-of-type{border-top:0;padding-top:2px}
+.jrh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.jrd{font-size:17px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.jrt{font-size:11px;color:var(--ink3)}
+.jrf{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px 4px;border-radius:20px;font-size:10.5px;font-weight:800;
+  font-variant-numeric:tabular-nums}
+/* 疲劳 1~5 → 5 根小格，填满几根＝几级（比单看数字直观） */
+.jrp{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
+.jrp b{width:3px;height:7px;border-radius:1px;background:currentColor;opacity:.3}
+.jrp b.on{height:11px;opacity:1}
+/* 当天分段：**真·时间轴**（左侧一条竖线 + 每段一个圆点，圆点＝该项目的颜色）——
+   日记/时间轴类 App 的标准长相。之前是"灰底方块 + 一行行"，像表格不像日记。 */
+.jrtl{position:relative;margin-bottom:2px;padding:3px 0}
+.jrtl:before{content:'';position:absolute;left:5px;top:12px;bottom:12px;width:1px;
+  background:#E3E7EE}
+.jrtl-r{position:relative;display:flex;align-items:center;gap:6px;padding-left:20px;
+  font-size:12px;line-height:2.1}
+.jrtl-r:before{content:'';position:absolute;left:1.5px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid var(--c,var(--acc))}
+.jrtl-r .ic{margin-right:0}
+.jrtl-t{width:38px;flex:none;color:var(--ink3);font-size:11px;
+  font-variant-numeric:tabular-nums}
+.jrtl-n{color:var(--ink1);font-weight:600;white-space:nowrap}
+.jrtl-m{color:var(--ink3);font-size:11px;font-variant-numeric:tabular-nums;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jrtl-d{margin-left:auto;color:var(--ink2);font-size:11.5px;font-weight:800;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.jrlz{color:var(--ink3);font-size:12px}
+/* 间隔 ≤30 分才标出来 —— 那才是"几乎没留恢复时间"，也是点评里说的负荷来源 */
+.jrgap{display:flex;align-items:center;gap:5px;padding-left:20px;font-size:10px;
+  color:#D98324;line-height:1.7}
+.jrgap i{width:5px;height:5px;border-radius:50%;background:#F5A524;flex:none}
+/* 当天总量：3 个小方格 */
+.jrl{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;font-size:12px;
+  color:var(--ink1);margin-bottom:6px}
+.jrl b{color:var(--ink3);font-weight:700;flex:none}
+.jrl span{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+/* 当天总量：三枚小胶囊（⏱ 时长 / 📍 距离 / 🔥 消耗）。
+   ⚠️ 别写成"三等分 + 竖分隔线 + 上下横线"—— 那看上去就是一张表格（阿成 2026-09-27 指）。 */
+.jrk{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 2px}
+.jrk span{display:inline-flex;align-items:center;gap:5px;background:#F4F6F8;
+  border-radius:9px;padding:6px 10px 7px;font-size:12px;font-weight:800;
+  letter-spacing:-.2px;font-variant-numeric:tabular-nums}
+/* 他的原话＝日记正文：左侧一条细灰引用线（原来的大引号会和第一行字重叠） */
+.jrq{margin-top:12px;padding-left:11px;border-left:2px solid #E4E8EE;
+  font-size:13.5px;line-height:1.8;color:var(--ink)}
+.jrsup{margin-top:7px;font-size:11.5px;line-height:1.7;color:var(--ink3)}
+.jrq b,.jrsup b,.jrs b{color:var(--ink3);font-weight:700;margin-right:6px;
+  font-size:11px;letter-spacing:.2px}
+/* 点评：顶部一条细线分隔（**不铺底色** —— 淡绿底在白卡上像贴了张背景图，阿成 2026-09-27 问
+   "这是什么背景图片"）。内容＝一个 grid：标签列 + 正文列，结论/要点/建议**共用同一套基线**。 */
+.jrc{margin-top:13px;border-top:1px solid var(--line);padding-top:12px}
+.jrch{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;
+  color:var(--accDark);letter-spacing:.4px;margin-bottom:8px}
+.jrch:before{content:'';width:5px;height:5px;border-radius:50%;background:var(--acc);
+  flex:none}
+/* 标签列定宽 44px：所有标签（含"结论""下次"）左对齐成一列，眼睛沿这条竖线扫 */
+.jrcl{display:grid;grid-template-columns:44px minmax(0,1fr);
+  gap:7px 9px;align-items:start}
+.jrc-k{align-self:start;justify-self:start;background:#E5F7EE;color:var(--accDark);
+  border-radius:6px;padding:2px 7px 3px;font-size:10.5px;font-weight:800;
+  white-space:nowrap;line-height:1.5}
+.jrc-k2{background:var(--acc);color:#fff}          /* 「下次」＝实心绿，一眼看出是可执行的那条 */
+.jrc-v{font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.jrc-z{font-weight:800;color:var(--ink);font-size:12.5px}
+.jrc-a{color:var(--ink);font-weight:600;line-height:1.75}
+.jrc-hr{grid-column:1/-1;height:1px;background:#E9EDF2;margin:3px 0 1px}
+.jrn{color:var(--ink3);font-size:11.5px;line-height:1.75;padding:6px 0 2px}
+.jrm{font-size:11.5px;color:var(--ink3);font-weight:700;margin:16px 0 2px;
+  padding-bottom:5px;border-bottom:1px solid var(--line)}
+.jrs{margin-top:8px;font-size:12px;line-height:1.8;color:var(--ink2);
+  background:#F7F5FF;border-left:3px solid #7B61FF;border-radius:0 9px 9px 0;
+  padding:9px 12px}
+.jrs b{color:#7B61FF}
+/* 更早的月份折叠：summary 沿用全局 ▸ / ▾，但压掉它那套绿色小字 */
+.jrw{margin-top:15px}
+.jrw>summary{list-style:none;cursor:pointer;font-size:11.5px;color:var(--ink3);
+  font-weight:700;padding-bottom:5px;border-bottom:1px solid var(--line);margin:0}
+.jrw>summary::-webkit-details-marker{display:none}
+.jrw>summary:before{content:'▾ '}
+.jrw:not([open])>summary:before{content:'▸ '}
+/* 月份卡 */
+.mcard{border:1px solid var(--line);border-radius:14px;padding:14px 15px;
+  margin-top:12px;background:#FCFDFD}
+.mcard.empty{background:#FAFBFB;border-style:dashed}
+.mh{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:10px}
+.mh b{font-size:15px}
+.mh span{font-size:11.5px;color:var(--ink2)}
+.mh .grp{color:var(--accDark);background:#E9F9F1;padding:2px 9px;border-radius:20px;
+  font-weight:600;font-size:11px}
+/* 逐月明细：分项折叠（箭头沿用全局 details summary:before 的 ▸ / ▾） */
+.mx{margin-top:9px}
+/* 折叠开关做成「凸起按键」：一眼看出能按、按下有下沉反馈、展开时变浅绿＝已按下去。
+   ⚠️ 只作用于 .mcard 里的 details（逐月明细的两级开关），不动跑量年份块等其它 details。 */
+.mcard details>summary{
+  display:inline-flex;align-items:center;gap:5px;margin:4px 0 2px;
+  padding:7px 13px 8px;border-radius:11px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F1F4F8 100%);
+  border:1px solid #E1E6EE;border-bottom:2px solid #D5DBE5;
+  color:var(--acc);font-size:11.5px;font-weight:700;letter-spacing:.2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 1px 3px rgba(36,31,46,.07);
+  transition:transform .07s ease,box-shadow .07s ease,background .12s,border-color .12s}
+.mcard details>summary:after{
+  content:'展开';margin-left:3px;font-size:10px;font-weight:600;color:var(--ink3)}
+.mcard details[open]>summary:after{content:'收起'}
+.mcard details>summary:active{
+  transform:translateY(1px);
+  background:linear-gradient(180deg,#EDF1F6 0%,#F7F9FC 100%);
+  box-shadow:0 2px 5px rgba(36,31,46,.13) inset}
+.mcard details[open]>summary{
+  background:linear-gradient(180deg,#EAF7F0 0%,#DCF2E7 100%);
+  border-color:#C6E9D6;border-bottom-color:#B6E0CB;color:var(--accDark)}
+.mx>summary{padding:5px 0}
+.mxb{padding:4px 0 2px}
+.mrow{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12.5px}
+.mt{flex:none;width:58px;font-weight:600;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.mn{flex:none;width:96px;color:var(--ink2);font-size:11.5px;
+  font-variant-numeric:tabular-nums}
+.mb{flex:1;min-width:20px;background:#EEF1F4;height:9px;border-radius:5px;overflow:hidden}
+.mb i{display:block;height:100%;border-radius:5px}
+.mempty{color:var(--ink3);font-size:12px;padding:2px 0}
+details summary{cursor:pointer;color:var(--acc);font-size:12px;font-weight:600;
+  margin-top:8px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary:before{content:'▸ '}details[open] summary:before{content:'▾ '}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th,td{padding:6px 5px;text-align:right;border-bottom:1px solid var(--line);
+  white-space:nowrap}
+th{color:var(--ink3);font-weight:600;font-size:10.5px;background:#F6F8F9}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:3;
+  box-shadow:2px 0 6px -3px rgba(20,30,60,.4)}
+th:first-child{background:#F6F8F9;z-index:4}
+.foot{text-align:center;color:var(--ink3);font-size:11px;line-height:1.8;
+  max-width:720px;margin:26px auto 0;padding:0 14px}
+/* ---- 板块分组 + 顶部引导目录（纯锚点跳转，无脚本） ---- */
+html{scroll-behavior:smooth}
+/* 注意：.grp 已被「逐月明细」的月份胶囊占用（.mh .grp），板块外壳只能用 .blk */
+.blk{margin-top:20px;scroll-margin-top:6px}
+.bhd{display:flex;align-items:center;gap:9px;padding-bottom:9px;margin-bottom:12px;
+  border-bottom:2.5px solid var(--gc)}
+.bno{flex:none;min-width:23px;height:23px;padding:0 6px;border-radius:7px;
+  background:var(--gc);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-variant-numeric:tabular-nums}
+.bti{font-size:15.5px;font-weight:800;color:var(--gc);letter-spacing:1px}
+.bde{margin-left:auto;flex:none;font-size:10.5px;color:var(--ink3)}
+.blk>.card{border-left:3px solid var(--gc)}
+.bup{display:block;text-align:right;font-size:11px;font-weight:700;color:var(--gc);
+  text-decoration:none;margin-top:11px;letter-spacing:.5px}
+/* ---- 底部毛玻璃 Tab Bar（iOS 风） + 面板切换 ----
+   为什么用 radio 而不是锚点：**锚点每点一次都会写一条浏览历史**，
+   于是"点有氧→点无氧→从屏幕左缘右滑"会一层层退回上一个板块；
+   radio 切面板**不产生历史** → 右滑直接退回上一页（封面/主屏）。 */
+.tbi{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.pnls>.blk{display:none}
+/* 切板块时给**头图**一个很轻的进场（淡入 + 上浮 6px）：
+   `display:none` → `block` 会让动画**重新播放**，不需要任何 JS 配合。
+   ⚠️ 只动头图这一小块（约 100px 高），**不给整块面板做动画** ——
+   面板可能几千像素高，整块淡入/位移会让 iOS 去合成一张巨大的图层，
+   反而更卡（用户这次反馈的"有点卡"）。头图这一下就够"内容换了"的提示。 */
+@keyframes pnlIn{from{opacity:0;transform:translate3d(0,6px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}}
+#tb1:checked~.pnls>.blk.p1,#tb2:checked~.pnls>.blk.p2,
+#tb3:checked~.pnls>.blk.p3,#tb4:checked~.pnls>.blk.p4{display:block}
+#tb1:checked~.pnls>.blk.p1>.hero,#tb2:checked~.pnls>.blk.p2>.hero,
+#tb3:checked~.pnls>.blk.p3>.hero,#tb4:checked~.pnls>.blk.p4>.hero{
+  animation:pnlIn .32s cubic-bezier(.32,.72,0,1)}
+/* 深链兜底（纯 CSS，不依赖脚本）：URL 里带 #gN 就直接显示对应面板，
+   **且从第一帧起就对** —— 封面点"有氧"跳的是 report.html#g2，正常由脚本预选 radio，
+   但脚本在文档末尾才跑，首帧仍会先按 `checked` 属性渲染成"总览"（大文档下
+   能看见明显一跳）。这层 CSS 让首帧就落在对的板块。
+   为什么给容器加 id：`#pnls:has(…)>…` 的选择器权重(1,4,1) 才压得住
+   `#tb1:checked~.pnls>.blk.p1`(1,4,0)，否则两个面板会同时显示。
+   脚本跑完会 replaceState 抹掉 hash → 这层自动失效，radio 重新接管。 */
+#pnls:has(>.blk:target)>.blk:not(:target){display:none}
+#pnls:has(>.blk:target)>.blk:target{display:block}
+#pnls:has(>.blk:target)>.blk:target>.hero{animation:pnlIn .32s cubic-bezier(.32,.72,0,1)}
+/* 底部留白：给「悬浮 Dock」让位（Dock 高约 72px + 距底 10px） */
+body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+/* Dock 背后一层**极淡的彩色氛围光** —— 给玻璃"有颜色的东西可折射"。
+   报告页 Dock 后面平时是白卡片，玻璃折射出来只有白（看着像没做折射）。
+   层次要卡准：**在内容之上、Dock(z-index:60) 之下**才有效 ——
+   放 z-index:-1 会被白色卡片盖住，等于没加。 */
+body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
+  z-index:50;pointer-events:none;
+  background:
+    radial-gradient(58% 96% at 13% 104%,rgba(0,200,111,.32),rgba(0,200,111,0) 72%),
+    radial-gradient(56% 92% at 87% 104%,rgba(123,97,255,.28),rgba(123,97,255,0) 72%),
+    radial-gradient(46% 78% at 50% 106%,rgba(245,165,36,.24),rgba(245,165,36,0) 72%)}
+/* ===== iOS 26「液态玻璃」悬浮 Dock =====
+   做法：① 高模糊 + 高饱和 + 轻微提亮的 backdrop-filter（真正的"折射"感）；
+        ② 四道 inset 高光＝玻璃边缘的厚度；
+        ③ ::before 一层斜向反光面（左上最亮）；
+        ④ ::after 底部一道更亮的折射亮边；
+        ⑤ 选中项套一枚**淡淡的彩色玻璃胶囊**。 */
+.tabbar{position:fixed;left:11px;right:11px;z-index:60;
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:7px 6px 6px;border-radius:31px;
+  /* ⚠️ 这里**不能**加 overflow:hidden —— Safari 上祖先 overflow:hidden 会让
+     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。 */
+  background:linear-gradient(180deg,rgba(255,255,255,.54),rgba(255,255,255,.34));
+  -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
+  backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
+  /* ⚠️⚠️⚠️ 这个 Dock 出过三次"横线"，最后查清是**三类东西**，现在一个都不剩：
+     ① 一圈 `.5px solid` 的 border（3x 屏上就是一条实心亮线，压在上/下沿）；
+     ② 一条 `height:1px` 的亮白渐变（货真价实的横线，还压在画面最下沿）；
+     ③ `.tabbar:after{box-shadow:inset …;filter:blur()}` 这种"伪元素＋滤镜＋inset"的
+        组合 —— 它在 iOS 上不止会留边线，还会渲染出**纯品红(#FF00FF)的杂色线**
+        （截图实测：横线 / 竖线各出现过一次，颜色是 100% 品红，属于 WebKit 的
+        "滤镜离屏缓冲没被清干净"的合成 bug，不是设计问题）。
+     ⚠️ **本规则**：Dock 与其子元素（.gsl / .tgl）**不许出现 filter / mask / inset 阴影**。
+        玻璃质感只靠「半透明渐变底 + backdrop-filter + 外投影」表达 ——
+        这三样在任何版本 iOS 上都不会画出线来。 */
+  box-shadow:0 14px 40px rgba(14,40,28,.2),0 2px 6px rgba(14,40,28,.07)}
+.tabbar label,.tabbar a{position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;padding:0;border-radius:18px;
+  text-decoration:none;color:var(--ink3);font-size:11px;font-weight:700;
+  letter-spacing:.2px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:color .18s,transform .12s}
+.tabbar label:active,.tabbar a:active{transform:scale(.9)}
+/* 图标外面这层：既撑大图标，也是"选中胶囊"的载体 */
+.tgl{display:flex;align-items:center;justify-content:center;
+  width:54px;height:36px;border-radius:18px;
+  /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮（只有 transform，最稳）。 */
+  transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
+  transition:transform .34s cubic-bezier(.32,.72,0,1)}
+/* ⚠️ 这里原来挂了一串 `filter: blur() + drop-shadow(红) + drop-shadow(蓝)` 做"棱镜色散"。
+   iOS 上会渲染出**品红色杂线**（与上面 tabbar 注释里的 ③ 同一类合成本 bug），
+   已整体删除。现在"隔着玻璃看图标"的感觉只由 .tgl 的放大 + .live 的换色表达。 */
+.tabbar svg{width:32px;height:32px;display:block;fill:none;
+  stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+/* ===== 选中态：空心 ⇄ 实心（微信那种"点中就填实、移开就空了"）=====
+   每个 svg 里叠着两套形状：.ol＝线性（空心），.fi＝实心。
+   未选中：.ol 亮、.fi 透明；选中/拖动高亮：反过来。两套形状同时在场，
+   切换只改 opacity ⇒ 不重排、不重新解析路径，点哪一格都不会掉帧。
+   ⚠️ 别再退回老做法（给选中项把 stroke-width 从 1.85 加到 2.4）：细线变粗仍然是线，
+   不是"实心"，跟微信的填充感差得远。 */
+.tabbar svg .fi,.tabbar svg .fi *{fill:currentColor;stroke:none}
+.tabbar svg .fi{opacity:0}
+.tabbar svg .ol,.tabbar svg .fi{transition:opacity .18s ease}
+/* 拖动过程中"最近的那格"会随手指频繁易主，带过渡会变成来回闪烁的 crossfade；
+   拖动期间直接关掉过渡，谁是实心就立刻是谁。 */
+.tabbar.dragging svg .ol,.tabbar.dragging svg .fi{transition:none}
+/* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
+   选中态的 4 条规则在下面，一起管。 */
+.tabbar label.live{color:var(--ac)}
+/* ===== 手势：**点按完全走原生**，只有横向拖动才由脚本接管 =====
+   ⚠️ 这里以前铺了一层透明的 .tsurf 盖住整个 Dock，点按全靠脚本在 pointerup 里
+   手动跳转。结果 iOS 上（竖向滑动优先）一旦把这次触摸判成滚动，就直接发
+   **pointercancel**，pointerup 永远不来 ⇒ 那一次点按**静默丢失**，
+   表现就是"点了没反应 / 得先点总览才行"。
+   现在：点按交给原生 `<label>` / `<a>` 的 click（浏览器保证触发，脚本挂了也能用），
+   横向拖动才由脚本接管（|dx|>8 且横向占优），拖完把那次 click 吃掉。
+   touch-action:pan-y ＝ 竖直手势仍归页面滚动（Dock 上也能顺畅滚），横向不发滚动。 */
+.tabbar{touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:grab;
+  -webkit-touch-callout:none}
+.tabbar.dragging{cursor:grabbing}
+#tb1:checked~.tabbar label[for=tb1],
+#tb2:checked~.tabbar label[for=tb2],
+#tb3:checked~.tabbar label[for=tb3],
+#tb4:checked~.tabbar label[for=tb4]{color:var(--ac);--lens:.2}
+/* ===== 会滑动的液态玻璃滑块（iOS 26 停靠栏那颗）=====
+   苹果那种"液态玻璃"其实靠三条，跟"糊不糊"关系不大：
+   ① **玻璃本身几乎无色** —— 涂白就是死的、不折射。要「极低白度 + 高饱和」，
+      让底下的颜色自己透上来：滑到绿区偏绿、紫区偏紫。
+   ② **几乎不模糊** —— 苹果的玻璃后面内容是**清晰**的，靠边缘那圈光体现"厚度"，
+      不是靠糊。之前 blur 开到 10px，看着像毛玻璃，这就是"不像苹果"的主因。
+   ③ **边缘的光必须不对称** —— 上沿最亮、下沿淡、两侧更淡（光从上方来）。
+      四边一样亮会显出四条框线（之前被反馈"有两条横线好丑"就是这个）。
+   尺寸：比格子宽 14%、上下各外扩 → 视觉上更饱满。 */
+.gsl{position:absolute;top:4px;bottom:3px;z-index:0;pointer-events:none;
+  left:calc(6px - (100% - 12px)/4 * 0.07);
+  width:calc((100% - 12px)/4 * 1.14);
+  border-radius:30px;
+  /* 玻璃"中间薄、边缘厚"的观感：两层**普通渐变**叠出来（不许用 filter/mask/inset，见 .tabbar 注释）。
+     第一层径向的**峰值放在 26% 高度 —— 落在胶囊内部**，不在上沿，所以不会烧出一条亮线。 */
+  background:
+    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.30),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.19) 46%,
+      rgba(255,255,255,.24) 100%);
+  /* ⚠️⚠️ 这颗胶囊**必须没有 backdrop-filter**（原来有 blur(3px) saturate(190%) brightness(1.06)）：
+     backdrop-filter 的元素一移动，浏览器就得**每一帧把身后的内容重新取景+重新糊**，
+     而它身后还压着 .tabbar 那层 blur(30px)，等于每帧重算两次模糊 —— 这是拖动"发卡"的主因。
+     好消息是**拿掉它几乎看不出区别**（实测逐像素比对：平均差 0.22/255、只有 0.3% 的像素差值>3）——
+     因为身后已经是 .tabbar 糊过一遍的、几乎中性的白玻璃，再 saturate/brighten 等于白做。
+     底色因此上调了一点点（.26/.28/.13/.18 → .30/.34/.19/.24）来补回那点"肉感"。 */
+  /* ⚠️ 一条 inset 都没有，也**没有伪元素**：inset 阴影在元素边界处最亮又被硬裁，
+     必然在胶囊上沿留一道 1px 亮线；而"伪元素 + filter/mask"在 iOS 上会渲染出
+     品红杂线（详见上面 .tabbar 的注释）。只用外投影 + 渐变底色，最稳。
+     translateZ(0)：提到独立合成层，拖动时只剩纯位移，不再重绘。 */
+  box-shadow:0 5px 16px rgba(18,45,32,.14),0 1px 3px rgba(18,45,32,.08);
+  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度"。
+     ⚠️ 缓动用 iOS 自己的曲线 cubic-bezier(.32,.72,0,1)：起步快、收尾极长，
+     是"丝滑"的来源。之前那版 (.3,1.32,.45,1) 带**回弹过冲**，弹一下看着热闹，
+     但苹果的胶囊从来不过冲 —— 过冲＝廉价感。 */
+  transform:translateX(calc(var(--i,0) * 100% / 1.14)) translateZ(0);
+  transition:transform .42s cubic-bezier(.32,.72,0,1)}
+/* 手指按住拖动时：滑块走的是"跟手"路径（脚本每帧直接写 --i、过渡关掉），
+   这里只把它**提升成独立合成层**，避免每帧都要重新合成投影。松手立刻撤掉，别常驻吃显存。 */
+.tabbar.dragging .gsl{will-change:transform}
+#tb1:checked~.tabbar .gsl{--i:0}
+#tb2:checked~.tabbar .gsl{--i:1}
+#tb3:checked~.tabbar .gsl{--i:2}
+#tb4:checked~.tabbar .gsl{--i:3}
+#tb1:checked~.tabbar label[for=tb1] svg .ol,
+#tb2:checked~.tabbar label[for=tb2] svg .ol,
+#tb3:checked~.tabbar label[for=tb3] svg .ol,
+#tb4:checked~.tabbar label[for=tb4] svg .ol,
+.tabbar label.live svg .ol{opacity:0}
+#tb1:checked~.tabbar label[for=tb1] svg .fi,
+#tb2:checked~.tabbar label[for=tb2] svg .fi,
+#tb3:checked~.tabbar label[for=tb3] svg .fi,
+#tb4:checked~.tabbar label[for=tb4] svg .fi,
+.tabbar label.live svg .fi{opacity:1}
+.toc-h{font-size:13.5px;font-weight:800;margin-bottom:11px;
+  display:flex;align-items:center;gap:7px}
+.toc-h:before{content:'📑';font-size:14px}
+.toc-g{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ti{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:12px;
+  background:#F7F9FE;border:1px solid var(--line);border-left:3px solid var(--gc);
+  text-decoration:none;color:var(--ink)}
+.tn{flex:none;min-width:21px;height:21px;padding:0 5px;border-radius:6px;
+  background:var(--gc);color:#fff;font-size:10.5px;font-weight:800;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-variant-numeric:tabular-nums}
+.tb{display:flex;flex-direction:column;min-width:0;flex:1}
+.tb b{font-size:12.5px;font-weight:800;color:var(--gc);letter-spacing:.5px}
+.tb em{font-style:normal;font-size:9.5px;color:var(--ink3);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tar{flex:none;color:var(--ink3);font-size:15px;line-height:1}
+/* ---- 器械训练（无氧）---- */
+.sub-h{font-size:12.5px;font-weight:700;color:var(--ink2);margin:16px 0 9px;
+  display:flex;align-items:center;gap:7px}
+.sub-h:before{content:'';width:3px;height:12px;border-radius:2px;background:var(--acc);flex:none}
+.h2n{font-size:11px;font-weight:500;color:var(--ink3);margin-left:6px;letter-spacing:0}
+.pt-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:12px}
+.pt-n{flex:none;width:64px;color:var(--ink2);display:flex;align-items:center;gap:4px}
+.pt-n .ic{margin-right:0}
+.pt-b{flex:1;min-width:24px;height:9px;border-radius:5px;background:#EEF1F4;overflow:hidden}
+.pt-b i{display:block;height:100%;border-radius:5px}
+.pt-v{flex:none;color:var(--ink3);font-size:10.5px;font-variant-numeric:tabular-nums;
+  text-align:right}
+.ss{border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-top:12px;
+  background:#FCFDFD}
+.ss-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ss-h b{font-size:15px}
+.ss-wd{font-size:11.5px;color:var(--ink3)}
+.ss-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  padding:2px 9px 2px 6px;border-radius:20px;margin-left:auto;letter-spacing:.5px}
+.ss-tag .ic{margin-right:0;border-radius:5px}
+.ss-s{font-size:11.5px;color:var(--ink2);margin-top:4px;
+  font-variant-numeric:tabular-nums}
+.ss-s b{color:var(--acc);font-weight:800;font-size:12.5px}
+.ss-watch{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11.5px;
+  color:var(--ink2);font-variant-numeric:tabular-nums;
+  background:#F1FBF6;border-radius:8px;padding:5px 9px}
+.ss-watch.dim{background:#F6F7F9;color:var(--ink3)}
+.ss-wt{flex:none;font-size:10px;font-weight:700;color:var(--acc);
+  background:#fff;border-radius:5px;padding:1px 5px;letter-spacing:.5px}
+.ss-watch.dim .ss-wt{color:var(--ink3)}
+.sx{margin-top:13px}
+.sx-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sx-n{font-size:13.5px;font-weight:650}
+.sx-v{font-size:14px;font-weight:800;color:var(--acc);
+  font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.sx-v small{font-size:10px;font-weight:600;margin-left:1px;letter-spacing:0}
+.sx-m{font-size:11.5px;color:var(--ink3);margin-top:2px;
+  font-variant-numeric:tabular-nums}
+/* 重量：做成醒目的绿块，让"多重"一眼看到；"合计/含杆"这类补充降级成小字 */
+.sx-w{display:inline-block;font-size:12.5px;font-weight:800;color:#00A85E;
+  background:#E9F9F1;border-radius:7px;padding:1.5px 8px;margin:0 1px;
+  font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.sx-w.bw{color:#6B6577;background:#F2F4F7;font-weight:700}
+.sx-sub{font-size:11px;opacity:.8;margin-left:1px}
+.sx-b{margin-top:6px;height:7px;border-radius:4px;background:#EEF1F4;overflow:hidden}
+.sx-b i{display:block;height:100%;border-radius:4px}
+.sx-note{font-size:11px;color:var(--ink3);margin-top:5px;opacity:.9;line-height:1.5}
+/* ---- 器械单次明细：一行一次，点行就地展开/收起（checkbox 而非 radio，因为要能"再点收回"） ---- */
+.s2{border-bottom:1px dashed var(--line)}
+.s2:last-child{border-bottom:0}
+.s2i{display:none}
+.s2r{display:grid;grid-template-columns:46px auto minmax(0,1fr) auto 12px;gap:7px;
+  align-items:center;padding:10px 2px;cursor:pointer}
+.s2d{font-size:11.5px;font-weight:750;line-height:1.15;white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.s2d em{display:block;font-style:normal;font-size:9.5px;font-weight:400;color:var(--ink3)}
+.s2p{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;
+  padding:2px 8px 2px 5px;border-radius:20px;white-space:nowrap;letter-spacing:.5px}
+.s2p .ic{margin-right:0;border-radius:5px}
+.s2m{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.s2m b{color:var(--acc);font-weight:800}
+.s2w{display:inline-flex;align-items:center;gap:2px;font-size:10.5px;color:var(--acc);
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.s2w.dim{color:var(--ink3)}
+.s2w svg{flex:none}
+.s2a{font-size:9px;color:var(--ink3);transition:transform .16s;transform-origin:center}
+.s2i:checked~.s2r .s2a{transform:rotate(90deg)}
+.s2i:checked~.s2r .s2d{color:var(--acc)}
+.s2b{display:none;padding:2px 0 12px}
+.s2i:checked~.s2b{display:block}
+/* ---- 跑步月度跑量：按年分组 + 横向条 ---- */
+.ry{border:1px solid var(--line);border-radius:14px;margin-top:12px;
+  background:#FCFDFD;overflow:hidden}
+.ry-h{display:flex;flex-direction:column;align-items:stretch;gap:3px;
+  padding:11px 14px;cursor:pointer;list-style:none;margin-top:0;
+  font-size:inherit;color:inherit;font-weight:inherit}
+.ry-h::-webkit-details-marker{display:none}
+/* 覆盖全局的 details summary:before 箭头（它的选择器权重更高，必须用同级或更高权重压过去），
+   否则标题左侧会多出一个箭头 */
+details summary.ry-h:before,details[open] summary.ry-h:before{content:none}
+.ry-l1{display:flex;align-items:center;gap:7px}
+.ry-l1:before{content:'▸';color:var(--acc);font-weight:800}
+details[open] > .ry-h .ry-l1:before{content:'▾'}
+.ry-h b{font-size:15px}
+.ry-t{font-size:12.5px;color:var(--acc);font-weight:700;margin-left:auto;
+  font-variant-numeric:tabular-nums}
+.ry-l2{font-size:11.5px;color:var(--ink3);padding-left:15px;
+  font-variant-numeric:tabular-nums}
+.rm{padding:2px 14px 12px}
+.rr{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}
+.rr-m{flex:none;width:26px;color:var(--ink2);text-align:right}
+.rr-b{flex:1;min-width:24px;height:9px;border-radius:5px;background:#EEF1F4;
+  overflow:hidden}
+.rr-b i{display:block;height:100%;border-radius:5px}
+.rr-v{flex:none;width:54px;text-align:right;font-weight:700;
+  font-variant-numeric:tabular-nums}
+.rr-v small{font-size:9px;font-weight:600;color:var(--ink3);margin-left:1px}
+.rr-n{flex:none;width:28px;text-align:right;color:var(--ink3);font-size:11px}
+.rr-p{flex:none;width:34px;text-align:right;color:var(--ink3);font-size:10.5px;
+  font-variant-numeric:tabular-nums}
+.rr-hr{flex:none;width:38px;display:inline-flex;align-items:center;
+  justify-content:flex-end;gap:2px;color:var(--ink3);font-size:10.5px;
+  font-variant-numeric:tabular-nums}
+.rr-hr svg{flex:none;fill:#E0708A}
+.rr.dim .rr-v,.rr.dim .rr-n,.rr.dim .rr-p,.rr.dim .rr-hr{color:#C6CAD1;
+  font-weight:400}
+@media (min-width:560px){
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .hd h1{font-size:34px}
+}
+
+#trend-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-0:checked ~ .plot .tip-trend-0{display:block}
+#trend-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#trend-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-1:checked ~ .plot .tip-trend-1{display:block}
+#trend-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#trend-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-2:checked ~ .plot .tip-trend-2{display:block}
+#trend-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#trend-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-3:checked ~ .plot .tip-trend-3{display:block}
+#trend-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#trend-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-4:checked ~ .plot .tip-trend-4{display:block}
+#trend-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#trend-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-5:checked ~ .plot .tip-trend-5{display:block}
+#trend-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#trend-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-6:checked ~ .plot .tip-trend-6{display:block}
+#trend-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#trend-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-7:checked ~ .plot .tip-trend-7{display:block}
+#trend-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#trend-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-8:checked ~ .plot .tip-trend-8{display:block}
+#trend-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#trend-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-9:checked ~ .plot .tip-trend-9{display:block}
+#trend-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#trend-10:checked ~ .plot svg .seg-10{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-10:checked ~ .plot .tip-trend-10{display:block}
+#trend-10:checked ~ .plot svg .seg:not(.seg-10){opacity:.22}
+#trend-11:checked ~ .plot svg .seg-11{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-11:checked ~ .plot .tip-trend-11{display:block}
+#trend-11:checked ~ .plot svg .seg:not(.seg-11){opacity:.22}
+#trend-12:checked ~ .plot svg .seg-12{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-12:checked ~ .plot .tip-trend-12{display:block}
+#trend-12:checked ~ .plot svg .seg:not(.seg-12){opacity:.22}
+#trend-13:checked ~ .plot svg .seg-13{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-13:checked ~ .plot .tip-trend-13{display:block}
+#trend-13:checked ~ .plot svg .seg:not(.seg-13){opacity:.22}
+#trend-14:checked ~ .plot svg .seg-14{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-14:checked ~ .plot .tip-trend-14{display:block}
+#trend-14:checked ~ .plot svg .seg:not(.seg-14){opacity:.22}
+#trend-15:checked ~ .plot svg .seg-15{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-15:checked ~ .plot .tip-trend-15{display:block}
+#trend-15:checked ~ .plot svg .seg:not(.seg-15){opacity:.22}
+#trend-16:checked ~ .plot svg .seg-16{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-16:checked ~ .plot .tip-trend-16{display:block}
+#trend-16:checked ~ .plot svg .seg:not(.seg-16){opacity:.22}
+#trend-17:checked ~ .plot svg .seg-17{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-17:checked ~ .plot .tip-trend-17{display:block}
+#trend-17:checked ~ .plot svg .seg:not(.seg-17){opacity:.22}
+#trend-18:checked ~ .plot svg .seg-18{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-18:checked ~ .plot .tip-trend-18{display:block}
+#trend-18:checked ~ .plot svg .seg:not(.seg-18){opacity:.22}
+#trend-19:checked ~ .plot svg .seg-19{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-19:checked ~ .plot .tip-trend-19{display:block}
+#trend-19:checked ~ .plot svg .seg:not(.seg-19){opacity:.22}
+#trend-20:checked ~ .plot svg .seg-20{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-20:checked ~ .plot .tip-trend-20{display:block}
+#trend-20:checked ~ .plot svg .seg:not(.seg-20){opacity:.22}
+#donut-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-0:checked ~ .plot .tip-donut-0{display:block}
+#donut-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#donut-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-1:checked ~ .plot .tip-donut-1{display:block}
+#donut-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#donut-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-2:checked ~ .plot .tip-donut-2{display:block}
+#donut-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#donut-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-3:checked ~ .plot .tip-donut-3{display:block}
+#donut-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#donut-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-4:checked ~ .plot .tip-donut-4{display:block}
+#donut-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#donut-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-5:checked ~ .plot .tip-donut-5{display:block}
+#donut-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#donut-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-6:checked ~ .plot .tip-donut-6{display:block}
+#donut-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#donut-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-7:checked ~ .plot .tip-donut-7{display:block}
+#donut-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#donut-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-8:checked ~ .plot .tip-donut-8{display:block}
+#donut-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#donut-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-9:checked ~ .plot .tip-donut-9{display:block}
+#donut-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#runs-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-0:checked ~ .plot .tip-runs-0{display:block}
+#runs-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#runs-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-1:checked ~ .plot .tip-runs-1{display:block}
+#runs-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#runs-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-2:checked ~ .plot .tip-runs-2{display:block}
+#runs-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#runs-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-3:checked ~ .plot .tip-runs-3{display:block}
+#runs-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#runs-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-4:checked ~ .plot .tip-runs-4{display:block}
+#runs-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#runs-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-5:checked ~ .plot .tip-runs-5{display:block}
+#runs-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#runs-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-6:checked ~ .plot .tip-runs-6{display:block}
+#runs-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#runs-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-7:checked ~ .plot .tip-runs-7{display:block}
+#runs-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#runs-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-8:checked ~ .plot .tip-runs-8{display:block}
+#runs-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#runs-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-9:checked ~ .plot .tip-runs-9{display:block}
+#runs-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#runs-10:checked ~ .plot svg .seg-10{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-10:checked ~ .plot .tip-runs-10{display:block}
+#runs-10:checked ~ .plot svg .seg:not(.seg-10){opacity:.22}
+#runs-11:checked ~ .plot svg .seg-11{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-11:checked ~ .plot .tip-runs-11{display:block}
+#runs-11:checked ~ .plot svg .seg:not(.seg-11){opacity:.22}
+#runs-12:checked ~ .plot svg .seg-12{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-12:checked ~ .plot .tip-runs-12{display:block}
+#runs-12:checked ~ .plot svg .seg:not(.seg-12){opacity:.22}
+#runs-13:checked ~ .plot svg .seg-13{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-13:checked ~ .plot .tip-runs-13{display:block}
+#runs-13:checked ~ .plot svg .seg:not(.seg-13){opacity:.22}
+#runs-14:checked ~ .plot svg .seg-14{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-14:checked ~ .plot .tip-runs-14{display:block}
+#runs-14:checked ~ .plot svg .seg:not(.seg-14){opacity:.22}
+#runs-15:checked ~ .plot svg .seg-15{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-15:checked ~ .plot .tip-runs-15{display:block}
+#runs-15:checked ~ .plot svg .seg:not(.seg-15){opacity:.22}
+#runs-16:checked ~ .plot svg .seg-16{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-16:checked ~ .plot .tip-runs-16{display:block}
+#runs-16:checked ~ .plot svg .seg:not(.seg-16){opacity:.22}
+#runs-17:checked ~ .plot svg .seg-17{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-17:checked ~ .plot .tip-runs-17{display:block}
+#runs-17:checked ~ .plot svg .seg:not(.seg-17){opacity:.22}
+#runs-18:checked ~ .plot svg .seg-18{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-18:checked ~ .plot .tip-runs-18{display:block}
+#runs-18:checked ~ .plot svg .seg:not(.seg-18){opacity:.22}
+#runs-19:checked ~ .plot svg .seg-19{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-19:checked ~ .plot .tip-runs-19{display:block}
+#runs-19:checked ~ .plot svg .seg:not(.seg-19){opacity:.22}
+#runs-20:checked ~ .plot svg .seg-20{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-20:checked ~ .plot .tip-runs-20{display:block}
+#runs-20:checked ~ .plot svg .seg:not(.seg-20){opacity:.22}
+#runs-21:checked ~ .plot svg .seg-21{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-21:checked ~ .plot .tip-runs-21{display:block}
+#runs-21:checked ~ .plot svg .seg:not(.seg-21){opacity:.22}
+#runs-22:checked ~ .plot svg .seg-22{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-22:checked ~ .plot .tip-runs-22{display:block}
+#runs-22:checked ~ .plot svg .seg:not(.seg-22){opacity:.22}
+#runs-23:checked ~ .plot svg .seg-23{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-23:checked ~ .plot .tip-runs-23{display:block}
+#runs-23:checked ~ .plot svg .seg:not(.seg-23){opacity:.22}
+#runs-24:checked ~ .plot svg .seg-24{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-24:checked ~ .plot .tip-runs-24{display:block}
+#runs-24:checked ~ .plot svg .seg:not(.seg-24){opacity:.22}
+#runs-25:checked ~ .plot svg .seg-25{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-25:checked ~ .plot .tip-runs-25{display:block}
+#runs-25:checked ~ .plot svg .seg:not(.seg-25){opacity:.22}
+#runs-26:checked ~ .plot svg .seg-26{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-26:checked ~ .plot .tip-runs-26{display:block}
+#runs-26:checked ~ .plot svg .seg:not(.seg-26){opacity:.22}
+#runs-27:checked ~ .plot svg .seg-27{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-27:checked ~ .plot .tip-runs-27{display:block}
+#runs-27:checked ~ .plot svg .seg:not(.seg-27){opacity:.22}
+#runs-28:checked ~ .plot svg .seg-28{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-28:checked ~ .plot .tip-runs-28{display:block}
+#runs-28:checked ~ .plot svg .seg:not(.seg-28){opacity:.22}
+#runs-29:checked ~ .plot svg .seg-29{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-29:checked ~ .plot .tip-runs-29{display:block}
+#runs-29:checked ~ .plot svg .seg:not(.seg-29){opacity:.22}
+#runs-30:checked ~ .plot svg .seg-30{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-30:checked ~ .plot .tip-runs-30{display:block}
+#runs-30:checked ~ .plot svg .seg:not(.seg-30){opacity:.22}
+#runs-31:checked ~ .plot svg .seg-31{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-31:checked ~ .plot .tip-runs-31{display:block}
+#runs-31:checked ~ .plot svg .seg:not(.seg-31){opacity:.22}
+#runs-32:checked ~ .plot svg .seg-32{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-32:checked ~ .plot .tip-runs-32{display:block}
+#runs-32:checked ~ .plot svg .seg:not(.seg-32){opacity:.22}
+#runs-33:checked ~ .plot svg .seg-33{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-33:checked ~ .plot .tip-runs-33{display:block}
+#runs-33:checked ~ .plot svg .seg:not(.seg-33){opacity:.22}
+#runs-34:checked ~ .plot svg .seg-34{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-34:checked ~ .plot .tip-runs-34{display:block}
+#runs-34:checked ~ .plot svg .seg:not(.seg-34){opacity:.22}
+#pace-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-0:checked ~ .plot .tip-pace-0{display:block}
+#pace-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#pace-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-1:checked ~ .plot .tip-pace-1{display:block}
+#pace-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#pace-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-2:checked ~ .plot .tip-pace-2{display:block}
+#pace-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#pace-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-3:checked ~ .plot .tip-pace-3{display:block}
+#pace-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#pace-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-4:checked ~ .plot .tip-pace-4{display:block}
+#pace-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#pace-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-5:checked ~ .plot .tip-pace-5{display:block}
+#pace-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#pace-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-6:checked ~ .plot .tip-pace-6{display:block}
+#pace-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#pace-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-7:checked ~ .plot .tip-pace-7{display:block}
+#pace-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#pace-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-8:checked ~ .plot .tip-pace-8{display:block}
+#pace-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#pace-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-9:checked ~ .plot .tip-pace-9{display:block}
+#pace-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#pace-10:checked ~ .plot svg .seg-10{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-10:checked ~ .plot .tip-pace-10{display:block}
+#pace-10:checked ~ .plot svg .seg:not(.seg-10){opacity:.22}
+#pace-11:checked ~ .plot svg .seg-11{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-11:checked ~ .plot .tip-pace-11{display:block}
+#pace-11:checked ~ .plot svg .seg:not(.seg-11){opacity:.22}
+#pace-12:checked ~ .plot svg .seg-12{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-12:checked ~ .plot .tip-pace-12{display:block}
+#pace-12:checked ~ .plot svg .seg:not(.seg-12){opacity:.22}
+#pace-13:checked ~ .plot svg .seg-13{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-13:checked ~ .plot .tip-pace-13{display:block}
+#pace-13:checked ~ .plot svg .seg:not(.seg-13){opacity:.22}
+#pace-14:checked ~ .plot svg .seg-14{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-14:checked ~ .plot .tip-pace-14{display:block}
+#pace-14:checked ~ .plot svg .seg:not(.seg-14){opacity:.22}
+#pace-15:checked ~ .plot svg .seg-15{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-15:checked ~ .plot .tip-pace-15{display:block}
+#pace-15:checked ~ .plot svg .seg:not(.seg-15){opacity:.22}
+#pace-16:checked ~ .plot svg .seg-16{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-16:checked ~ .plot .tip-pace-16{display:block}
+#pace-16:checked ~ .plot svg .seg:not(.seg-16){opacity:.22}
+#pace-17:checked ~ .plot svg .seg-17{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-17:checked ~ .plot .tip-pace-17{display:block}
+#pace-17:checked ~ .plot svg .seg:not(.seg-17){opacity:.22}
+#pace-18:checked ~ .plot svg .seg-18{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-18:checked ~ .plot .tip-pace-18{display:block}
+#pace-18:checked ~ .plot svg .seg:not(.seg-18){opacity:.22}
+#pace-19:checked ~ .plot svg .seg-19{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-19:checked ~ .plot .tip-pace-19{display:block}
+#pace-19:checked ~ .plot svg .seg:not(.seg-19){opacity:.22}
+#pace-20:checked ~ .plot svg .seg-20{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-20:checked ~ .plot .tip-pace-20{display:block}
+#pace-20:checked ~ .plot svg .seg:not(.seg-20){opacity:.22}
+#pace-21:checked ~ .plot svg .seg-21{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-21:checked ~ .plot .tip-pace-21{display:block}
+#pace-21:checked ~ .plot svg .seg:not(.seg-21){opacity:.22}
+#pace-22:checked ~ .plot svg .seg-22{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-22:checked ~ .plot .tip-pace-22{display:block}
+#pace-22:checked ~ .plot svg .seg:not(.seg-22){opacity:.22}
+#pace-23:checked ~ .plot svg .seg-23{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-23:checked ~ .plot .tip-pace-23{display:block}
+#pace-23:checked ~ .plot svg .seg:not(.seg-23){opacity:.22}
+#pace-24:checked ~ .plot svg .seg-24{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-24:checked ~ .plot .tip-pace-24{display:block}
+#pace-24:checked ~ .plot svg .seg:not(.seg-24){opacity:.22}
+#pace-25:checked ~ .plot svg .seg-25{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-25:checked ~ .plot .tip-pace-25{display:block}
+#pace-25:checked ~ .plot svg .seg:not(.seg-25){opacity:.22}
+#pace-26:checked ~ .plot svg .seg-26{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-26:checked ~ .plot .tip-pace-26{display:block}
+#pace-26:checked ~ .plot svg .seg:not(.seg-26){opacity:.22}
+#pace-27:checked ~ .plot svg .seg-27{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-27:checked ~ .plot .tip-pace-27{display:block}
+#pace-27:checked ~ .plot svg .seg:not(.seg-27){opacity:.22}
+#pace-28:checked ~ .plot svg .seg-28{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-28:checked ~ .plot .tip-pace-28{display:block}
+#pace-28:checked ~ .plot svg .seg:not(.seg-28){opacity:.22}
+#pace-29:checked ~ .plot svg .seg-29{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-29:checked ~ .plot .tip-pace-29{display:block}
+#pace-29:checked ~ .plot svg .seg:not(.seg-29){opacity:.22}
+#pace-30:checked ~ .plot svg .seg-30{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-30:checked ~ .plot .tip-pace-30{display:block}
+#pace-30:checked ~ .plot svg .seg:not(.seg-30){opacity:.22}
+#pace-31:checked ~ .plot svg .seg-31{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-31:checked ~ .plot .tip-pace-31{display:block}
+#pace-31:checked ~ .plot svg .seg:not(.seg-31){opacity:.22}
+#pace-32:checked ~ .plot svg .seg-32{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-32:checked ~ .plot .tip-pace-32{display:block}
+#pace-32:checked ~ .plot svg .seg:not(.seg-32){opacity:.22}
+#pace-33:checked ~ .plot svg .seg-33{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-33:checked ~ .plot .tip-pace-33{display:block}
+#pace-33:checked ~ .plot svg .seg:not(.seg-33){opacity:.22}
+#pace-34:checked ~ .plot svg .seg-34{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-34:checked ~ .plot .tip-pace-34{display:block}
+#pace-34:checked ~ .plot svg .seg:not(.seg-34){opacity:.22}
+#hr-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-0:checked ~ .plot .tip-hr-0{display:block}
+#hr-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#hr-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-1:checked ~ .plot .tip-hr-1{display:block}
+#hr-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#hr-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-2:checked ~ .plot .tip-hr-2{display:block}
+#hr-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#hr-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-3:checked ~ .plot .tip-hr-3{display:block}
+#hr-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#hr-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-4:checked ~ .plot .tip-hr-4{display:block}
+#hr-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#hr-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-5:checked ~ .plot .tip-hr-5{display:block}
+#hr-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#hr-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-6:checked ~ .plot .tip-hr-6{display:block}
+#hr-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#hr-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-7:checked ~ .plot .tip-hr-7{display:block}
+#hr-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#hr-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-8:checked ~ .plot .tip-hr-8{display:block}
+#hr-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#hr-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-9:checked ~ .plot .tip-hr-9{display:block}
+#hr-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#st-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-0:checked ~ .plot .tip-st-0{display:block}
+#st-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#st-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-1:checked ~ .plot .tip-st-1{display:block}
+#st-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#st-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-2:checked ~ .plot .tip-st-2{display:block}
+#st-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#st-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-3:checked ~ .plot .tip-st-3{display:block}
+#st-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#st-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-4:checked ~ .plot .tip-st-4{display:block}
+#st-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#jr-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#jr-0:checked ~ .plot .tip-jr-0{display:block}
+#jr-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#jr-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#jr-1:checked ~ .plot .tip-jr-1{display:block}
+#jr-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+/* ===== 悬浮「首页」键：随时能退回封面 =====
+   ⚠️ 白底**几乎不透明**（.96）而不是毛玻璃：它会随滚动滑进滑出，
+      移动的 backdrop-filter 元素每帧都要重新取景身后内容（卡顿 + WebKit 合成 bug 出品红杂线），
+      详见 home_btn.py 顶部注释。视觉差别小到看不出，稳得多。 */
+.home{position:fixed;left:13px;top:calc(11px + env(safe-area-inset-top));z-index:58;
+  display:inline-flex;align-items:center;gap:3px;height:35px;
+  padding:0 13px 0 9px;border-radius:18px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 6px 18px rgba(14,40,28,.17),0 1px 3px rgba(14,40,28,.07);
+  color:#0A8F55;font-size:13px;font-weight:700;letter-spacing:.4px;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:transform .28s cubic-bezier(.32,.72,0,1),opacity .2s}
+.home svg{width:17px;height:17px;flex:none;display:block;fill:none;stroke:currentColor;
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+/* 按下去：`.press` 由 HOME_JS 驱动，`:active` 只当兜底（iOS 上 :active 不可靠，见文件头注释） */
+.home:active,.home.press{transform:translateY(1px) scale(.95);transition-duration:.08s}
+/* 往下读正文时整枚滑出左边缘 —— 注意是**移走**不是淡出：淡出后它还在那儿挡着字，
+   仍然点得到（误触）。缓动用 iOS 曲线，跟 Safari 工具栏一个路子。 */
+.home.hide{transform:translateX(-84px);opacity:0;pointer-events:none}
+/* ⚠️ 三个次级页面的页头 `.hd` 是**左对齐**的（徽标 + 大标题），左上角正好就是标题的位置，
+   会被这枚按钮压住（实测："本月速览 · 2026-09"和"目标 140 斤"都被盖掉半截）。
+   所以把页头顶部下移一枚按钮 + 呼吸位。报告页没有 `.hd`（它的头图是居中的），不受影响。 */
+.hd{padding-top:calc(56px + env(safe-area-inset-top))}
+
+</style>
+<style>
+
+.vA .jday{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.vA .jday b{font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.2px}
+.vA .jday .sum{margin-left:auto;font-size:11.5px;color:var(--ink3);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.vA .jdl{display:grid;grid-template-columns:34px minmax(0,1fr);gap:7px 10px;
+  align-items:start;margin-top:14px}
+.vA .k{font-size:10.5px;font-weight:700;color:var(--ink3);letter-spacing:.3px;
+  line-height:1.95;white-space:nowrap}
+.vA .v{font-size:12.5px;line-height:1.85;color:var(--ink1)}
+.vA .v.quote{font-size:13px;color:var(--ink);line-height:1.8}
+.vA .v.dim{font-size:11.5px;color:var(--ink3);line-height:1.8}
+.vA .v.strong{font-weight:800;color:var(--ink)}
+.vA .v.adv{color:var(--ink);font-weight:600}
+.vA .k.g{color:var(--accDark)}
+.vA .cap{grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--ink3);
+  letter-spacing:.5px;margin-top:2px}
+.vA .hr{grid-column:1/-1;height:1px;background:#EFF1F4;margin:5px 0 3px}
+
+.vB .jday{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.vB .jday b{font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.2px}
+.vB .jday .sum{margin-left:auto;font-size:11.5px;color:var(--ink3);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.vB .body{font-size:13.5px;line-height:1.95;color:var(--ink);margin-top:15px}
+.vB .sup{font-size:11.5px;line-height:1.8;color:var(--ink3);margin-top:9px}
+.vB .say{margin-top:16px;padding-top:13px;border-top:1px solid var(--line)}
+.vB .say h4{font-size:10.5px;font-weight:800;color:var(--ink3);letter-spacing:.6px;
+  margin-bottom:8px}
+.vB .li{display:flex;gap:8px;font-size:12.5px;line-height:1.85;color:var(--ink2);
+  margin-top:5px}
+.vB .li i{width:5px;height:5px;border-radius:50%;background:#D7DBE2;flex:none;margin-top:9px}
+.vB .li b{color:var(--accDark);font-weight:800;margin-right:5px}
+.vB .li.z{color:var(--ink);font-weight:800}
+.vB .li.z i{background:var(--acc)}
+.vB .li.a{color:var(--ink);font-weight:600}
+.vB .li.a i{background:var(--acc)}
+
+.vC .jday{display:flex;align-items:baseline;gap:8px;margin:14px 0 0}
+.vC .jday b{font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.2px}
+.vC .jday .sum{margin-left:auto;font-size:11.5px;color:var(--ink3);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.vC .vtl{position:relative;margin-top:8px}
+.vC .vtl:before{content:'';position:absolute;left:5px;top:15px;bottom:15px;width:1px;
+  background:#E3E7EE}
+.vC .jrtl{margin:0;padding:0}
+.vC .jrtl:before{display:none}
+.vC .nd{position:relative;padding-left:20px;margin-top:11px}
+.vC .nd:before{content:'';position:absolute;left:1.5px;top:5px;width:8px;height:8px;
+  border-radius:50%;background:#fff;border:2px solid var(--c,#D7DBE2)}
+.vC .nd .nh{display:flex;align-items:baseline;gap:7px;margin-bottom:3px}
+.vC .nd .nh b{font-size:11px;font-weight:800;color:var(--ink3);letter-spacing:.4px}
+.vC .nd .nh span{font-size:10.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.vC .nd .nt{font-size:12.5px;line-height:1.8;color:var(--ink2)}
+.vC .nd .nt.q{font-size:13px;color:var(--ink);line-height:1.8}
+.vC .nd .nt em{font-style:normal;color:var(--accDark);font-weight:800;margin-right:5px}
+
+.top{background:#0E7A4C;color:#fff;padding:18px 16px 20px;
+  background-image:linear-gradient(135deg,#00C86F,#0FA9C9)}
+.top h1{font-size:19px;font-weight:800;letter-spacing:-.2px}
+.top p{font-size:12.5px;line-height:1.75;opacity:.92;margin-top:6px}
+.pick{display:flex;gap:8px;margin-top:12px}
+.pick a{flex:1;text-align:center;text-decoration:none;font-size:12.5px;font-weight:800;
+  padding:9px 0 10px;border-radius:10px;background:rgba(255,255,255,.9);color:#0E7A4C}
+.wrap{max-width:430px;margin:0 auto;padding:0 14px 40px}
+.sect{margin-top:22px}
+.sect>h3{font-size:14px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;
+  gap:7px;margin-bottom:4px}
+.sect>h3 i{width:20px;height:20px;border-radius:7px;background:#00C86F;color:#fff;
+  font-style:normal;font-size:11.5px;font-weight:800;display:inline-flex;
+  align-items:center;justify-content:center;flex:none}
+.sect>p{font-size:11.5px;line-height:1.7;color:#6B6577;margin-bottom:2px}
+.sect .card{margin-top:10px}
+.card>h2{font-size:15px}
+</style></head><body>
+<div class="top"><h1>训练手记 · 三个改版候选</h1>
+<p>同样的两条手记，三种排版。往下翻，看完回来告诉我选哪个（或者哪一版里的哪块行、哪块不行）。</p>
+<div class="pick"><a href="#a">看 A</a><a href="#b">看 B</a><a href="#c">看 C</a></div></div>
+<div class="wrap">
+<div class="sect" id="a"><h3><i>A</i>指标行</h3>
+<p>沿用全站「小灰标签 + 值」的写法。感受 / 补给 / 点评共用同一条左基线，全部无底色、无徽章；三条胶囊统计并进「当天」那一行的右边。</p>
+<div class="card"><h2>训练手记</h2><div class="jr vA"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jday"><b>当天 · 4 段运动</b><span class="sum">2h42 · 23.61 km · 896 kcal</span></div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.51 km</span><span class="jrtl-d">32′</span></div><div class="jrtl-r" style="--c:#A855F7"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-m"></span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">10.07 km</span><span class="jrtl-d">38′</span></div></div><div class="jdl"><span class="k">感受</span><span class="v quote">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</span><span class="k">补给</span><span class="v dim">跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</span><span class="hr"></span><span class="cap">教练点评</span><span class="k"></span><span class="v strong">4 段连做、跨 4 小时</span><span class="k">顺序</span><span class="v">力量在跑步前 —— 方向是对的，别改</span><span class="k">间隔</span><span class="v">只歇 13 分就开跑；该歇 20~30 分</span><span class="k">补水</span><span class="v">1.4 L 只算及格；椰子水别当电解质水</span><span class="k">作息</span><span class="v">23:00 才到家，睡不够最伤恢复</span><span class="hr"></span><span class="k g">下次</span><span class="v adv">力量后歇 20~30 分钟再跑，中间补点糖</span><span class="k"></span><span class="v adv">力量日的跑步压到 Z2 20~30 分钟</span></div></div><div class="jr vA"><div class="jrh"><span class="jrd">09/15</span><span class="jrt">周二</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jday"><b>当天 · 3 段运动</b><span class="sum">1h40 · 21.98 km · 682 kcal</span></div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">19:08</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.43 km</span><span class="jrtl-d">33′</span></div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:11</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:15</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.52 km</span><span class="jrtl-d">35′</span></div></div><div class="jdl"><span class="k">感受</span><span class="v quote">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲</span><span class="hr"></span><span class="cap">教练点评</span><span class="k"></span><span class="v strong">肩带撑不住：洗头抬手都使不上劲</span><span class="k">性质</span><span class="v">不是酸、是“使不上劲”＝神经肌肉疲劳</span><span class="k">存疑</span><span class="v">这天只记到骑行+跑步，没上肢训练</span><span class="k">红旗</span><span class="v">再出现／夜间痛／上举痛 → 运动医学科</span><span class="hr"></span><span class="k g">下次</span><span class="v adv">48 小时内别做过头上举，也别忍痛硬撑</span><span class="k"></span><span class="v adv">加练肩外旋与肩胛稳定（弹力带、YTW）</span><span class="k"></span><span class="v adv">骑行车把别太低，别让上身重量压在手上</span></div></div></div></div>
+<div class="sect" id="b"><h3><i>B</i>日记流</h3>
+<p>感受直接当正文写（不加标签、不加引用线），点评变成「一行一个小圆点」，一句一事、装饰最少。字数看着最少的一版。</p>
+<div class="card"><h2>训练手记</h2><div class="jr vB"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jday"><b>当天 · 4 段运动</b><span class="sum">2h42 · 23.61 km · 896 kcal</span></div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.51 km</span><span class="jrtl-d">32′</span></div><div class="jrtl-r" style="--c:#A855F7"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-m"></span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">10.07 km</span><span class="jrtl-d">38′</span></div></div><div class="body">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div><div class="sup">补给 · 跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div><div class="say"><h4>教练点评</h4><div class="li z"><i></i><span>4 段连做、跨 4 小时</span></div><div class="li"><i></i><span><b>顺序</b>力量在跑步前 —— 方向是对的，别改</span></div><div class="li"><i></i><span><b>间隔</b>只歇 13 分就开跑；该歇 20~30 分</span></div><div class="li"><i></i><span><b>补水</b>1.4 L 只算及格；椰子水别当电解质水</span></div><div class="li"><i></i><span><b>作息</b>23:00 才到家，睡不够最伤恢复</span></div><div class="li a"><i></i><span><b>下次</b>力量后歇 20~30 分钟再跑，中间补点糖</span></div><div class="li a"><i></i><span>力量日的跑步压到 Z2 20~30 分钟</span></div></div></div><div class="jr vB"><div class="jrh"><span class="jrd">09/15</span><span class="jrt">周二</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jday"><b>当天 · 3 段运动</b><span class="sum">1h40 · 21.98 km · 682 kcal</span></div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">19:08</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.43 km</span><span class="jrtl-d">33′</span></div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:11</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:15</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.52 km</span><span class="jrtl-d">35′</span></div></div><div class="body">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲</div><div class="say"><h4>教练点评</h4><div class="li z"><i></i><span>肩带撑不住：洗头抬手都使不上劲</span></div><div class="li"><i></i><span><b>性质</b>不是酸、是“使不上劲”＝神经肌肉疲劳</span></div><div class="li"><i></i><span><b>存疑</b>这天只记到骑行+跑步，没上肢训练</span></div><div class="li"><i></i><span><b>红旗</b>再出现／夜间痛／上举痛 → 运动医学科</span></div><div class="li a"><i></i><span><b>下次</b>48 小时内别做过头上举，也别忍痛硬撑</span></div><div class="li a"><i></i><span>加练肩外旋与肩胛稳定（弹力带、YTW）</span></div><div class="li a"><i></i><span>骑行车把别太低，别让上身重量压在手上</span></div></div></div></div></div>
+<div class="sect" id="c"><h3><i>C</i>一条时间线</h3>
+<p>把「感受」和「教练点评」也挂到那条时间轴上，整条手记变成一个从上到下的纵向流。结构感最强。</p>
+<div class="card"><h2>训练手记</h2><div class="jr vC"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jday"><b>当天 · 4 段运动</b><span class="sum">2h42 · 23.61 km · 896 kcal</span></div><div class="vtl"><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.51 km</span><span class="jrtl-d">32′</span></div><div class="jrtl-r" style="--c:#A855F7"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-m"></span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">10.07 km</span><span class="jrtl-d">38′</span></div></div><div class="nd" style="--c:#00C86F"><div class="nh"><b>感受</b><span>23:40</span></div><div class="nt q">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div></div><div class="nd" style="--c:#CFEAF2"><div class="nh"><b>补给</b></div><div class="nt">跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div></div><div class="nd" style="--c:#00C86F"><div class="nh"><b>教练点评</b></div><div class="nt"><em>结论</em>4 段连做、跨 4 小时</div><div class="nt"><em>顺序</em>力量在跑步前 —— 方向是对的，别改</div><div class="nt"><em>间隔</em>只歇 13 分就开跑；该歇 20~30 分</div><div class="nt"><em>补水</em>1.4 L 只算及格；椰子水别当电解质水</div><div class="nt"><em>作息</em>23:00 才到家，睡不够最伤恢复</div><div class="nt"><em>下次</em>力量后歇 20~30 分钟再跑，中间补点糖</div><div class="nt"><em></em>力量日的跑步压到 Z2 20~30 分钟</div></div></div></div><div class="jr vC"><div class="jrh"><span class="jrd">09/15</span><span class="jrt">周二</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jday"><b>当天 · 3 段运动</b><span class="sum">1h40 · 21.98 km · 682 kcal</span></div><div class="vtl"><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">19:08</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.43 km</span><span class="jrtl-d">33′</span></div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:11</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:15</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.52 km</span><span class="jrtl-d">35′</span></div></div><div class="nd" style="--c:#00C86F"><div class="nh"><b>感受</b><span></span></div><div class="nt q">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲</div></div><div class="nd" style="--c:#00C86F"><div class="nh"><b>教练点评</b></div><div class="nt"><em>结论</em>肩带撑不住：洗头抬手都使不上劲</div><div class="nt"><em>性质</em>不是酸、是“使不上劲”＝神经肌肉疲劳</div><div class="nt"><em>存疑</em>这天只记到骑行+跑步，没上肢训练</div><div class="nt"><em>红旗</em>再出现／夜间痛／上举痛 → 运动医学科</div><div class="nt"><em>下次</em>48 小时内别做过头上举，也别忍痛硬撑</div><div class="nt"><em></em>加练肩外旋与肩胛稳定（弹力带、YTW）</div><div class="nt"><em></em>骑行车把别太低，别让上身重量压在手上</div></div></div></div></div></div>
+<p style="font-size:11px;color:#9E99A8;line-height:1.7;margin-top:26px">
+这是临时预览页（不进正式报告、不会被搜索到），你定下来我就删掉。</p>
+</div></body></html>
