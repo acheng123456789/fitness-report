@@ -54,8 +54,11 @@ body{
   position:relative;overflow:hidden}
 .jv-dbox span{display:block;font-size:6px;font-weight:800;color:#B3B0BA;
   letter-spacing:.5px;line-height:1.2;margin-bottom:3px}
-.jv-dbox b{display:block;font-size:13.5px;font-weight:800;color:var(--ink);line-height:1;
+.jv-dbox b{display:block;font-size:14.5px;font-weight:800;color:var(--ink);line-height:1;
   font-variant-numeric:tabular-nums;letter-spacing:-.6px}
+/* 日期：三个独立方框直接放在灰色页面上，不再套白卡 */
+.jv-bare{display:flex;align-items:center;padding:0}
+.jv-bare .jv-dboxes{width:100%}
 /* 疲劳度 */
 .jv-mid{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
 .jv-fat-top{font-size:8.5px;color:#B6B3BD;line-height:1.4;margin-bottom:6px}
@@ -113,7 +116,7 @@ body{
 <div class="jv">
   <div class="jv-page">
     <div class="jv-grid">
-      <div class="jv-card"><div class="jv-ttl">日期</div><div class="jv-dboxes"><div class="jv-dbox"><span>YEAR</span><b>2026</b></div><div class="jv-dbox"><span>MONTH</span><b>09</b></div><div class="jv-dbox"><span>DATE</span><b>25</b></div></div></div>
+      <div class="jv-bare"><div class="jv-dboxes"><div class="jv-dbox"><span>YEAR</span><b>2026</b></div><div class="jv-dbox"><span>MONTH</span><b>09</b></div><div class="jv-dbox"><span>DATE</span><b>25</b></div></div></div>
       <div class="jv-card"><div class="jv-ttl">疲劳度</div><div class="jv-mid"><div class="jv-fat-top">今天练到什么程度？</div><span class="jv-fat" style="color:#F97316;background:#FEF1E4"><span class="jv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span></div><div class="jv-fat-time">周五 · 23:40 记</div></div>
       <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-mid"><div class="jv-wk-big">4 段连做</div><div class="jv-wk">骑行 · 力量<br>跑步 · 骑行</div></div></div>
       <div class="jv-card"><div class="jv-ttl">运动项目</div><div class="jv-icrow" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.51km</i><span class="jv-tm">18:55</span></div><div class="jv-icbox" style="--c:#A855F7"><em>💪</em><span>力量</span><i>61min</i><span class="jv-tm">20:11</span></div><div class="jv-icbox" style="--c:#7B61FF"><em>🏃</em><span>跑步</span><i>5.03km</i><span class="jv-tm">21:25</span></div><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>10.07km</i><span class="jv-tm">22:21</span></div></div><div class="jv-gap">相邻两段之间只隔 13 分 / 25 分</div></div>
@@ -128,7 +131,7 @@ body{
 <div class="jv">
   <div class="jv-page">
     <div class="jv-grid">
-      <div class="jv-card"><div class="jv-ttl">日期</div><div class="jv-dboxes"><div class="jv-dbox"><span>YEAR</span><b>2026</b></div><div class="jv-dbox"><span>MONTH</span><b>09</b></div><div class="jv-dbox"><span>DATE</span><b>15</b></div></div></div>
+      <div class="jv-bare"><div class="jv-dboxes"><div class="jv-dbox"><span>YEAR</span><b>2026</b></div><div class="jv-dbox"><span>MONTH</span><b>09</b></div><div class="jv-dbox"><span>DATE</span><b>15</b></div></div></div>
       <div class="jv-card"><div class="jv-ttl">疲劳度</div><div class="jv-mid"><div class="jv-fat-top">今天练到什么程度？</div><span class="jv-fat" style="color:#F97316;background:#FEF1E4"><span class="jv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span></div><div class="jv-fat-time">周二</div></div>
       <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-mid"><div class="jv-wk-big">3 段连做</div><div class="jv-wk">骑行 · 跑步<br>骑行</div></div></div>
       <div class="jv-card"><div class="jv-ttl">运动项目</div><div class="jv-icrow" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.43km</i><span class="jv-tm">19:08</span></div><div class="jv-icbox" style="--c:#7B61FF"><em>🏃</em><span>跑步</span><i>5.03km</i><span class="jv-tm">21:11</span></div><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.52km</i><span class="jv-tm">22:15</span></div></div></div>
