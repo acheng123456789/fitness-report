@@ -48,7 +48,7 @@ body{
   line-height:1.2;margin-bottom:6px}
 /* 日期：三个方框（半宽 → 字号收小） */
 .jv-dboxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-.jv-dbox{text-align:center;border-radius:9px;padding:6px 1px;
+.jv-dbox{display:flex;flex-direction:column;justify-content:center;text-align:center;border-radius:9px;padding:6px 1px;
   background:linear-gradient(180deg,#fff 0%,#F8F9FB 100%);border:1px solid #E0E1E6;
   box-shadow:0 2px 4px rgba(55,60,90,.10),0 1px 0 rgba(255,255,255,.95) inset;
   position:relative;overflow:hidden}
@@ -57,7 +57,7 @@ body{
 .jv-dbox b{display:block;font-size:14.5px;font-weight:800;color:var(--ink);line-height:1;
   font-variant-numeric:tabular-nums;letter-spacing:-.6px}
 /* 日期：三个独立方框直接放在灰色页面上，不再套白卡 */
-.jv-bare{display:flex;align-items:center;padding:0}
+.jv-bare{display:flex;align-items:stretch;padding:0}
 .jv-bare .jv-dboxes{width:100%}
 /* 疲劳度 */
 .jv-mid{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
@@ -72,6 +72,16 @@ body{
 .jv-wk-big{font-size:12px;font-weight:800;color:var(--ink);margin-bottom:2px;
   font-variant-numeric:tabular-nums}
 .jv-wk{font-size:10.5px;line-height:1.8;color:var(--ink2)}
+/* 运动健身：大字 + 时间线（填满卡片）*/
+.jv-wk-sub{font-size:8.5px;color:#B6B3BD;font-weight:700;margin:1px 0 7px;
+  font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.jv-tl{display:flex;flex-direction:column;gap:5px}
+.jv-tl-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--ink2)}
+.jv-tl-row .tm{width:31px;flex:none;font-weight:800;color:var(--ink3);
+  font-variant-numeric:tabular-nums}
+.jv-tl-row i{width:6px;height:6px;border-radius:50%;flex:none;background:var(--c)}
+.jv-tl-row b{color:var(--ink);font-weight:800;margin-left:auto;
+  font-variant-numeric:tabular-nums}
 /* 运动项目：2×2 图标格，时间收进格内 */
 .jv-icrow{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .jv-icbox{background:#fff;border-radius:9px;padding:6px 3px;text-align:center;
@@ -84,11 +94,13 @@ body{
   line-height:1.3;font-variant-numeric:tabular-nums;margin-top:1px}
 .jv-gap{font-size:8.5px;color:var(--ink3);margin-top:5px;line-height:1.5}
 /* 合计消耗：半宽 → 单列勾选 */
-.jv-habs{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px}
-.jv-hb{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink2);
-  font-variant-numeric:tabular-nums}
-.jv-hb i{width:10px;height:10px;border-radius:50%;flex:none;background:var(--c,#00C86F);
-  box-shadow:0 0 0 2px rgba(120,130,160,.12)}
+.jv-habs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.jv-hb{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;
+  background:linear-gradient(180deg,#fff 0%,#F8F9FB 100%);border:1px solid #E0E1E6;
+  border-radius:10px;padding:7px 2px 6px;
+  box-shadow:0 2px 4px rgba(55,60,90,.10),0 1px 0 rgba(255,255,255,.95) inset}
+.jv-hb .ic{font-size:14px;line-height:1.2}
+.jv-hb > span{font-size:8px;font-weight:800;color:#B3B0BA;letter-spacing:.5px}
 .jv-hb b{color:var(--ink);font-weight:800}
 /* 感受 / 补水 */
 .jv-feel{font-size:11px;line-height:1.85;color:var(--ink)}
@@ -118,9 +130,9 @@ body{
     <div class="jv-grid">
       <div class="jv-bare"><div class="jv-dboxes"><div class="jv-dbox"><span>YEAR</span><b>2026</b></div><div class="jv-dbox"><span>MONTH</span><b>09</b></div><div class="jv-dbox"><span>DATE</span><b>25</b></div></div></div>
       <div class="jv-card"><div class="jv-ttl">疲劳度</div><div class="jv-mid"><div class="jv-fat-top">今天练到什么程度？</div><span class="jv-fat" style="color:#F97316;background:#FEF1E4"><span class="jv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span></div><div class="jv-fat-time">周五 · 23:40 记</div></div>
-      <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-mid"><div class="jv-wk-big">4 段连做</div><div class="jv-wk">骑行 · 力量<br>跑步 · 骑行</div></div></div>
+      <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-mid"><div class="jv-wk-big">4 段连做</div><div class="jv-wk-sub">跨 4 小时 · 18:55 — 22:21</div><div class="jv-tl"><div class="jv-tl-row"><span class="tm">18:55</span><i style="--c:#0FA9C9"></i><span>骑行</span><b>8.51km</b></div><div class="jv-tl-row"><span class="tm">20:11</span><i style="--c:#A855F7"></i><span>力量</span><b>61min</b></div><div class="jv-tl-row"><span class="tm">21:25</span><i style="--c:#7B61FF"></i><span>跑步</span><b>5.03km</b></div><div class="jv-tl-row"><span class="tm">22:21</span><i style="--c:#0FA9C9"></i><span>骑行</span><b>10.07km</b></div></div></div></div>
       <div class="jv-card"><div class="jv-ttl">运动项目</div><div class="jv-icrow" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.51km</i><span class="jv-tm">18:55</span></div><div class="jv-icbox" style="--c:#A855F7"><em>💪</em><span>力量</span><i>61min</i><span class="jv-tm">20:11</span></div><div class="jv-icbox" style="--c:#7B61FF"><em>🏃</em><span>跑步</span><i>5.03km</i><span class="jv-tm">21:25</span></div><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>10.07km</i><span class="jv-tm">22:21</span></div></div><div class="jv-gap">相邻两段之间只隔 13 分 / 25 分</div></div>
-      <div class="jv-card jv-wide"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb" style="--c:#00C86F"><i></i><span>时长 <b>2h42</b></span></div><div class="jv-hb" style="--c:#0FA9C9"><i></i><span>距离 <b>23.61km</b></span></div><div class="jv-hb" style="--c:#F97316"><i></i><span>热量 <b>896kcal</b></span></div><div class="jv-hb" style="--c:#A855F7"><i></i><span>共 <b>4 段</b></span></div></div></div>
+      <div class="jv-card jv-wide"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb"><span class="ic">⏱</span><span>时长</span><b>2h42</b></div><div class="jv-hb"><span class="ic">📏</span><span>距离</span><b>23.61km</b></div><div class="jv-hb"><span class="ic">🔥</span><span>热量</span><b>896kcal</b></div><div class="jv-hb"><span class="ic">🔁</span><span>段数</span><b>4 段</b></div></div></div>
       <div class="jv-card"><div class="jv-ttl">感受</div><div class="jv-feel">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了。力量放在跑步前是对的，但中间只歇了 13 分钟，下次要拉长到 20~30 分钟。</div></div>
       <div class="jv-card"><div class="jv-ttl">补水</div><div class="jv-feel">跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div></div>
       <div class="jv-card jv-wide"><div class="jv-ttl">点评</div><div class="jv-comm"><div class="lead">4 段连做、跨 4 小时</div><p><b>顺序</b>力量在跑步前 —— 方向是对的，别改</p><p><b>间隔</b>只歇 13 分就开跑；该歇 20~30 分</p><p><b>补水</b>1.4 L 只算及格；椰子水别当电解质水</p><p><b>作息</b>23:00 才到家，睡不够最伤恢复</p><p><span class="nx"><b>下次</b>力量后歇 20~30 分钟再跑，中间补点糖</span></p><p><span class="nx">力量日的跑步压到 Z2 20~30 分钟</span></p></div></div>
@@ -133,9 +145,9 @@ body{
     <div class="jv-grid">
       <div class="jv-bare"><div class="jv-dboxes"><div class="jv-dbox"><span>YEAR</span><b>2026</b></div><div class="jv-dbox"><span>MONTH</span><b>09</b></div><div class="jv-dbox"><span>DATE</span><b>15</b></div></div></div>
       <div class="jv-card"><div class="jv-ttl">疲劳度</div><div class="jv-mid"><div class="jv-fat-top">今天练到什么程度？</div><span class="jv-fat" style="color:#F97316;background:#FEF1E4"><span class="jv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span></div><div class="jv-fat-time">周二</div></div>
-      <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-mid"><div class="jv-wk-big">3 段连做</div><div class="jv-wk">骑行 · 跑步<br>骑行</div></div></div>
+      <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-mid"><div class="jv-wk-big">3 段连做</div><div class="jv-wk-sub">19:08 — 22:15</div><div class="jv-tl"><div class="jv-tl-row"><span class="tm">19:08</span><i style="--c:#0FA9C9"></i><span>骑行</span><b>8.43km</b></div><div class="jv-tl-row"><span class="tm">21:11</span><i style="--c:#7B61FF"></i><span>跑步</span><b>5.03km</b></div><div class="jv-tl-row"><span class="tm">22:15</span><i style="--c:#0FA9C9"></i><span>骑行</span><b>8.52km</b></div></div></div></div>
       <div class="jv-card"><div class="jv-ttl">运动项目</div><div class="jv-icrow" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.43km</i><span class="jv-tm">19:08</span></div><div class="jv-icbox" style="--c:#7B61FF"><em>🏃</em><span>跑步</span><i>5.03km</i><span class="jv-tm">21:11</span></div><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.52km</i><span class="jv-tm">22:15</span></div></div></div>
-      <div class="jv-card jv-wide"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb" style="--c:#00C86F"><i></i><span>时长 <b>1h40</b></span></div><div class="jv-hb" style="--c:#0FA9C9"><i></i><span>距离 <b>21.98km</b></span></div><div class="jv-hb" style="--c:#F97316"><i></i><span>热量 <b>682kcal</b></span></div><div class="jv-hb" style="--c:#A855F7"><i></i><span>共 <b>3 段</b></span></div></div></div>
+      <div class="jv-card jv-wide"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb"><span class="ic">⏱</span><span>时长</span><b>1h40</b></div><div class="jv-hb"><span class="ic">📏</span><span>距离</span><b>21.98km</b></div><div class="jv-hb"><span class="ic">🔥</span><span>热量</span><b>682kcal</b></div><div class="jv-hb"><span class="ic">🔁</span><span>段数</span><b>3 段</b></div></div></div>
       <div class="jv-card jv-wide"><div class="jv-ttl">感受</div><div class="jv-feel">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲。</div></div>
       <div class="jv-card jv-wide"><div class="jv-ttl">点评</div><div class="jv-comm"><div class="lead">肩带撑不住：洗头抬手都使不上劲</div><p><b>性质</b>不是酸、是“使不上劲”＝神经肌肉疲劳</p><p><b>存疑</b>这天只记到骑行+跑步，没上肢训练</p><p><b>红旗</b>再出现／夜间痛／上举痛 → 运动医学科</p><p><span class="nx"><b>下次</b>48 小时内别做过头上举，也别忍痛硬撑</span></p><p><span class="nx">加练肩外旋与肩胛稳定（弹力带、YTW）</span></p><p><span class="nx">骑行车把别太低，别让上身重量压在手上</span></p></div></div>
     </div>
