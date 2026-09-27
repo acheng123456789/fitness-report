@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#00C86F"><meta name="robots" content="noindex,nofollow">
-<title>训练手记 · 日记卡片（2 列紧凑版）</title>
+<title>训练手记 · 日记卡片（两列紧凑版）</title>
 <style>
 :root{
   --bg:#F4F5F7;--card:#fff;--ink:#241F2E;--ink1:#241F2E;--ink2:#6B6577;--ink3:#9E99A8;
@@ -39,8 +39,8 @@ body{
 .jv-page{background:#E7E7EA;border-radius:20px;padding:9px;
   box-shadow:0 22px 46px -16px rgba(55,60,90,.32),0 6px 14px rgba(55,60,90,.10),
     0 1px 0 rgba(255,255,255,.7) inset}
-.jv-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;align-items:start}
-/* align-items:start —— 卡片各自贴合内容高度，不被同行的长卡拉高留空洞 */
+.jv-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+/* 同行卡片等高（默认 stretch）→ 左列右列上下对齐 */
 .jv-card{background:#fff;border-radius:13px;padding:8px 9px 9px;min-width:0;
   box-shadow:0 3px 8px rgba(55,60,90,.09),0 1px 2px rgba(55,60,90,.05)}
 .jv-ttl{font-size:7.5px;font-weight:800;color:#B6B3BD;letter-spacing:.6px;
@@ -79,8 +79,8 @@ body{
   line-height:1.3;font-variant-numeric:tabular-nums;margin-top:1px}
 .jv-gap{font-size:8.5px;color:var(--ink3);margin-top:5px;line-height:1.5}
 /* 合计消耗：半宽 → 单列勾选 */
-.jv-habs{display:flex;flex-direction:column;gap:6px}
-.jv-hb{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--ink2);
+.jv-habs{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px}
+.jv-hb{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink2);
   font-variant-numeric:tabular-nums}
 .jv-hb i{width:10px;height:10px;border-radius:50%;flex:none;background:var(--c,#00C86F);
   box-shadow:0 0 0 2px rgba(120,130,160,.12)}
@@ -96,6 +96,7 @@ body{
 .jv-comm .nx{color:var(--ink);font-weight:700}
 .jv-comm .nx b{color:#00A85E}
 /* 页底标签行 */
+/* 整行卡（合计消耗 / 点评 / 无补水时的感受）*/
 .jv-wide{grid-column:span 2}
 .jv-tags{display:flex;justify-content:space-between;gap:3px;padding:8px 4px 1px}
 .jv-tags span{font-size:9px;font-weight:700;color:#ABA8B4;line-height:1.4;
@@ -105,7 +106,7 @@ body{
   max-width:430px;margin:22px auto 0;padding:0 14px}
 </style></head><body>
 <a class="home" href="index.html" aria-label="回到封面首页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.6 5.4 8 12l6.6 6.6"/></svg><span>首页</span></a>
-<div class="hd"><h1>训练手记 · 日记卡片</h1><p>两列紧凑版 · 红笔三对并排：① 日期+疲劳度　② 运动健身+运动项目　③ 感受+补水</p></div>
+<div class="hd"><h1>训练手记 · 日记卡片</h1><p>两列紧凑版 · 日期+疲劳度 / 运动健身+运动项目 / 合计消耗整行 / 感受+补水（没补水则整行）/ 点评整块</p></div>
 <div class="wrap">
 <div class="jv">
   <div class="jv-page">
@@ -114,10 +115,10 @@ body{
       <div class="jv-card"><div class="jv-ttl">疲劳度</div><div class="jv-fat-top">今天练到什么程度？</div><span class="jv-fat" style="color:#F97316;background:#FEF1E4"><span class="jv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span><div class="jv-fat-time">周五 · 23:40 记</div></div>
       <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-wk-big">4 段连做</div><div class="jv-wk">骑行 · 力量<br>跑步 · 骑行</div></div>
       <div class="jv-card"><div class="jv-ttl">运动项目</div><div class="jv-icrow" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.51km</i><span class="jv-tm">18:55</span></div><div class="jv-icbox" style="--c:#A855F7"><em>💪</em><span>力量</span><i>61min</i><span class="jv-tm">20:11</span></div><div class="jv-icbox" style="--c:#7B61FF"><em>🏃</em><span>跑步</span><i>5.03km</i><span class="jv-tm">21:25</span></div><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>10.07km</i><span class="jv-tm">22:21</span></div></div><div class="jv-gap">相邻两段之间只隔 13 分 / 25 分</div></div>
+      <div class="jv-card jv-wide"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb" style="--c:#00C86F"><i></i><span>时长 <b>2h42</b></span></div><div class="jv-hb" style="--c:#0FA9C9"><i></i><span>距离 <b>23.61km</b></span></div><div class="jv-hb" style="--c:#F97316"><i></i><span>热量 <b>896kcal</b></span></div><div class="jv-hb" style="--c:#A855F7"><i></i><span>共 <b>4 段</b></span></div></div></div>
       <div class="jv-card"><div class="jv-ttl">感受</div><div class="jv-feel">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了。力量放在跑步前是对的，但中间只歇了 13 分钟，下次要拉长到 20~30 分钟。</div></div>
       <div class="jv-card"><div class="jv-ttl">补水</div><div class="jv-feel">跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div></div>
-      <div class="jv-card"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb" style="--c:#00C86F"><i></i><span>时长 <b>2h42</b></span></div><div class="jv-hb" style="--c:#0FA9C9"><i></i><span>距离 <b>23.61km</b></span></div><div class="jv-hb" style="--c:#F97316"><i></i><span>热量 <b>896kcal</b></span></div><div class="jv-hb" style="--c:#A855F7"><i></i><span>共 <b>4 段</b></span></div></div></div>
-      <div class="jv-card"><div class="jv-ttl">点评</div><div class="jv-comm"><div class="lead">4 段连做、跨 4 小时</div><p><b>顺序</b>力量在跑步前 —— 方向是对的，别改</p><p><b>间隔</b>只歇 13 分就开跑；该歇 20~30 分</p><p><b>补水</b>1.4 L 只算及格；椰子水别当电解质水</p><p><b>作息</b>23:00 才到家，睡不够最伤恢复</p><p><span class="nx"><b>下次</b>力量后歇 20~30 分钟再跑，中间补点糖</span></p><p><span class="nx">力量日的跑步压到 Z2 20~30 分钟</span></p></div></div>
+      <div class="jv-card jv-wide"><div class="jv-ttl">点评</div><div class="jv-comm"><div class="lead">4 段连做、跨 4 小时</div><p><b>顺序</b>力量在跑步前 —— 方向是对的，别改</p><p><b>间隔</b>只歇 13 分就开跑；该歇 20~30 分</p><p><b>补水</b>1.4 L 只算及格；椰子水别当电解质水</p><p><b>作息</b>23:00 才到家，睡不够最伤恢复</p><p><span class="nx"><b>下次</b>力量后歇 20~30 分钟再跑，中间补点糖</span></p><p><span class="nx">力量日的跑步压到 Z2 20~30 分钟</span></p></div></div>
     </div>
   </div>
 </div>
@@ -129,14 +130,14 @@ body{
       <div class="jv-card"><div class="jv-ttl">疲劳度</div><div class="jv-fat-top">今天练到什么程度？</div><span class="jv-fat" style="color:#F97316;background:#FEF1E4"><span class="jv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span><div class="jv-fat-time">周二</div></div>
       <div class="jv-card"><div class="jv-ttl">运动健身</div><div class="jv-wk-big">3 段连做</div><div class="jv-wk">骑行 · 跑步<br>骑行</div></div>
       <div class="jv-card"><div class="jv-ttl">运动项目</div><div class="jv-icrow" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.43km</i><span class="jv-tm">19:08</span></div><div class="jv-icbox" style="--c:#7B61FF"><em>🏃</em><span>跑步</span><i>5.03km</i><span class="jv-tm">21:11</span></div><div class="jv-icbox" style="--c:#0FA9C9"><em>🚴</em><span>骑行</span><i>8.52km</i><span class="jv-tm">22:15</span></div></div></div>
-      <div class="jv-card"><div class="jv-ttl">感受</div><div class="jv-feel">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲。</div></div>
-      <div class="jv-card"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb" style="--c:#00C86F"><i></i><span>时长 <b>1h40</b></span></div><div class="jv-hb" style="--c:#0FA9C9"><i></i><span>距离 <b>21.98km</b></span></div><div class="jv-hb" style="--c:#F97316"><i></i><span>热量 <b>682kcal</b></span></div><div class="jv-hb" style="--c:#A855F7"><i></i><span>共 <b>3 段</b></span></div></div></div>
+      <div class="jv-card jv-wide"><div class="jv-ttl">合计消耗</div><div class="jv-habs"><div class="jv-hb" style="--c:#00C86F"><i></i><span>时长 <b>1h40</b></span></div><div class="jv-hb" style="--c:#0FA9C9"><i></i><span>距离 <b>21.98km</b></span></div><div class="jv-hb" style="--c:#F97316"><i></i><span>热量 <b>682kcal</b></span></div><div class="jv-hb" style="--c:#A855F7"><i></i><span>共 <b>3 段</b></span></div></div></div>
+      <div class="jv-card jv-wide"><div class="jv-ttl">感受</div><div class="jv-feel">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲。</div></div>
       <div class="jv-card jv-wide"><div class="jv-ttl">点评</div><div class="jv-comm"><div class="lead">肩带撑不住：洗头抬手都使不上劲</div><p><b>性质</b>不是酸、是“使不上劲”＝神经肌肉疲劳</p><p><b>存疑</b>这天只记到骑行+跑步，没上肢训练</p><p><b>红旗</b>再出现／夜间痛／上举痛 → 运动医学科</p><p><span class="nx"><b>下次</b>48 小时内别做过头上举，也别忍痛硬撑</span></p><p><span class="nx">加练肩外旋与肩胛稳定（弹力带、YTW）</span></p><p><span class="nx">骑行车把别太低，别让上身重量压在手上</span></p></div></div>
     </div>
   </div>
 </div>
 
 <div class="jv-tags"><span>记录天气</span><span>记录心情</span><span>幸运指数</span><span>今日饮食</span><span>今日成就</span></div>
-<p class="foot">同上：report.html 记录 Tab 里用的是同一套卡片</p>
+<p class="foot">与 report.html 记录 Tab 用的是同一套卡片</p>
 </div>
 </body></html>
