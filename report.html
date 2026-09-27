@@ -192,21 +192,24 @@ body{
 .jrq{background:#F4F7F9;border-radius:10px;padding:9px 11px}
 .jrq b,.jrsup b,.jrs b{color:var(--ink3);font-weight:700;margin-right:6px;
   font-size:11px;letter-spacing:.2px}
-/* 点评：结论 / 要点 / 建议 三块（长文按 
- 自动分流，见 _jrn_points） */
+/* 点评：结论一行 / 要点（标签+短句，标签成一列）/ 建议（白底块）
+   ⚠️ 要点**必须短**：标签占一列是给眼睛当索引用的，正文一旦超过两行就又变成一堵墙。 */
 .jrc{margin-top:9px;background:#F3FBF7;border-left:3px solid var(--acc);
   border-radius:0 12px 12px 0;padding:10px 12px 11px}
 .jrch{font-size:11px;font-weight:800;color:var(--accDark);letter-spacing:.4px;
   margin-bottom:6px}
-.jrcz{font-size:12.5px;line-height:1.85;color:var(--ink1);font-weight:600}
-.jrcu{list-style:none;margin:7px 0 0}
-.jrcu li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.85;
-  color:var(--ink2);margin-top:5px}
-.jrcu li:before{content:'';position:absolute;left:2px;top:8.5px;width:4px;height:4px;
-  border-radius:50%;background:var(--acc);opacity:.55}
-.jrcad{margin-top:9px;background:#fff;border-radius:9px;padding:8px 10px;
-  font-size:12.5px;line-height:1.8;color:var(--ink1)}
-.jrcad b{color:var(--accDark);font-weight:800;margin-right:5px;font-size:11px}
+.jrcz{font-size:13px;line-height:1.6;color:var(--ink);font-weight:800;letter-spacing:-.1px}
+/* 标签列 + 正文列：grid 让所有标签左对齐成一列，上下扫一眼就定位到想看的那条 */
+.jrcl{display:grid;grid-template-columns:minmax(44px,max-content) minmax(0,1fr);
+  gap:7px 9px;align-items:start;margin-top:8px}
+.jrc-k{align-self:start;justify-self:start;background:#E5F7EE;color:var(--accDark);
+  border-radius:6px;padding:2px 7px 3px;font-size:10.5px;font-weight:800;
+  white-space:nowrap;line-height:1.5}
+.jrc-v{font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.jrcad{margin-top:9px;background:#fff;border-radius:10px;padding:9px 11px;
+  display:grid;grid-template-columns:minmax(44px,max-content) minmax(0,1fr);
+  gap:9px;align-items:start}
+.jrcad .jrc-v{color:var(--ink);line-height:1.75}
 .jrn{color:var(--ink3);font-size:11.5px;line-height:1.75;padding:6px 0 2px}
 .jrm{font-size:11.5px;color:var(--ink3);font-weight:700;margin:16px 0 2px;
   padding-bottom:5px;border-bottom:1px solid var(--line)}
@@ -1047,7 +1050,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
 </div></section>
 
 <section class="blk pnl p4" id="g4" style="--gc:#0FA9C9"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><rect x="3.2" y="4.6" width="17.6" height="16" rx="4.2"/><path d="M3.2 9.4h17.6"/><path d="M8 3.1v3.4M16 3.1v3.4"/><circle cx="8.4" cy="14.2" r="1.5" fill="#fff" stroke="none"/><path d="M12.2 14.2h4.2M8.4 18h8"/></svg></div><h1>全部记录</h1><div class="hsub">手记 · 逐月明细</div></header><div class="cnt">
-<div class="card"><h2>训练手记</h2><div class="desc">练完随口说一句感受，攒起来看趋势　<em>没说的日子不记</em></div><div class="jrn">攒到 2 条手记，这里会连出趋势线 —— 看训练量在涨、疲劳在降，那就是真的变强了。</div><div class="jrm">2026年9月 · 手记 1 条 · 满 3 条出月度总评</div><div class="jr"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jrl"><b>当天 · 4 段运动</b></div><div class="jrtl"><div class="jrtl-r"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-d">32′</span></div><div class="jrtl-r"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-d">38′</span></div></div><div class="jrk"><span><b>2h42</b><i>时长</i></span><span><b>23.61</b><i>公里</i></span><span><b>896</b><i>千卡</i></span></div><div class="jrq"><b>你说的</b>练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div><div class="jrsup"><b>补给</b>跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div><div class="jrc"><div class="jrch">点评</div><p class="jrcz">这是目前单日最大负荷的一天：四段运动连着做，162 分钟、896 kcal、23.6 km，18:55 出门到 23:00 进家门，跨度 4 小时 05 分。判 4（很累）的判据有三条——连续四段几乎没留恢复时间、收尾时间在 23:00 远超平时作息、你自己的体感是&quot;已经困了&quot;。</p><ul class="jrcu"><li>真正把负荷推高的是「顺序」：力量 21:12 结束，21:25 就开跑，中间只歇 13 分钟。力量已经把糖原和神经募集能力耗掉一大截，紧接着又跑出 Z4 占 14'39&quot; 的强度，等于在没有补给的窗口里连做两次高强度。累不是你状态差，是这个排法本身的代价。</li><li>补水方向是对的、量偏保守。凉白开 300+ml + 电解质水 + 椰子水 600ml 合计约 1.4 L，对 896 kcal 的消耗来说只算及格；椰子水补钾好但钠低，出汗量大时不能替代电解质水——这次好在你两样都喝了。</li></ul><p class="jrcad"><b>建议</b>二选一：把跑步挪到力量之前（先跑后练，力量质量会掉但疲劳感明显轻），或者力量日把跑步降成 Z2 轻松跑 20 分钟收个尾。另一个更划算的调整是早点开始——18:55 出门已经是当天第四段运动都排在一起的前提。</p></div></div></div>
+<div class="card"><h2>训练手记</h2><div class="desc">练完随口说一句感受，攒起来看趋势　<em>没说的日子不记</em></div><div class="jrn">攒到 2 条手记，这里会连出趋势线 —— 看训练量在涨、疲劳在降，那就是真的变强了。</div><div class="jrm">2026年9月 · 手记 1 条 · 满 3 条出月度总评</div><div class="jr"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jrl"><b>当天 · 4 段运动</b></div><div class="jrtl"><div class="jrtl-r"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-d">32′</span></div><div class="jrtl-r"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-d">38′</span></div></div><div class="jrk"><span><b>2h42</b><i>时长</i></span><span><b>23.61</b><i>公里</i></span><span><b>896</b><i>千卡</i></span></div><div class="jrq"><b>你说的</b>练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div><div class="jrsup"><b>补给</b>跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div><div class="jrc"><div class="jrch">点评</div><p class="jrcz">单日最大负荷：162 分钟 · 23.61 km · 896 kcal</p><div class="jrcl"><span class="jrc-k">排法</span><span class="jrc-v">力量 21:12 结束、21:25 就开跑，中间只歇 13 分 —— 这才是累的根源</span><span class="jrc-k">收尾</span><span class="jrc-v">18:55 出门、23:00 才到家，跨度 4 小时，远超平时作息</span><span class="jrc-k">补水</span><span class="jrc-v">约 1.4 L 只算及格；椰子水钾高钠低，别拿它替代电解质水</span></div><div class="jrcad"><span class="jrc-k">下次</span><span class="jrc-v">先跑后练：力量质量会掉，但疲劳感明显轻<br>或者力量日把跑步降成 Z2 轻松跑 20 分钟收尾</span></div></div></div></div>
   <div class="card">
     <h2>逐月明细</h2>
     <div class="desc">最近的月份排在前面，可展开看每次运动</div>
