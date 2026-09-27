@@ -150,36 +150,50 @@ body{
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend span+span{margin-left:7px}
 .lg-hint{margin-left:auto;font-size:10.5px}
-/* ---- 训练手记 · 结构化日记页（严格照阿成 2026-09-27 那张模板）----
+/* ---- 训练手记 · 日记卡片（严格按阿成 2026-09-27 参考图纵向版）----
    模板三层：**浅灰「页」(.jg) → 白色「格子」(.jb) → 格子左上角一枚极小栏目名(.jz)**。
    栏目名照他红笔标的来：日期 / 疲劳度 / 运动健身 / 运动项目 / 合计消耗 / 感受 / 点评。
-   ⚠️ 反面教训（连否两轮）：在**白**父容器上铺近白底(#FCFDFD)＝一块"污渍"。
-   模板的解法正相反 —— **灰页 + 白格**，靠明度差把格子分出来。 */
-.jg{background:#ECEEF2;border-radius:22px;padding:12px 11px 14px;margin-top:11px;
-  box-shadow:0 10px 30px rgba(90,105,180,.06)}
-.jgr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.jb{background:#fff;border-radius:15px;padding:10px 10px 11px;min-width:0;
-  display:flex;flex-direction:column}
-.jb.top{height:74px;padding:9px 10px 10px}
+   底部标签保留参考图：记录天气 / 记录心情 / 幸运指数 / 今日饮食 / 今日成就。
+   ⚠️ 灰页 + 白格 + 三层投影，做出纸张浮起来的质感。 */
+.jg{background:#E6E7EC;border-radius:26px;padding:14px 13px 16px;margin-top:11px;
+  box-shadow:0 28px 56px -14px rgba(60,68,100,.30),
+             0 10px 24px rgba(60,68,100,.12),
+             0 1px 0 rgba(255,255,255,.55) inset}
+/* 6 列：日期独占 6 列；疲劳度/运动健身 各 3 列；下排三格各 2 列 */
+.jgr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.jb{grid-column:span 2;background:#fff;border-radius:18px;padding:10px 11px 12px;min-width:0;
+  display:flex;flex-direction:column;
+  box-shadow:0 6px 14px rgba(60,68,100,.10),0 1px 3px rgba(60,68,100,.05)}
+.jb.h3{grid-column:span 3}
+.jb.top{height:80px;padding:9px 10px 10px}
 .jb.tall{min-height:310px}
+/* 日期卡独占整行 */
+.jb.date{grid-column:span 6;height:auto;padding:11px 12px 13px}
 /* 栏目名：极小、加粗、浅灰，贴左上角 */
-.jz{font-size:9px;font-weight:800;color:#B5B2BB;letter-spacing:.4px;
-  margin-bottom:6px;line-height:1.2}
-/* 日期格：三列「月/日/年」 */
-.jdate{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;
-  margin-top:auto;text-align:center}
-.jdw{display:flex;flex-direction:column;gap:1px}
-.jdw span{font-size:7.5px;font-weight:700;color:var(--ink3);text-transform:uppercase}
-.jdw b{font-size:17px;font-weight:800;color:var(--ink);line-height:1.1;
-  font-variant-numeric:tabular-nums;letter-spacing:-.6px}
+.jz{font-size:8.5px;font-weight:800;color:#B8B4C0;letter-spacing:.6px;
+  margin-bottom:7px;line-height:1.2;text-transform:uppercase}
+/* 日期格：三个独立方框（MONTH / DATE / YEAR），带边框 + 小投影 */
+.jdate{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:1px}
+.jdw{text-align:center;
+  background:linear-gradient(180deg,#fff 0%,#F9FAFC 100%);
+  border:1px solid #E4E6ED;border-radius:13px;
+  padding:9px 3px 8px;
+  box-shadow:0 2px 5px rgba(60,68,100,.10),0 1px 0 rgba(255,255,255,.9) inset;
+  position:relative;overflow:hidden}
+.jdw:before{content:'';position:absolute;left:10px;right:10px;top:0;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.95),rgba(255,255,255,0))}
+.jdw span{display:block;font-size:8px;font-weight:800;color:#B4B0BE;
+  letter-spacing:1.2px;line-height:1.2;margin-bottom:3px}
+.jdw b{display:block;font-size:25px;font-weight:800;color:var(--ink);
+  line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
 /* 疲劳格：胶囊 + 周几时间 */
 .jfat{display:flex;flex-direction:column;gap:6px;margin-top:auto}
 .jfc{display:inline-flex;align-items:center;gap:4px;width:fit-content;
-  padding:3px 8px 4px;border-radius:20px;font-size:10.5px;font-weight:800}
-.jfc .jrp{display:inline-flex;align-items:flex-end;gap:2px;height:10px}
-.jrp{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
-.jrp b{width:3px;height:7px;border-radius:1px;background:currentColor;opacity:.3}
-.jrp b.on{height:11px;opacity:1}
+  padding:4px 10px 5px;border-radius:20px;font-size:11px;font-weight:800}
+.jfc .jdots{display:inline-flex;align-items:flex-end;gap:2px;height:10px}
+.jdots{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
+.jdots i{width:3px;height:7px;border-radius:1px;background:currentColor;opacity:.3}
+.jdots i.on{height:11px;opacity:1}
 .jfwt{font-size:10px;color:var(--ink3);line-height:1.4}
 /* 运动健身格：简短总览 */
 .jwk{font-size:11.5px;font-weight:600;color:var(--ink2);line-height:1.6;
@@ -188,7 +202,7 @@ body{
 /* 下排左格：运动项目 + 合计消耗 上下堆叠 */
 .jtall{gap:10px}
 .jsub{flex:1;display:flex;flex-direction:column;min-height:0}
-.jsub+.jsub{border-top:1.5px dashed #DEE1E7;padding-top:10px}
+.jsub+.jsub{border-top:1.5px dashed #E1E4EA;padding-top:10px}
 /* 运动项目：真·时间轴 */
 .jtl{position:relative;display:flex;flex-direction:column;gap:7px;
   padding-left:14px;margin-top:2px}
@@ -207,7 +221,7 @@ body{
   border-radius:8px;padding:5px 8px 6px;font-size:10.5px;font-weight:800;
   font-variant-numeric:tabular-nums;color:var(--ink2)}
 /* 感受格：正文 */
-.jsay{font-size:12px;line-height:1.75;color:var(--ink);margin-top:2px}
+.jsay{font-size:12px;line-height:1.85;color:var(--ink);margin-top:2px}
 /* 点评格 */
 .jcm{display:flex;flex-direction:column;gap:6px;margin-top:2px}
 .jcm .lead{font-size:12.5px;font-weight:800;color:var(--ink);line-height:1.55}
@@ -216,8 +230,8 @@ body{
 .jcm p b:after{content:'：';color:#C6CBD3;font-weight:400}
 .jcm .nx{font-weight:700;color:var(--ink)}
 .jcm .nx b{color:var(--accDark)}
-/* 底部标签行 */
-.jtags{display:flex;justify-content:space-between;gap:6px;margin-top:13px;
+/* 底部标签行（参考图 footer） */
+.jtags{display:flex;justify-content:space-between;gap:5px;margin-top:13px;
   padding:0 4px}
 .jtags span{font-size:10px;font-weight:700;color:var(--ink3);line-height:1.4;
   text-align:center;flex:1}
@@ -1066,17 +1080,23 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
     <div class="desc">按你红笔标注模板试排：日期 / 疲劳度 / 运动健身 / 运动项目 / 合计消耗 / 感受 / 点评</div>
     <div class="jg">
       <div class="jgr">
-        <div class="jb top"><div class="jz">日期</div><div class="jdate"><div class="jdw"><span>MONTH</span><b>09</b></div><div class="jdw"><span>DATE</span><b>25</b></div><div class="jdw"><span>YEAR</span><b>2026</b></div></div></div>
-        <div class="jb top"><div class="jz">疲劳度</div><div class="jfat"><span class="jfc" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span><div class="jfwt">周五 · 23:40 记</div></div></div>
-        <div class="jb top"><div class="jz">运动健身</div><div class="jwk"><b>4 段连做</b>骑行 · 力量 · 跑步 · 骑行</div></div>
+        <!-- 日期：独占整行 -->
+        <div class="jb date"><div class="jz">日期</div><div class="jdate"><div class="jdw"><span>MONTH</span><b>01</b></div><div class="jdw"><span>DATE</span><b>21</b></div><div class="jdw"><span>YEAR</span><b>2026</b></div></div></div>
+        <!-- 疲劳度 -->
+        <div class="jb top h3"><div class="jz">疲劳度</div><div class="jfat"><span class="jfc" style="color:#F97316;background:#FEF0E3"><span class="jdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4 · 很累</span><div class="jfwt">周五 · 23:40 记</div></div></div>
+        <!-- 运动健身 -->
+        <div class="jb top h3"><div class="jz">运动健身</div><div class="jwk"><b>4 段连做</b>骑行 · 力量 · 跑步 · 骑行</div></div>
+        <!-- 运动项目 + 合计消耗 -->
         <div class="jb tall jtall">
           <div class="jsub"><div class="jz">运动项目</div><div class="jtl"><div class="jtl-r" style="--c:#0FA9C9"><span class="jtl-t">18:55</span><span class="jtl-n">骑行</span><span class="jtl-m">8.51 km</span></div><div class="jtl-r" style="--c:#A855F7"><span class="jtl-t">20:11</span><span class="jtl-n">力量</span><span class="jtl-m">61 min</span></div><div class="jtl-r" style="--c:#7B61FF"><span class="jtl-t">21:25</span><span class="jtl-n">跑步</span><span class="jtl-m">5.03 km</span></div><div class="jtl-r" style="--c:#0FA9C9"><span class="jtl-t">22:21</span><span class="jtl-n">骑行</span><span class="jtl-m">10.07 km</span></div></div></div>
           <div class="jsub"><div class="jz">合计消耗</div><div class="jcaps"><span>⏱ 2h42</span><span>📍 23.61 km</span><span>🔥 896 kcal</span></div></div>
         </div>
+        <!-- 感受 -->
         <div class="jb tall"><div class="jz">感受</div><div class="jsay">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了。力量放在跑步前是对的，但中间只歇了 13 分钟，下次要拉长到 20~30 分钟。</div></div>
+        <!-- 点评 -->
         <div class="jb tall"><div class="jz">点评</div><div class="jcm"><div class="lead">4 段连做、跨 4 小时</div><p><b>顺序</b>力量在跑步前，方向别改</p><p><b>间隔</b>只歇 13 分就开跑，该歇 20~30 分</p><p><b>补水</b>1.4 L 只算及格</p><p><b>作息</b>23:00 才到家，睡不够最伤恢复</p><p class="nx"><b>下次</b>力量后歇 20~30 分钟再跑</p></div></div>
       </div>
-      <div class="jtags"><span>运动项目</span><span>合计消耗</span><span>感受</span><span>点评</span></div>
+      <div class="jtags"><span>记录天气</span><span>记录心情</span><span>幸运指数</span><span>今日饮食</span><span>今日成就</span></div>
     </div>
   </div>
 
