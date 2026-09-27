@@ -150,15 +150,42 @@ body{
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend span+span{margin-left:7px}
 .lg-hint{margin-left:auto;font-size:10.5px}
-/* ---- 训练手记 ---- */
-.jr{border-top:1px solid var(--line);padding:14px 0 4px}
-.jr:first-of-type{border-top:0;padding-top:2px}
-.jrh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.jrd{font-size:17px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
-.jrt{font-size:11px;color:var(--ink3)}
-.jrf{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:5px;
+/* ---- 训练手记 · 结构化日记页 ----
+   版式参考阿成 2026-09-27 给的那张日记页：**日期做成「月/日/年」三连**，
+   每个区块前面一个极小的大写式标签（今日运动 / 我的感受 / 补水 / 教练点评）。
+   区块之间**只用留白**，不铺底色也不加通栏线 ——
+   "淡底在白卡上像贴了张背景图"（2026-09-27 已被否过一次），"卡内横线很少有用"。 */
+.jr{border-top:1px solid var(--line);padding:20px 0 4px}
+.jr:first-of-type{border-top:0;padding-top:4px}
+.jhead{display:flex;align-items:flex-end;gap:10px}
+.jdt{display:flex;gap:16px}
+.jdt>div{display:flex;flex-direction:column;gap:2px}
+.jdt span{font-size:9px;font-weight:800;color:var(--ink3);letter-spacing:1.2px}
+.jdt b{font-size:20px;font-weight:800;line-height:1.05;letter-spacing:-.5px;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.jhw{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.jwd{font-size:11px;color:var(--ink3)}
+.jrf{flex:none;display:inline-flex;align-items:center;gap:5px;
   padding:3px 9px 4px;border-radius:20px;font-size:10.5px;font-weight:800;
   font-variant-numeric:tabular-nums}
+/* 区块标签：10px、加宽字距，像日记页上的小栏目名 */
+.jz{margin-top:18px;font-size:10px;font-weight:800;color:var(--ink3);
+  letter-spacing:1.1px}
+.jsum{margin-top:9px;font-size:11.5px;color:var(--ink2);
+  font-variant-numeric:tabular-nums}
+/* 他的话＝正文，13px（＝报告正文上限，别再放大） */
+.jsay{margin-top:6px;font-size:13px;line-height:1.9;color:var(--ink)}
+.jsup{margin-top:6px;font-size:11.5px;line-height:1.8;color:var(--ink3)}
+/* 点评：结论加粗一行，之后每条「关键词：一句」，标签内联加粗（不成列） */
+.jcm{margin-top:6px}
+.jcm p{margin-top:5px;font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.jcm p.lead{color:var(--ink);font-weight:800;font-size:13px}
+.jcm p b{color:var(--ink);font-weight:800}
+.jcm p b:after{content:'：';color:#C6CBD3;font-weight:400}
+.jcm p.nx{color:var(--ink);font-weight:600}
+.jcm p.nx b{color:var(--accDark)}
+.jcm p.nx b:after{color:#BFE9D3}
+.jcm p.nxi{padding-left:3em}          /* 第 2 条起建议：让文字对齐到「下次：」后面 */
 /* 疲劳 1~5 → 5 根小格，填满几根＝几级（比单看数字直观） */
 .jrp{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
 .jrp b{width:3px;height:7px;border-radius:1px;background:currentColor;opacity:.3}
@@ -185,41 +212,7 @@ body{
 .jrgap{display:flex;align-items:center;gap:5px;padding-left:20px;font-size:10px;
   color:#D98324;line-height:1.7}
 .jrgap i{width:5px;height:5px;border-radius:50%;background:#F5A524;flex:none}
-/* 当天总量：3 个小方格 */
-.jrl{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;font-size:12px;
-  color:var(--ink1);margin-bottom:6px}
-.jrl b{color:var(--ink3);font-weight:700;flex:none}
-.jrl span{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
-/* 当天总量：三枚小胶囊（⏱ 时长 / 📍 距离 / 🔥 消耗）。
-   ⚠️ 别写成"三等分 + 竖分隔线 + 上下横线"—— 那看上去就是一张表格（阿成 2026-09-27 指）。 */
-.jrk{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 2px}
-.jrk span{display:inline-flex;align-items:center;gap:5px;background:#F4F6F8;
-  border-radius:9px;padding:6px 10px 7px;font-size:12px;font-weight:800;
-  letter-spacing:-.2px;font-variant-numeric:tabular-nums}
-/* 他的原话＝日记正文：左侧一条细灰引用线（原来的大引号会和第一行字重叠） */
-.jrq{margin-top:12px;padding-left:11px;border-left:2px solid #E4E8EE;
-  font-size:13.5px;line-height:1.8;color:var(--ink)}
-.jrsup{margin-top:7px;font-size:11.5px;line-height:1.7;color:var(--ink3)}
-.jrq b,.jrsup b,.jrs b{color:var(--ink3);font-weight:700;margin-right:6px;
-  font-size:11px;letter-spacing:.2px}
-/* 点评：顶部一条细线分隔（**不铺底色** —— 淡绿底在白卡上像贴了张背景图，阿成 2026-09-27 问
-   "这是什么背景图片"）。内容＝一个 grid：标签列 + 正文列，结论/要点/建议**共用同一套基线**。 */
-.jrc{margin-top:13px;border-top:1px solid var(--line);padding-top:12px}
-.jrch{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;
-  color:var(--accDark);letter-spacing:.4px;margin-bottom:8px}
-.jrch:before{content:'';width:5px;height:5px;border-radius:50%;background:var(--acc);
-  flex:none}
-/* 标签列定宽 44px：所有标签（含"结论""下次"）左对齐成一列，眼睛沿这条竖线扫 */
-.jrcl{display:grid;grid-template-columns:44px minmax(0,1fr);
-  gap:7px 9px;align-items:start}
-.jrc-k{align-self:start;justify-self:start;background:#E5F7EE;color:var(--accDark);
-  border-radius:6px;padding:2px 7px 3px;font-size:10.5px;font-weight:800;
-  white-space:nowrap;line-height:1.5}
-.jrc-k2{background:var(--acc);color:#fff}          /* 「下次」＝实心绿，一眼看出是可执行的那条 */
-.jrc-v{font-size:12.5px;line-height:1.7;color:var(--ink2)}
-.jrc-z{font-weight:800;color:var(--ink);font-size:12.5px}
-.jrc-a{color:var(--ink);font-weight:600;line-height:1.75}
-.jrc-hr{grid-column:1/-1;height:1px;background:#E9EDF2;margin:3px 0 1px}
+.jrs b{color:#7B61FF;font-weight:700;margin-right:6px}
 .jrn{color:var(--ink3);font-size:11.5px;line-height:1.75;padding:6px 0 2px}
 .jrm{font-size:11.5px;color:var(--ink3);font-weight:700;margin:16px 0 2px;
   padding-bottom:5px;border-bottom:1px solid var(--line)}
@@ -1066,7 +1059,7 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
 </div></section>
 
 <section class="blk pnl p4" id="g4" style="--gc:#0FA9C9"><header class="hero"><div class="hico"><svg viewBox="0 0 24 24"><rect x="3.2" y="4.6" width="17.6" height="16" rx="4.2"/><path d="M3.2 9.4h17.6"/><path d="M8 3.1v3.4M16 3.1v3.4"/><circle cx="8.4" cy="14.2" r="1.5" fill="#fff" stroke="none"/><path d="M12.2 14.2h4.2M8.4 18h8"/></svg></div><h1>全部记录</h1><div class="hsub">手记 · 逐月明细</div></header><div class="cnt">
-<div class="card"><h2>训练手记</h2><div class="desc">练完随口说一句感受，攒起来看趋势　<em>没说的日子不记</em></div><div class="fig"><div class="chart"><input class="r" type="radio" name="g-jr" id="jr-off"><input class="r" type="radio" name="g-jr" id="jr-0"><input class="r" type="radio" name="g-jr" id="jr-1"><div class="plot"><svg viewBox="0 0 350 190" width="100%" height="auto" role="img" aria-label="训练手记疲劳趋势"><line x1="26" y1="162.0" x2="338" y2="162.0" stroke="#EDEFF3"/><text x="22" y="165.5" text-anchor="end" font-size="9" fill="#9E99A8">1</text><line x1="26" y1="89.0" x2="338" y2="89.0" stroke="#EDEFF3"/><text x="22" y="92.5" text-anchor="end" font-size="9" fill="#9E99A8">3</text><line x1="26" y1="16.0" x2="338" y2="16.0" stroke="#EDEFF3"/><text x="22" y="19.5" text-anchor="end" font-size="9" fill="#9E99A8">5</text><rect class="seg seg-0" x="60.3" y="112.7" width="87.4" height="49.3" fill="#CFEAF2" rx="2"/><rect class="seg seg-1" x="216.3" y="81.7" width="87.4" height="80.3" fill="#CFEAF2" rx="2"/><polyline points="104.0,52.5 260.0,52.5" fill="none" stroke="#F5A524" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle class="seg seg-0" cx="104.0" cy="52.5" r="4.2" fill="#F97316" stroke="#fff" stroke-width="1.6"/><text x="104.0" y="175.0" text-anchor="start" font-size="8.5" fill="#9E99A8">09/15</text><circle class="seg seg-1" cx="260.0" cy="52.5" r="4.2" fill="#F97316" stroke="#fff" stroke-width="1.6"/><text x="260.0" y="175.0" text-anchor="end" font-size="8.5" fill="#9E99A8">09/25</text></svg><label class="off" for="jr-off"></label><label class="hot" for="jr-0" style="left:7.429%;top:8.421%;width:44.571%;height:76.842%"></label><label class="hot" for="jr-1" style="left:52.000%;top:8.421%;width:44.571%;height:76.842%"></label><label class="tip tip-jr-0" for="jr-off"><div class="tt"><i class="td" style="background:#F97316"></i><b>2026-09-15 周二</b><br>3 次 · 1 小时 40 分 · 21.98 km · 682 kcal<br>疲劳 4 · 很累<br>“训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲”</div></label><label class="tip tip-jr-1" for="jr-off"><div class="tt"><i class="td" style="background:#F97316"></i><b>2026-09-25 周五</b><br>4 次 · 2 小时 42 分 · 23.61 km · 896 kcal<br>疲劳 4 · 很累<br>“练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了”</div></label></div><div class="legend"><span><i class="d" style="background:#F5A524"></i>疲劳度 1~5</span><span><i class="d" style="background:#CFEAF2"></i>当天运动时长</span><span class="lg-hint">点任意一列看当天</span></div></div></div><div class="jrm">2026年9月 · 手记 2 条 · 满 3 条出月度总评</div><div class="jr"><div class="jrh"><span class="jrd">09/25</span><span class="jrt">周五 · 23:40</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jrl"><b>当天 · 4 段运动</b></div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.51 km</span><span class="jrtl-d">32′</span></div><div class="jrtl-r" style="--c:#A855F7"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-m"></span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">10.07 km</span><span class="jrtl-d">38′</span></div></div><div class="jrk"><span>⏱ 2h42</span><span>📍 23.61 km</span><span>🔥 896 kcal</span></div><div class="jrq">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div><div class="jrsup">💧 跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div><div class="jrc"><div class="jrch">点评</div><div class="jrcl"><span class="jrc-k">结论</span><span class="jrc-v jrc-z">4 段连做、跨 4 小时</span><span class="jrc-k">顺序</span><span class="jrc-v">力量在跑步前 —— 方向是对的，别改</span><span class="jrc-k">间隔</span><span class="jrc-v">只歇 13 分就开跑；该歇 20~30 分</span><span class="jrc-k">补水</span><span class="jrc-v">1.4 L 只算及格；椰子水别当电解质水</span><span class="jrc-k">作息</span><span class="jrc-v">23:00 才到家，睡不够最伤恢复</span><span class="jrc-hr"></span><span class="jrc-k jrc-k2">下次</span><span class="jrc-v jrc-a">力量后歇 20~30 分钟再跑，中间补点糖</span><span class="jrc-k"></span><span class="jrc-v jrc-a">力量日的跑步压到 Z2 20~30 分钟</span></div></div></div><div class="jr"><div class="jrh"><span class="jrd">09/15</span><span class="jrt">周二</span><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span></div><div class="jrl"><b>当天 · 3 段运动</b></div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">19:08</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.43 km</span><span class="jrtl-d">33′</span></div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:11</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:15</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.52 km</span><span class="jrtl-d">35′</span></div></div><div class="jrk"><span>⏱ 1h40</span><span>📍 21.98 km</span><span>🔥 682 kcal</span></div><div class="jrq">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲</div><div class="jrc"><div class="jrch">点评</div><div class="jrcl"><span class="jrc-k">结论</span><span class="jrc-v jrc-z">肩带撑不住：洗头抬手都使不上劲</span><span class="jrc-k">性质</span><span class="jrc-v">不是酸、是“使不上劲”＝神经肌肉疲劳</span><span class="jrc-k">存疑</span><span class="jrc-v">这天只记到骑行+跑步，没上肢训练</span><span class="jrc-k">红旗</span><span class="jrc-v">再出现／夜间痛／上举痛 → 运动医学科</span><span class="jrc-hr"></span><span class="jrc-k jrc-k2">下次</span><span class="jrc-v jrc-a">48 小时内别做过头上举，也别忍痛硬撑</span><span class="jrc-k"></span><span class="jrc-v jrc-a">加练肩外旋与肩胛稳定（弹力带、YTW）</span><span class="jrc-k"></span><span class="jrc-v jrc-a">骑行车把别太低，别让上身重量压在手上</span></div></div></div></div>
+<div class="card"><h2>训练手记</h2><div class="desc">练完随口说一句感受，攒起来看趋势　<em>没说的日子不记</em></div><div class="fig"><div class="chart"><input class="r" type="radio" name="g-jr" id="jr-off"><input class="r" type="radio" name="g-jr" id="jr-0"><input class="r" type="radio" name="g-jr" id="jr-1"><div class="plot"><svg viewBox="0 0 350 190" width="100%" height="auto" role="img" aria-label="训练手记疲劳趋势"><line x1="26" y1="162.0" x2="338" y2="162.0" stroke="#EDEFF3"/><text x="22" y="165.5" text-anchor="end" font-size="9" fill="#9E99A8">1</text><line x1="26" y1="89.0" x2="338" y2="89.0" stroke="#EDEFF3"/><text x="22" y="92.5" text-anchor="end" font-size="9" fill="#9E99A8">3</text><line x1="26" y1="16.0" x2="338" y2="16.0" stroke="#EDEFF3"/><text x="22" y="19.5" text-anchor="end" font-size="9" fill="#9E99A8">5</text><rect class="seg seg-0" x="60.3" y="112.7" width="87.4" height="49.3" fill="#CFEAF2" rx="2"/><rect class="seg seg-1" x="216.3" y="81.7" width="87.4" height="80.3" fill="#CFEAF2" rx="2"/><polyline points="104.0,52.5 260.0,52.5" fill="none" stroke="#F5A524" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle class="seg seg-0" cx="104.0" cy="52.5" r="4.2" fill="#F97316" stroke="#fff" stroke-width="1.6"/><text x="104.0" y="175.0" text-anchor="start" font-size="8.5" fill="#9E99A8">09/15</text><circle class="seg seg-1" cx="260.0" cy="52.5" r="4.2" fill="#F97316" stroke="#fff" stroke-width="1.6"/><text x="260.0" y="175.0" text-anchor="end" font-size="8.5" fill="#9E99A8">09/25</text></svg><label class="off" for="jr-off"></label><label class="hot" for="jr-0" style="left:7.429%;top:8.421%;width:44.571%;height:76.842%"></label><label class="hot" for="jr-1" style="left:52.000%;top:8.421%;width:44.571%;height:76.842%"></label><label class="tip tip-jr-0" for="jr-off"><div class="tt"><i class="td" style="background:#F97316"></i><b>2026-09-15 周二</b><br>3 次 · 1 小时 40 分 · 21.98 km · 682 kcal<br>疲劳 4 · 很累<br>“训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲”</div></label><label class="tip tip-jr-1" for="jr-off"><div class="tt"><i class="td" style="background:#F97316"></i><b>2026-09-25 周五</b><br>4 次 · 2 小时 42 分 · 23.61 km · 896 kcal<br>疲劳 4 · 很累<br>“练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了”</div></label></div><div class="legend"><span><i class="d" style="background:#F5A524"></i>疲劳度 1~5</span><span><i class="d" style="background:#CFEAF2"></i>当天运动时长</span><span class="lg-hint">点任意一列看当天</span></div></div></div><div class="jrm">2026年9月 · 手记 2 条 · 满 3 条出月度总评</div><div class="jr"><div class="jhead"><div class="jdt"><div><span>月</span><b>09</b></div><div><span>日</span><b>25</b></div><div><span>年</span><b>2026</b></div></div><div class="jhw"><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span><span class="jwd">周五 · 23:40</span></div></div><div class="jz">今日运动</div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">18:55</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.51 km</span><span class="jrtl-d">32′</span></div><div class="jrtl-r" style="--c:#A855F7"><span class="jrtl-t">20:11</span><span class="ic" style="background:#A855F722;width:17px;height:17px;font-size:11px">💪</span><span class="jrtl-n">力量训练</span><span class="jrtl-m"></span><span class="jrtl-d">1h01</span></div><div class="jrgap"><i></i>与上一段只隔 13 分</div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:25</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrgap"><i></i>与上一段只隔 25 分</div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:21</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">10.07 km</span><span class="jrtl-d">38′</span></div></div><div class="jsum">合计 2 小时 42 分 · 23.61 km · 896 kcal</div><div class="jz">我的感受</div><div class="jsay">练完之后比较累，到住的地方已经 11 点了，到了之后感觉已经困了</div><div class="jz">补水</div><div class="jsup">跑完后凉白开 300 多毫升 + 外星人电解质水 1 瓶；到家后椰子水 600 ml</div><div class="jz">教练点评</div><div class="jcm"><p class="lead">4 段连做、跨 4 小时</p><p><b>顺序</b>力量在跑步前 —— 方向是对的，别改</p><p><b>间隔</b>只歇 13 分就开跑；该歇 20~30 分</p><p><b>补水</b>1.4 L 只算及格；椰子水别当电解质水</p><p><b>作息</b>23:00 才到家，睡不够最伤恢复</p><p class="nx"><b>下次</b>力量后歇 20~30 分钟再跑，中间补点糖</p><p class="nx nxi">力量日的跑步压到 Z2 20~30 分钟</p></div></div><div class="jr"><div class="jhead"><div class="jdt"><div><span>月</span><b>09</b></div><div><span>日</span><b>15</b></div><div><span>年</span><b>2026</b></div></div><div class="jhw"><span class="jrf" style="color:#F97316;background:#F973161A"><span class="jrp"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></span>4 · 很累</span><span class="jwd">周二</span></div></div><div class="jz">今日运动</div><div class="jrtl"><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">19:08</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.43 km</span><span class="jrtl-d">33′</span></div><div class="jrtl-r" style="--c:#7B61FF"><span class="jrtl-t">21:11</span><span class="ic" style="background:#7B61FF22;width:17px;height:17px;font-size:11px">🏃</span><span class="jrtl-n">跑步</span><span class="jrtl-m">5.03 km</span><span class="jrtl-d">31′</span></div><div class="jrtl-r" style="--c:#0FA9C9"><span class="jrtl-t">22:15</span><span class="ic" style="background:#0FA9C922;width:17px;height:17px;font-size:11px">🚴</span><span class="jrtl-n">骑行</span><span class="jrtl-m">8.52 km</span><span class="jrtl-d">35′</span></div></div><div class="jsum">合计 1 小时 40 分 · 21.98 km · 682 kcal</div><div class="jz">我的感受</div><div class="jsay">训练完回来洗袜子、洗脸、洗头，手抬起来洗头就使不上劲 —— 不是酸，就是肩部连接处那一块使不上劲，感觉跟平时不一样，好像过度拉伸的那种感觉；洗内裤跟洗袜子也一样，就是使不上劲</div><div class="jz">教练点评</div><div class="jcm"><p class="lead">肩带撑不住：洗头抬手都使不上劲</p><p><b>性质</b>不是酸、是“使不上劲”＝神经肌肉疲劳</p><p><b>存疑</b>这天只记到骑行+跑步，没上肢训练</p><p><b>红旗</b>再出现／夜间痛／上举痛 → 运动医学科</p><p class="nx"><b>下次</b>48 小时内别做过头上举，也别忍痛硬撑</p><p class="nx nxi">加练肩外旋与肩胛稳定（弹力带、YTW）</p><p class="nx nxi">骑行车把别太低，别让上身重量压在手上</p></div></div></div>
   <div class="card">
     <h2>逐月明细</h2>
     <div class="desc">最近的月份排在前面，可展开看每次运动</div>
