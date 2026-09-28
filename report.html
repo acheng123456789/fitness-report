@@ -158,14 +158,17 @@ body{
 .jv{margin-top:10px}
 /* ===== 日记卡组（deck）：一天一张，带角度层叠，左右滑动翻天 =====
    阿成 2026-09-29 要的交互。⚠️ 无脚本时退化：只显示最新一张（其余不占版面），
-   页面其余部分照常 —— 绝不因为脚本没跑起来就把 14 张卡全摊开。 */
+   页面其余部分照常 —— 绝不因为脚本没跑起来就把 14 张卡全摊开。
+   09-29 二稿：容器 overflow:hidden + 上下留白 → 后面的高卡只能从上边露角，
+   **绝不允许从下边穿出**（修复：矮卡在前时高卡穿过指示条、盖住逐月明细）。 */
 .jdeck-wrap{margin-top:10px}
 .jdeck{position:relative;touch-action:pan-y;-webkit-user-select:none;user-select:none;
   outline:none}
-.jdeck.on{overflow:visible;transition:height .34s cubic-bezier(.22,.85,.24,1)}
-.jdeck.on .jv{position:absolute;top:0;left:0;width:100%;margin-top:0;
+.jdeck.on{overflow:hidden;padding:30px 3px 10px;
+  transition:height .34s cubic-bezier(.22,.85,.24,1)}
+.jdeck.on .jv{position:absolute;top:30px;left:3px;width:calc(100% - 6px);margin-top:0;
   transform-origin:50% 94%;will-change:transform,opacity;backface-visibility:hidden;
-  transition:transform .42s cubic-bezier(.22,.85,.24,1),opacity .3s linear}
+  transition:transform .38s cubic-bezier(.25,1.35,.4,1),opacity .28s linear}
 .jdeck.on .jv.drag{transition:none}
 .jdeck.on .jv.gone{pointer-events:none}
 .jdeck:not(.on) .jv ~ .jv{display:none}
@@ -1147,14 +1150,14 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
   for(var i=0;i<N;i++){
    var k=i-cur,c=cards[i];
    c.style.zIndex=(N-i);c.style.visibility='visible';
-   if(k<0){tf(c,-W*0.66,-14,-15,0.93,0);c.classList.add('gone');}
-   else if(k===0){tf(c,dx,0,dx/26,1,1);c.classList.remove('gone');}
-   else if(k===1){tf(c,11+dx*0.16,-13,2.3,0.952,1);c.classList.remove('gone');}
-   else if(k===2){tf(c,22+dx*0.09,-25,4.2,0.905,0.92);c.classList.remove('gone');}
-   else{tf(c,22,-25,4.2,0.905,0);c.style.visibility='hidden';c.classList.add('gone');}
+   if(k<0){tf(c,-W*0.85,-18,-18,0.92,0);c.classList.add('gone');}
+   else if(k===0){tf(c,dx,0,dx/18,1,1);c.classList.remove('gone');}
+   else if(k===1){tf(c,10+dx*0.35,-13,2.1,0.952,1);c.classList.remove('gone');}
+   else if(k===2){tf(c,20+dx*0.2,-25,3.9,0.905,0.92);c.classList.remove('gone');}
+   else{tf(c,20,-25,3.9,0.905,0);c.style.visibility='hidden';c.classList.add('gone');}
   }
  }
- function hgt(){deck.style.height=cards[cur].offsetHeight+'px';}
+ function hgt(){deck.style.height=(cards[cur].offsetHeight+40)+'px';}
  function meta(){
   if(bD)bD.textContent=cards[cur].getAttribute('data-lb')||'';
   if(bN)bN.textContent=(cur+1)+' / '+N;
@@ -1186,9 +1189,9 @@ details[open] > .ry-h .ry-l1:before{content:'▾'}
   if(lock===1){
    clearDrag();
    var dt=Date.now()-t0||1,xn=(e&&typeof e.clientX==='number')?e.clientX:x0,
-       v=(xn-x0)/dt,thr=Math.min(76,wid()*0.2);
-   if(dx<-thr||v<-0.45)go(cur+1);
-   else if(dx>thr||v>0.45)go(cur-1);
+       v=(xn-x0)/dt,thr=Math.min(64,wid()*0.18);
+   if(dx<-thr||v<-0.32)go(cur+1);
+   else if(dx>thr||v>0.32)go(cur-1);
    else go(cur);
    if(moved)setTimeout(function(){moved=false;},80);
   }
