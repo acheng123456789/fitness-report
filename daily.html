@@ -1,0 +1,1185 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>每日明细 · 2025年1月 ~ 2026年10月</title>
+<meta name="description" content="21 个月运动数据 · 146 次运动 · 789 公里">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="我的运动报告">
+<meta property="og:title" content="每日明细 · 2025年1月 ~ 2026年10月">
+<meta property="og:description" content="21 个月运动数据 · 146 次运动 · 789 公里">
+<meta property="og:url" content="https://acheng123456789.github.io/daily.html">
+<meta property="og:image" content="https://acheng123456789.github.io/cover.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
+<meta property="og:image:alt" content="我的运动报告">
+<link rel="image_src" href="https://acheng123456789.github.io/cover.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://acheng123456789.github.io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://acheng123456789.github.io/icon-192.png">
+<link rel="icon" type="image/png" sizes="64x64" href="https://acheng123456789.github.io/favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://acheng123456789.github.io/favicon-32.png">
+<link rel="shortcut icon" href="https://acheng123456789.github.io/favicon.png">
+<meta name="theme-color" content="#00C86F">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="我的运动报告">
+<meta name="application-name" content="我的运动报告">
+<style>
+
+:root{
+  --bg:#F4F5F7;--card:#fff;--ink:#241F2E;--ink1:#241F2E;--ink2:#6B6577;--ink3:#9E99A8;
+  --line:#ECEDF1;--acc:#00C86F;--accDark:#00A85E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
+.ic{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;
+  flex:none;vertical-align:middle;margin-right:6px;line-height:1}
+html,body{max-width:100%;overflow-x:hidden}
+svg text{font-family:inherit}
+body{
+  background:var(--bg);color:var(--ink);line-height:1.5;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC",
+    "Source Han Sans SC","Noto Sans CJK SC","Hiragino Sans GB","Microsoft YaHei",
+    system-ui,"Segoe UI",Roboto,sans-serif;
+  padding:0 0 60px;-webkit-font-smoothing:antialiased;
+}
+/* 每个板块**自己的头图**：底色仍是绿色主渐变，再叠一层该板块主色(--gc)的柔光，
+   于是四个板块各有颜色、整站又以绿为主。 */
+/* 注意：.hero **不要**设 position:relative —— 那会让它盖住负边距拉上来的 .cnt */
+.hero{overflow:hidden;border-radius:0 0 28px 28px;
+  padding:28px 20px 86px;text-align:center;color:#fff;
+  background:
+    radial-gradient(125% 90% at 84% -14%, var(--gc) 0%, rgba(255,255,255,0) 62%),
+    linear-gradient(150deg,#00DB8B 0%,#00C86F 46%,#00A862 100%)}
+.hico{width:64px;height:64px;margin:0 auto 14px;border-radius:21px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.34);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 6px 18px rgba(0,70,40,.14)}
+.hico svg{width:42px;height:42px;fill:none;stroke:#fff;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.hero h1{font-size:23px;font-weight:800;letter-spacing:1px}
+.hero .hsub{margin-top:7px;font-size:12px;opacity:.88;line-height:1.6}
+.cnt{position:relative;z-index:1;max-width:720px;margin:-60px auto 0;padding:0 14px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--card);border-radius:16px;padding:15px 14px;
+  box-shadow:0 6px 18px rgba(90,105,180,.08);min-width:0}
+.kpi .v{font-size:23px;font-weight:800;color:var(--ink);letter-spacing:-.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v small{font-size:12px;font-weight:700;margin-left:3px;color:var(--acc)}
+.kpi .l{color:var(--ink3);font-size:11.5px;margin-top:3px}
+.card{background:var(--card);border-radius:18px;padding:18px 15px;margin-top:14px;
+  box-shadow:0 6px 18px rgba(90,105,180,.08);min-width:0}
+.card>h2{font-size:16px;font-weight:750;margin-bottom:4px;display:flex;
+  align-items:center;gap:8px}
+.card>h2:before{content:'';width:4px;height:17px;border-radius:3px;flex:none;
+  background:linear-gradient(#00DB8B,#00A862)}
+.card .desc{color:var(--ink3);font-size:11.5px;margin-bottom:14px}
+.desc em{font-style:normal;color:var(--acc);font-weight:600}
+.fig{width:100%;position:relative}
+/* ---- 纯 CSS 交互核心 ---- */
+.chart{position:relative}
+/* ⚠️ position 必须是 fixed、不能是 absolute：
+   这些 radio 是给 <label> 点按用的，而点 <label> 会让浏览器**聚焦**关联的 radio，
+   并按"把聚焦元素滚进视野"处理 —— absolute + 0 尺寸时它躺在图表自己的位置上，
+   于是每次点热区页面都会自己往上跳一下（实测点在屏幕顶端时整页跳 527px）。
+   fixed 的元素永远算"已在视野内"，focus 不再触发滚动；
+   0 尺寸 + opacity:0 照旧完全不可见、点不到。 */
+.r{position:fixed;top:0;left:0;opacity:0;width:0;height:0;pointer-events:none}
+.plot{position:relative;overflow:visible}
+.plot>svg{display:block;width:100%;height:auto}
+.hot{position:absolute;z-index:3;cursor:pointer}
+.off{position:absolute;inset:0;z-index:2;cursor:default}
+.seg{transition:transform .18s ease,filter .18s ease,opacity .18s ease;
+  transform-box:fill-box;transform-origin:center}
+.tip{position:absolute;left:50%;top:6px;transform:translateX(-50%);display:none;
+  z-index:10;max-width:88%;background:rgba(28,24,36,.96);color:#fff;border-radius:12px;
+  padding:9px 24px 9px 12px;font-size:11.5px;line-height:1.65;
+  box-shadow:0 8px 22px rgba(0,0,0,.22);
+  pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  white-space:normal;word-break:break-word;text-align:left}
+.tip:after{content:'✕';position:absolute;top:9px;right:10px;font-size:10px;
+  line-height:1;opacity:.5;font-weight:400}
+.tip .tt b{font-size:12.5px}
+.tip .td{display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:5px;vertical-align:1px}
+/* 环形图中心数字：HTML 叠层，字号固定、不随圆形放大；排版与 KPI 卡片一致 */
+.dc{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;text-align:center}
+/* 全部用 Keep 绿，且"次"的字号与数字拉近，读起来是「135次」一个整体，不再割裂 */
+.dc-n{font-size:25px;font-weight:800;color:var(--acc);letter-spacing:-.4px;
+  line-height:1;font-variant-numeric:tabular-nums}
+.dc-n small{font-size:18px;font-weight:700;color:var(--acc);margin-left:2px;
+  letter-spacing:0}
+.dc-l{margin-top:6px;font-size:11px;color:var(--ink3);letter-spacing:.2px}
+/* 环形图图例（可点） */
+.lg{position:relative;z-index:4;min-width:120px}
+.lg-row{display:flex;align-items:center;gap:7px;font-size:12px;padding:5px 4px;
+  cursor:pointer;border-radius:8px}
+.lg-row:active{background:#E9F9F1}
+.lg-row i{width:9px;height:9px;border-radius:50%;flex:none}
+.lg-n{flex:1;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg-v{font-weight:700;font-variant-numeric:tabular-nums}
+/* 日历：31 列定宽网格，保证各月纵向对齐，表头 1~31 日 */
+.cal{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.calrow{display:flex;align-items:center;gap:3px;margin-bottom:4px;min-width:0}
+.cl{width:26px;flex:none;font-size:10px;color:var(--ink2);text-align:right}
+.cy{width:18px;flex:none;font-size:9px;color:var(--ink3)}
+.cdays{display:grid;grid-template-columns:repeat(31,minmax(0,1fr));gap:1px;
+  flex:1;min-width:0}
+.calrow b{flex:none;min-width:20px;padding-left:4px;text-align:right;font-size:11px;
+  font-weight:600;color:var(--acc);font-variant-numeric:tabular-nums;letter-spacing:.2px}
+.d{width:100%;max-width:14px;margin:0 auto;aspect-ratio:1/1;border-radius:3px;
+  background:#EEF1F4;display:block}
+.d.void{background:transparent}
+.d.l1{background:#C7F0DB}.d.l2{background:#7EDDAF}
+.d.l3{background:#34CE86}.d.l4{background:#00C86F}
+/* 日历表头：日期数字 */
+.chead{margin-bottom:3px}
+.chead .cl,.chead .cy{font-size:8.5px;color:var(--ink3);font-weight:400}
+/* 刻度数字允许溢出窄列居中显示（相邻刻度相隔 5 格，不会撞上） */
+.dn{font-size:7px;line-height:1;color:var(--ink3);text-align:center;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.chead b{color:var(--ink3);font-weight:600;font-size:9.5px}
+.legend{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3);
+  margin-top:12px;flex-wrap:wrap}
+.legend .d{width:12px;height:12px;flex:none;aspect-ratio:auto;max-width:none}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend span+span{margin-left:7px}
+.lg-hint{margin-left:auto;font-size:10.5px}
+/* ===== 训练手记 · 日记卡片（2 列紧凑版，2026-09-27 定稿 / 09-28 移植进构建）=====
+   三对并成三行：① 日期+疲劳度 ② 运动健身+运动项目 ③ 感受+补水，
+   合计消耗 + 点评 整行。⚠️ 全部 .jv- 前缀，避免和站内 .card / .dbox 等撞名。
+   页底那排模板标签（记录天气/心情/幸运指数…）已删 —— 阿成 2026-09-28：多余无关。 */
+.jrm{font-size:11px;color:var(--ink3);font-weight:700;margin-top:10px}
+.jv{margin-top:10px}
+/* ===== 日记卡组（deck）：一天一张，带角度层叠，左右滑动翻天 =====
+   阿成 2026-09-29 要的交互。⚠️ 无脚本时退化：只显示最新一张（其余不占版面），
+   页面其余部分照常 —— 绝不因为脚本没跑起来就把 14 张卡全摊开。
+   09-29 二稿：容器 overflow:hidden + 上下留白 → 后面的高卡只能从上边露角，
+   **绝不允许从下边穿出**（修复：矮卡在前时高卡穿过指示条、盖住逐月明细）。 */
+.jdeck-wrap{margin-top:10px}
+/* 手记月份条：横向可滚，当前月高亮。
+   阿成 2026-10-01：卡组原来只铺最新一个月，9 月及更早的手记根本翻不到。 */
+.jms{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.jms::-webkit-scrollbar{display:none}
+.jm{flex:none;padding:7px 12px;border:1px solid var(--line);border-radius:12px;
+  background:var(--card);font-size:12px;line-height:1.25;color:var(--ink2);
+  text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform .16s,border-color .16s,background .16s,box-shadow .16s}
+.jm em{display:block;margin-top:2px;font-style:normal;font-size:10.5px;color:var(--ink3)}
+.jm:active{transform:scale(.96)}
+.jm.on{border-color:transparent;background:linear-gradient(180deg,#00D97B,#00B464);
+  color:#fff;box-shadow:0 4px 12px rgba(0,180,100,.28)}
+.jm.on em{color:rgba(255,255,255,.86)}
+.jdeck{position:relative;touch-action:pan-y;-webkit-user-select:none;user-select:none;
+  outline:none}
+.jdeck.on{overflow:hidden;padding:30px 3px 10px;
+  transition:height .34s cubic-bezier(.22,.85,.24,1)}
+.jdeck.on .jv{position:absolute;top:30px;left:3px;width:calc(100% - 6px);margin-top:0;
+  transform-origin:50% 94%;will-change:transform,opacity;backface-visibility:hidden;
+  transition:transform .56s cubic-bezier(.25,1.25,.4,1),opacity .42s linear}
+.jdeck.on .jv.drag{transition:none}
+.jdeck.on .jv.gone{pointer-events:none}
+.jdeck:not(.on) .jv ~ .jv{display:none}
+.jbar{display:flex;align-items:center;gap:8px;margin-top:10px}
+.jb-d{font-size:12px;font-weight:800;color:var(--ink)}
+.jb-n{margin-left:auto;font-size:11px;font-weight:700;color:var(--ink3);
+  font-variant-numeric:tabular-nums}
+.jnav{width:30px;height:30px;flex:none;border:1px solid var(--line);background:#fff;
+  border-radius:50%;font-size:16px;line-height:1;color:var(--ink2);cursor:pointer;
+  box-shadow:0 2px 5px rgba(55,60,90,.10);display:inline-flex;padding:0;
+  align-items:center;justify-content:center;font-family:inherit;
+  transition:transform .12s,background .12s}
+.jnav:active{transform:scale(.9);background:#F1F2F4}
+.jnav:disabled{opacity:.32}
+.jprog{height:4px;border-radius:2px;background:#E4E5E9;margin-top:8px;overflow:hidden}
+.jprog i{display:block;height:100%;border-radius:2px;background:var(--acc);
+  transition:width .34s cubic-bezier(.22,.85,.24,1)}
+.jhint{font-size:10px;color:var(--ink3);margin-top:7px;text-align:center}
+/* 卡组里：没写手记的日子，第一行只有日期三框（占满整行） */
+.jv-r1-solo{grid-template-columns:1fr}
+.jv-page{background:#E7E7EA;border-radius:20px;padding:9px;
+  box-shadow:0 22px 46px -16px rgba(55,60,90,.32),0 6px 14px rgba(55,60,90,.10),
+    0 1px 0 rgba(255,255,255,.7) inset}
+.jv-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+/* 第一行（日期+疲劳度，阿成 09-28 二稿：疲劳度压成两行、整行变矮；
+   日期框字号加大、按比例撑满左半行，空隙收小） */
+.jv-r1{grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);margin-bottom:7px}
+.jv-r1 .jv-dboxes{gap:6px}
+.jv-r1 .jv-dbox{padding:6px 2px 7px}
+.jv-r1 .jv-dbox span{margin-bottom:2px;font-size:6.5px}
+.jv-r1 .jv-dbox b{font-size:17px;letter-spacing:-.5px}
+/* 疲劳度卡：两行版式（疲劳度＋胶囊一行，记录时间一行），整卡居中、不再撑高 */
+.jv-fatcard{justify-content:center;gap:4px}
+.jv-fr1{display:flex;align-items:center;gap:6px}
+.jv-fatlab{font-size:8.5px;font-weight:800;color:#B6B3BD;letter-spacing:.6px}
+.jv-fr1 .jv-fat{margin-left:auto}
+.jv-fatcard .jv-fat-time{margin-top:0}
+/* 同行卡片等高（默认 stretch）→ 左列右列上下对齐 */
+.jv-card{background:#fff;border-radius:13px;padding:8px 9px 9px;min-width:0;
+  display:flex;flex-direction:column;
+  box-shadow:0 3px 8px rgba(55,60,90,.09),0 1px 2px rgba(55,60,90,.05)}
+.jv-ttl{font-size:7.5px;font-weight:800;color:#B6B3BD;letter-spacing:.6px;
+  line-height:1.2;margin-bottom:6px}
+/* 日期：三个方框（YEAR / MONTH / DATE，模板原文） */
+.jv-dboxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.jv-dbox{display:flex;flex-direction:column;justify-content:center;text-align:center;
+  border-radius:9px;padding:6px 1px;
+  background:linear-gradient(180deg,#fff 0%,#F8F9FB 100%);border:1px solid #E0E1E6;
+  box-shadow:0 2px 4px rgba(55,60,90,.10),0 1px 0 rgba(255,255,255,.95) inset;
+  position:relative;overflow:hidden}
+.jv-dbox span{display:block;font-size:6px;font-weight:800;color:#B3B0BA;
+  letter-spacing:.5px;line-height:1.2;margin-bottom:3px}
+.jv-dbox b{display:block;font-size:14.5px;font-weight:800;color:var(--ink);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.6px}
+/* 日期：三个独立方框直接放在灰色页面上，不再套白卡 */
+.jv-bare{display:flex;align-items:stretch;padding:0}
+.jv-bare .jv-dboxes{width:100%}
+/* 疲劳度 */
+.jv-mid{flex:1;display:flex;flex-direction:column;justify-content:center;
+  align-items:flex-start}
+.jv-fat-top{font-size:8.5px;color:#B6B3BD;line-height:1.4;margin-bottom:6px}
+.jv-fat{display:inline-flex;align-items:center;gap:4px;padding:4px 8px 5px;
+  border-radius:16px;font-size:10px;font-weight:800}
+.jv-dots{display:inline-flex;align-items:flex-end;gap:1.5px;height:9px}
+.jv-dots i{width:2.5px;height:6px;border-radius:1px;background:currentColor;opacity:.28}
+.jv-dots i.on{height:9px;opacity:1}
+.jv-fat-time{font-size:9px;color:var(--ink3);margin-top:6px}
+/* 运动健身：大字 + 时间线（填满卡片） */
+.jv-wk-big{font-size:12px;font-weight:800;color:var(--ink);margin-bottom:2px;
+  font-variant-numeric:tabular-nums}
+.jv-wk-sub{font-size:8.5px;color:#B6B3BD;font-weight:700;margin:1px 0 7px;
+  font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.jv-tl{display:flex;flex-direction:column;gap:5px}
+.jv-tl-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--ink2)}
+.jv-tl-row .tm{width:31px;flex:none;font-weight:800;color:var(--ink3);
+  font-variant-numeric:tabular-nums}
+.jv-tl-row i{width:6px;height:6px;border-radius:50%;flex:none;background:var(--c)}
+.jv-tl-row b{color:var(--ink);font-weight:800;margin-left:auto;
+  font-variant-numeric:tabular-nums}
+/* 运动项目：图标格，时间收进格内（≥4 段两列，3 段三列） */
+.jv-icrow{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.jv-icbox{background:#fff;border-radius:9px;padding:6px 3px;text-align:center;
+  border:1px solid var(--c,#E2E3E7);box-shadow:0 1px 4px rgba(55,60,90,.09)}
+.jv-icbox em{display:block;font-style:normal;font-size:14px;line-height:1;margin-bottom:3px}
+.jv-icbox span{display:block;font-size:9px;font-weight:700;color:var(--ink2);line-height:1.25}
+.jv-icbox i{display:block;font-style:normal;font-size:8px;color:var(--ink3);
+  line-height:1.25;font-variant-numeric:tabular-nums}
+.jv-icbox .jv-tm{display:block;font-size:7.5px;color:#B6B3BD;
+  line-height:1.3;font-variant-numeric:tabular-nums;margin-top:1px}
+.jv-gap{font-size:8.5px;color:var(--ink3);margin-top:5px;line-height:1.5}
+/* 合计消耗：整行四格图标方块 */
+.jv-habs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.jv-hb{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;
+  background:linear-gradient(180deg,#fff 0%,#F8F9FB 100%);border:1px solid #E0E1E6;
+  border-radius:10px;padding:7px 2px 6px;
+  box-shadow:0 2px 4px rgba(55,60,90,.10),0 1px 0 rgba(255,255,255,.95) inset}
+.jv-hb .ic{font-size:14px;line-height:1.2}
+.jv-hb > span{font-size:8px;font-weight:800;color:#B3B0BA;letter-spacing:.5px}
+.jv-hb b{color:var(--ink);font-weight:800}
+/* 感受 / 补水 */
+.jv-feel{font-size:11px;line-height:1.85;color:var(--ink)}
+/* 点评 */
+.jv-comm{display:flex;flex-direction:column;gap:6px;text-align:justify}
+.jv-comm .lead{font-size:12.5px;font-weight:800;color:var(--ink);line-height:1.5}
+.jv-comm p{font-size:11.5px;line-height:1.8;color:var(--ink2);text-align:justify}
+.jv-comm p b{color:var(--ink);font-weight:800}
+.jv-comm p b:after{content:'：';color:#C9CBD2;font-weight:400}
+.jv-comm .nx{color:var(--ink);font-weight:700}
+.jv-comm .nx b{color:#00A85E}
+/* 整行卡（合计消耗 / 点评 / 无补水时的感受） */
+.jv-wide{grid-column:span 2}
+/* 无图提示（<2 条手记时） */
+.jrn{color:var(--ink3);font-size:11.5px;line-height:1.75;padding:6px 0 2px}
+/* 月度总评（≥3 条时） */
+.jrs{margin-top:8px;font-size:12px;line-height:1.8;color:var(--ink2);
+  background:#F7F5FF;border-left:3px solid #7B61FF;border-radius:0 9px 9px 0;
+  padding:9px 12px}
+.jrs b{color:#7B61FF;font-weight:700;margin-right:6px}
+/* 更早的月份折叠：summary 沿用全局 ▸ / ▾，但压掉它那套绿色小字 */
+.jrw{margin-top:15px}
+.jrw>summary{list-style:none;cursor:pointer;font-size:11.5px;color:var(--ink3);
+  font-weight:700;padding-bottom:5px;border-bottom:1px solid var(--line);margin:0}
+.jrw>summary::-webkit-details-marker{display:none}
+.jrw>summary:before{content:'▾ '}
+.jrw:not([open])>summary:before{content:'▸ '}
+/* 月份卡 */
+.mcard{border:1px solid var(--line);border-radius:14px;padding:14px 15px;
+  margin-top:12px;background:#FCFDFD}
+.mcard.empty{background:#FAFBFB;border-style:dashed}
+.mh{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:10px}
+.mh b{font-size:15px}
+.mh span{font-size:11.5px;color:var(--ink2)}
+.mh .grp{color:var(--accDark);background:#E9F9F1;padding:2px 9px;border-radius:20px;
+  font-weight:600;font-size:11px}
+/* 逐月明细：分项折叠（箭头沿用全局 details summary:before 的 ▸ / ▾） */
+.mx{margin-top:9px}
+/* 折叠开关做成「凸起按键」：一眼看出能按、按下有下沉反馈、展开时变浅绿＝已按下去。
+   ⚠️ 只作用于 .mcard 里的 details（逐月明细的两级开关），不动跑量年份块等其它 details。 */
+.mcard details>summary{
+  display:inline-flex;align-items:center;gap:5px;margin:4px 0 2px;
+  padding:7px 13px 8px;border-radius:11px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F1F4F8 100%);
+  border:1px solid #E1E6EE;border-bottom:2px solid #D5DBE5;
+  color:var(--acc);font-size:11.5px;font-weight:700;letter-spacing:.2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 1px 3px rgba(36,31,46,.07);
+  transition:transform .07s ease,box-shadow .07s ease,background .12s,border-color .12s}
+.mcard details>summary:after{
+  content:'展开';margin-left:3px;font-size:10px;font-weight:600;color:var(--ink3)}
+.mcard details[open]>summary:after{content:'收起'}
+.mcard details>summary:active{
+  transform:translateY(1px);
+  background:linear-gradient(180deg,#EDF1F6 0%,#F7F9FC 100%);
+  box-shadow:0 2px 5px rgba(36,31,46,.13) inset}
+.mcard details[open]>summary{
+  background:linear-gradient(180deg,#EAF7F0 0%,#DCF2E7 100%);
+  border-color:#C6E9D6;border-bottom-color:#B6E0CB;color:var(--accDark)}
+.mx>summary{padding:5px 0}
+.mxb{padding:4px 0 2px}
+.mrow{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12.5px}
+.mt{flex:none;width:58px;font-weight:600;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.mn{flex:none;width:96px;color:var(--ink2);font-size:11.5px;
+  font-variant-numeric:tabular-nums}
+.mb{flex:1;min-width:20px;background:#EEF1F4;height:9px;border-radius:5px;overflow:hidden}
+.mb i{display:block;height:100%;border-radius:5px}
+.mempty{color:var(--ink3);font-size:12px;padding:2px 0}
+details summary{cursor:pointer;color:var(--acc);font-size:12px;font-weight:600;
+  margin-top:8px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary:before{content:'▸ '}details[open] summary:before{content:'▾ '}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th,td{padding:6px 5px;text-align:right;border-bottom:1px solid var(--line);
+  white-space:nowrap}
+th{color:var(--ink3);font-weight:600;font-size:10.5px;background:#F6F8F9}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:3;
+  box-shadow:2px 0 6px -3px rgba(20,30,60,.4)}
+th:first-child{background:#F6F8F9;z-index:4}
+.foot{text-align:center;color:var(--ink3);font-size:11px;line-height:1.8;
+  max-width:720px;margin:26px auto 0;padding:0 14px}
+/* ---- 板块分组 + 顶部引导目录（纯锚点跳转，无脚本） ---- */
+html{scroll-behavior:smooth}
+/* 注意：.grp 已被「逐月明细」的月份胶囊占用（.mh .grp），板块外壳只能用 .blk */
+.blk{margin-top:20px;scroll-margin-top:6px}
+.bhd{display:flex;align-items:center;gap:9px;padding-bottom:9px;margin-bottom:12px;
+  border-bottom:2.5px solid var(--gc)}
+.bno{flex:none;min-width:23px;height:23px;padding:0 6px;border-radius:7px;
+  background:var(--gc);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-variant-numeric:tabular-nums}
+.bti{font-size:15.5px;font-weight:800;color:var(--gc);letter-spacing:1px}
+.bde{margin-left:auto;flex:none;font-size:10.5px;color:var(--ink3)}
+.blk>.card{border-left:3px solid var(--gc)}
+.bup{display:block;text-align:right;font-size:11px;font-weight:700;color:var(--gc);
+  text-decoration:none;margin-top:11px;letter-spacing:.5px}
+/* ---- 底部毛玻璃 Tab Bar（iOS 风） + 面板切换 ----
+   为什么用 radio 而不是锚点：**锚点每点一次都会写一条浏览历史**，
+   于是"点有氧→点无氧→从屏幕左缘右滑"会一层层退回上一个板块；
+   radio 切面板**不产生历史** → 右滑直接退回上一页（封面/主屏）。 */
+.tbi{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.pnls>.blk{display:none}
+/* 切板块时给**头图**一个很轻的进场（淡入 + 上浮 6px）：
+   `display:none` → `block` 会让动画**重新播放**，不需要任何 JS 配合。
+   ⚠️ 只动头图这一小块（约 100px 高），**不给整块面板做动画** ——
+   面板可能几千像素高，整块淡入/位移会让 iOS 去合成一张巨大的图层，
+   反而更卡（用户这次反馈的"有点卡"）。头图这一下就够"内容换了"的提示。 */
+@keyframes pnlIn{from{opacity:0;transform:translate3d(0,6px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}}
+#tb1:checked~.pnls>.blk.p1,#tb2:checked~.pnls>.blk.p2,
+#tb3:checked~.pnls>.blk.p3,#tb4:checked~.pnls>.blk.p4{display:block}
+#tb1:checked~.pnls>.blk.p1>.hero,#tb2:checked~.pnls>.blk.p2>.hero,
+#tb3:checked~.pnls>.blk.p3>.hero,#tb4:checked~.pnls>.blk.p4>.hero{
+  animation:pnlIn .32s cubic-bezier(.32,.72,0,1)}
+/* 深链兜底（纯 CSS，不依赖脚本）：URL 里带 #gN 就直接显示对应面板，
+   **且从第一帧起就对** —— 封面点"有氧"跳的是 report.html#g2，正常由脚本预选 radio，
+   但脚本在文档末尾才跑，首帧仍会先按 `checked` 属性渲染成"总览"（大文档下
+   能看见明显一跳）。这层 CSS 让首帧就落在对的板块。
+   为什么给容器加 id：`#pnls:has(…)>…` 的选择器权重(1,4,1) 才压得住
+   `#tb1:checked~.pnls>.blk.p1`(1,4,0)，否则两个面板会同时显示。
+   脚本跑完会 replaceState 抹掉 hash → 这层自动失效，radio 重新接管。 */
+#pnls:has(>.blk:target)>.blk:not(:target){display:none}
+#pnls:has(>.blk:target)>.blk:target{display:block}
+#pnls:has(>.blk:target)>.blk:target>.hero{animation:pnlIn .32s cubic-bezier(.32,.72,0,1)}
+/* 底部留白：给「悬浮 Dock」让位（Dock 高约 72px + 距底 10px） */
+body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+/* Dock 背后一层**极淡的彩色氛围光** —— 给玻璃"有颜色的东西可折射"。
+   报告页 Dock 后面平时是白卡片，玻璃折射出来只有白（看着像没做折射）。
+   层次要卡准：**在内容之上、Dock(z-index:60) 之下**才有效 ——
+   放 z-index:-1 会被白色卡片盖住，等于没加。 */
+body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:120px;
+  z-index:50;pointer-events:none;
+  background:
+    radial-gradient(58% 96% at 13% 104%,rgba(0,200,111,.32),rgba(0,200,111,0) 72%),
+    radial-gradient(56% 92% at 87% 104%,rgba(123,97,255,.28),rgba(123,97,255,0) 72%),
+    radial-gradient(46% 78% at 50% 106%,rgba(245,165,36,.24),rgba(245,165,36,0) 72%)}
+/* ===== iOS 26「液态玻璃」悬浮 Dock =====
+   做法：① 高模糊 + 高饱和 + 轻微提亮的 backdrop-filter（真正的"折射"感）；
+        ② 四道 inset 高光＝玻璃边缘的厚度；
+        ③ ::before 一层斜向反光面（左上最亮）；
+        ④ ::after 底部一道更亮的折射亮边；
+        ⑤ 选中项套一枚**淡淡的彩色玻璃胶囊**。 */
+.tabbar{position:fixed;left:11px;right:11px;z-index:60;
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:7px 6px 6px;border-radius:31px;
+  /* ⚠️ 这里**不能**加 overflow:hidden —— Safari 上祖先 overflow:hidden 会让
+     子元素(.gsl)的 backdrop-filter 静默失效（玻璃就退化成一块死白）。 */
+  background:linear-gradient(180deg,rgba(255,255,255,.54),rgba(255,255,255,.34));
+  -webkit-backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
+  backdrop-filter:blur(30px) saturate(210%) brightness(1.07);
+  /* ⚠️⚠️⚠️ 这个 Dock 出过三次"横线"，最后查清是**三类东西**，现在一个都不剩：
+     ① 一圈 `.5px solid` 的 border（3x 屏上就是一条实心亮线，压在上/下沿）；
+     ② 一条 `height:1px` 的亮白渐变（货真价实的横线，还压在画面最下沿）；
+     ③ `.tabbar:after{box-shadow:inset …;filter:blur()}` 这种"伪元素＋滤镜＋inset"的
+        组合 —— 它在 iOS 上不止会留边线，还会渲染出**纯品红(#FF00FF)的杂色线**
+        （截图实测：横线 / 竖线各出现过一次，颜色是 100% 品红，属于 WebKit 的
+        "滤镜离屏缓冲没被清干净"的合成 bug，不是设计问题）。
+     ⚠️ **本规则**：Dock 与其子元素（.gsl / .tgl）**不许出现 filter / mask / inset 阴影**。
+        玻璃质感只靠「半透明渐变底 + backdrop-filter + 外投影」表达 ——
+        这三样在任何版本 iOS 上都不会画出线来。 */
+  box-shadow:0 14px 40px rgba(14,40,28,.2),0 2px 6px rgba(14,40,28,.07)}
+.tabbar label,.tabbar a{position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;padding:0;border-radius:18px;
+  text-decoration:none;color:var(--ink3);font-size:11px;font-weight:700;
+  letter-spacing:.2px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:color .18s,transform .12s}
+.tabbar label:active,.tabbar a:active{transform:scale(.9)}
+/* 图标外面这层：既撑大图标，也是"选中胶囊"的载体 */
+.tgl{display:flex;align-items:center;justify-content:center;
+  width:54px;height:36px;border-radius:18px;
+  /* **透镜**：滑块离得越近，图标被"吸"得越大、略微上浮（只有 transform，最稳）。 */
+  transform:scale(calc(1 + var(--lens,0)*.34)) translateY(calc(var(--lens,0)*-1.6px));
+  transition:transform .34s cubic-bezier(.32,.72,0,1)}
+/* ⚠️ 这里原来挂了一串 `filter: blur() + drop-shadow(红) + drop-shadow(蓝)` 做"棱镜色散"。
+   iOS 上会渲染出**品红色杂线**（与上面 tabbar 注释里的 ③ 同一类合成本 bug），
+   已整体删除。现在"隔着玻璃看图标"的感觉只由 .tgl 的放大 + .live 的换色表达。 */
+.tabbar svg{width:32px;height:32px;display:block;fill:none;
+  stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+/* ===== 选中态：空心 ⇄ 实心（微信那种"点中就填实、移开就空了"）=====
+   每个 svg 里叠着两套形状：.ol＝线性（空心），.fi＝实心。
+   未选中：.ol 亮、.fi 透明；选中/拖动高亮：反过来。两套形状同时在场，
+   切换只改 opacity ⇒ 不重排、不重新解析路径，点哪一格都不会掉帧。
+   ⚠️ 别再退回老做法（给选中项把 stroke-width 从 1.85 加到 2.4）：细线变粗仍然是线，
+   不是"实心"，跟微信的填充感差得远。 */
+.tabbar svg .fi,.tabbar svg .fi *{fill:currentColor;stroke:none}
+.tabbar svg .fi{opacity:0}
+.tabbar svg .ol,.tabbar svg .fi{transition:opacity .18s ease}
+/* 拖动过程中"最近的那格"会随手指频繁易主，带过渡会变成来回闪烁的 crossfade；
+   拖动期间直接关掉过渡，谁是实心就立刻是谁。 */
+.tabbar.dragging svg .ol,.tabbar.dragging svg .fi{transition:none}
+/* 拖动中的实时高亮：颜色取该 Tab 自己的 --ac（由渲染时写在 label 上）。
+   选中态的 4 条规则在下面，一起管。 */
+.tabbar label.live{color:var(--ac)}
+/* ===== 手势：**点按完全走原生**，只有横向拖动才由脚本接管 =====
+   ⚠️ 这里以前铺了一层透明的 .tsurf 盖住整个 Dock，点按全靠脚本在 pointerup 里
+   手动跳转。结果 iOS 上（竖向滑动优先）一旦把这次触摸判成滚动，就直接发
+   **pointercancel**，pointerup 永远不来 ⇒ 那一次点按**静默丢失**，
+   表现就是"点了没反应 / 得先点总览才行"。
+   现在：点按交给原生 `<label>` / `<a>` 的 click（浏览器保证触发，脚本挂了也能用），
+   横向拖动才由脚本接管（|dx|>8 且横向占优），拖完把那次 click 吃掉。
+   touch-action:pan-y ＝ 竖直手势仍归页面滚动（Dock 上也能顺畅滚），横向不发滚动。 */
+.tabbar{touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:grab;
+  -webkit-touch-callout:none}
+.tabbar.dragging{cursor:grabbing}
+#tb1:checked~.tabbar label[for=tb1],
+#tb2:checked~.tabbar label[for=tb2],
+#tb3:checked~.tabbar label[for=tb3],
+#tb4:checked~.tabbar label[for=tb4]{color:var(--ac);--lens:.2}
+/* ===== 会滑动的液态玻璃滑块（iOS 26 停靠栏那颗）=====
+   苹果那种"液态玻璃"其实靠三条，跟"糊不糊"关系不大：
+   ① **玻璃本身几乎无色** —— 涂白就是死的、不折射。要「极低白度 + 高饱和」，
+      让底下的颜色自己透上来：滑到绿区偏绿、紫区偏紫。
+   ② **几乎不模糊** —— 苹果的玻璃后面内容是**清晰**的，靠边缘那圈光体现"厚度"，
+      不是靠糊。之前 blur 开到 10px，看着像毛玻璃，这就是"不像苹果"的主因。
+   ③ **边缘的光必须不对称** —— 上沿最亮、下沿淡、两侧更淡（光从上方来）。
+      四边一样亮会显出四条框线（之前被反馈"有两条横线好丑"就是这个）。
+   尺寸：比格子宽 14%、上下各外扩 → 视觉上更饱满。 */
+.gsl{position:absolute;top:4px;bottom:3px;z-index:0;pointer-events:none;
+  left:calc(6px - (100% - 12px)/4 * 0.07);
+  width:calc((100% - 12px)/4 * 1.14);
+  border-radius:30px;
+  /* 玻璃"中间薄、边缘厚"的观感：两层**普通渐变**叠出来（不许用 filter/mask/inset，见 .tabbar 注释）。
+     第一层径向的**峰值放在 26% 高度 —— 落在胶囊内部**，不在上沿，所以不会烧出一条亮线。 */
+  background:
+    radial-gradient(120% 150% at 50% 26%,rgba(255,255,255,.30),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.19) 46%,
+      rgba(255,255,255,.24) 100%);
+  /* ⚠️⚠️ 这颗胶囊**必须没有 backdrop-filter**（原来有 blur(3px) saturate(190%) brightness(1.06)）：
+     backdrop-filter 的元素一移动，浏览器就得**每一帧把身后的内容重新取景+重新糊**，
+     而它身后还压着 .tabbar 那层 blur(30px)，等于每帧重算两次模糊 —— 这是拖动"发卡"的主因。
+     好消息是**拿掉它几乎看不出区别**（实测逐像素比对：平均差 0.22/255、只有 0.3% 的像素差值>3）——
+     因为身后已经是 .tabbar 糊过一遍的、几乎中性的白玻璃，再 saturate/brighten 等于白做。
+     底色因此上调了一点点（.26/.28/.13/.18 → .30/.34/.19/.24）来补回那点"肉感"。 */
+  /* ⚠️ 一条 inset 都没有，也**没有伪元素**：inset 阴影在元素边界处最亮又被硬裁，
+     必然在胶囊上沿留一道 1px 亮线；而"伪元素 + filter/mask"在 iOS 上会渲染出
+     品红杂线（详见上面 .tabbar 的注释）。只用外投影 + 渐变底色，最稳。
+     translateZ(0)：提到独立合成层，拖动时只剩纯位移，不再重绘。 */
+  box-shadow:0 5px 16px rgba(18,45,32,.14),0 1px 3px rgba(18,45,32,.08);
+  /* --i = 当前第几格(0~3，拖动时是小数)；位移 ÷1.14 是因为 100% 指"自身宽度"。
+     ⚠️ 缓动用 iOS 自己的曲线 cubic-bezier(.32,.72,0,1)：起步快、收尾极长，
+     是"丝滑"的来源。之前那版 (.3,1.32,.45,1) 带**回弹过冲**，弹一下看着热闹，
+     但苹果的胶囊从来不过冲 —— 过冲＝廉价感。 */
+  transform:translateX(calc(var(--i,0) * 100% / 1.14)) translateZ(0);
+  transition:transform .42s cubic-bezier(.32,.72,0,1)}
+/* 手指按住拖动时：滑块走的是"跟手"路径（脚本每帧直接写 --i、过渡关掉），
+   这里只把它**提升成独立合成层**，避免每帧都要重新合成投影。松手立刻撤掉，别常驻吃显存。 */
+.tabbar.dragging .gsl{will-change:transform}
+#tb1:checked~.tabbar .gsl{--i:0}
+#tb2:checked~.tabbar .gsl{--i:1}
+#tb3:checked~.tabbar .gsl{--i:2}
+#tb4:checked~.tabbar .gsl{--i:3}
+#tb1:checked~.tabbar label[for=tb1] svg .ol,
+#tb2:checked~.tabbar label[for=tb2] svg .ol,
+#tb3:checked~.tabbar label[for=tb3] svg .ol,
+#tb4:checked~.tabbar label[for=tb4] svg .ol,
+.tabbar label.live svg .ol{opacity:0}
+#tb1:checked~.tabbar label[for=tb1] svg .fi,
+#tb2:checked~.tabbar label[for=tb2] svg .fi,
+#tb3:checked~.tabbar label[for=tb3] svg .fi,
+#tb4:checked~.tabbar label[for=tb4] svg .fi,
+.tabbar label.live svg .fi{opacity:1}
+.toc-h{font-size:13.5px;font-weight:800;margin-bottom:11px;
+  display:flex;align-items:center;gap:7px}
+.toc-h:before{content:'📑';font-size:14px}
+.toc-g{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ti{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:12px;
+  background:#F7F9FE;border:1px solid var(--line);border-left:3px solid var(--gc);
+  text-decoration:none;color:var(--ink)}
+.tn{flex:none;min-width:21px;height:21px;padding:0 5px;border-radius:6px;
+  background:var(--gc);color:#fff;font-size:10.5px;font-weight:800;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-variant-numeric:tabular-nums}
+.tb{display:flex;flex-direction:column;min-width:0;flex:1}
+.tb b{font-size:12.5px;font-weight:800;color:var(--gc);letter-spacing:.5px}
+.tb em{font-style:normal;font-size:9.5px;color:var(--ink3);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tar{flex:none;color:var(--ink3);font-size:15px;line-height:1}
+/* ---- 器械训练（无氧）---- */
+.sub-h{font-size:12.5px;font-weight:700;color:var(--ink2);margin:16px 0 9px;
+  display:flex;align-items:center;gap:7px}
+.sub-h:before{content:'';width:3px;height:12px;border-radius:2px;background:var(--acc);flex:none}
+.h2n{font-size:11px;font-weight:500;color:var(--ink3);margin-left:6px;letter-spacing:0}
+.pt-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:12px}
+.pt-n{flex:none;width:64px;color:var(--ink2);display:flex;align-items:center;gap:4px}
+.pt-n .ic{margin-right:0}
+.pt-b{flex:1;min-width:24px;height:9px;border-radius:5px;background:#EEF1F4;overflow:hidden}
+.pt-b i{display:block;height:100%;border-radius:5px}
+.pt-v{flex:none;color:var(--ink3);font-size:10.5px;font-variant-numeric:tabular-nums;
+  text-align:right}
+.ss{border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-top:12px;
+  background:#FCFDFD}
+.ss-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ss-h b{font-size:15px}
+.ss-wd{font-size:11.5px;color:var(--ink3)}
+.ss-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  padding:2px 9px 2px 6px;border-radius:20px;margin-left:auto;letter-spacing:.5px}
+.ss-tag .ic{margin-right:0;border-radius:5px}
+.ss-s{font-size:11.5px;color:var(--ink2);margin-top:4px;
+  font-variant-numeric:tabular-nums}
+.ss-s b{color:var(--acc);font-weight:800;font-size:12.5px}
+.ss-watch{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11.5px;
+  color:var(--ink2);font-variant-numeric:tabular-nums;
+  background:#F1FBF6;border-radius:8px;padding:5px 9px}
+.ss-watch.dim{background:#F6F7F9;color:var(--ink3)}
+.ss-wt{flex:none;font-size:10px;font-weight:700;color:var(--acc);
+  background:#fff;border-radius:5px;padding:1px 5px;letter-spacing:.5px}
+.ss-watch.dim .ss-wt{color:var(--ink3)}
+.sx{margin-top:13px}
+.sx-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sx-n{font-size:13.5px;font-weight:650}
+.sx-v{font-size:14px;font-weight:800;color:var(--acc);
+  font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.sx-v small{font-size:10px;font-weight:600;margin-left:1px;letter-spacing:0}
+.sx-m{font-size:11.5px;color:var(--ink3);margin-top:2px;
+  font-variant-numeric:tabular-nums}
+/* 重量：做成醒目的绿块，让"多重"一眼看到；"合计/含杆"这类补充降级成小字 */
+.sx-w{display:inline-block;font-size:12.5px;font-weight:800;color:#00A85E;
+  background:#E9F9F1;border-radius:7px;padding:1.5px 8px;margin:0 1px;
+  font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.sx-w.bw{color:#6B6577;background:#F2F4F7;font-weight:700}
+.sx-sub{font-size:11px;opacity:.8;margin-left:1px}
+.sx-b{margin-top:6px;height:7px;border-radius:4px;background:#EEF1F4;overflow:hidden}
+.sx-b i{display:block;height:100%;border-radius:4px}
+.sx-note{font-size:11px;color:var(--ink3);margin-top:5px;opacity:.9;line-height:1.5}
+/* ---- 器械单次明细：一行一次，点行就地展开/收起（checkbox 而非 radio，因为要能"再点收回"） ---- */
+.s2{border-bottom:1px dashed var(--line)}
+.s2:last-child{border-bottom:0}
+.s2i{display:none}
+.s2r{display:grid;grid-template-columns:46px auto minmax(0,1fr) auto 12px;gap:7px;
+  align-items:center;padding:10px 2px;cursor:pointer}
+.s2d{font-size:11.5px;font-weight:750;line-height:1.15;white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.s2d em{display:block;font-style:normal;font-size:9.5px;font-weight:400;color:var(--ink3)}
+.s2p{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;
+  padding:2px 8px 2px 5px;border-radius:20px;white-space:nowrap;letter-spacing:.5px}
+.s2p .ic{margin-right:0;border-radius:5px}
+.s2m{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.s2m b{color:var(--acc);font-weight:800}
+.s2w{display:inline-flex;align-items:center;gap:2px;font-size:10.5px;color:var(--acc);
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.s2w.dim{color:var(--ink3)}
+.s2w svg{flex:none}
+.s2a{font-size:9px;color:var(--ink3);transition:transform .16s;transform-origin:center}
+.s2i:checked~.s2r .s2a{transform:rotate(90deg)}
+.s2i:checked~.s2r .s2d{color:var(--acc)}
+.s2b{display:none;padding:2px 0 12px}
+.s2i:checked~.s2b{display:block}
+/* ---- 跑步月度跑量：按年分组 + 横向条 ---- */
+.ry{border:1px solid var(--line);border-radius:14px;margin-top:12px;
+  background:#FCFDFD;overflow:hidden}
+.ry-h{display:flex;flex-direction:column;align-items:stretch;gap:3px;
+  padding:11px 14px;cursor:pointer;list-style:none;margin-top:0;
+  font-size:inherit;color:inherit;font-weight:inherit}
+.ry-h::-webkit-details-marker{display:none}
+/* 覆盖全局的 details summary:before 箭头（它的选择器权重更高，必须用同级或更高权重压过去），
+   否则标题左侧会多出一个箭头 */
+details summary.ry-h:before,details[open] summary.ry-h:before{content:none}
+.ry-l1{display:flex;align-items:center;gap:7px}
+.ry-l1:before{content:'▸';color:var(--acc);font-weight:800}
+details[open] > .ry-h .ry-l1:before{content:'▾'}
+.ry-h b{font-size:15px}
+.ry-t{font-size:12.5px;color:var(--acc);font-weight:700;margin-left:auto;
+  font-variant-numeric:tabular-nums}
+.ry-l2{font-size:11.5px;color:var(--ink3);padding-left:15px;
+  font-variant-numeric:tabular-nums}
+.rm{padding:2px 14px 12px}
+.rr{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}
+.rr-m{flex:none;width:26px;color:var(--ink2);text-align:right}
+.rr-b{flex:1;min-width:24px;height:9px;border-radius:5px;background:#EEF1F4;
+  overflow:hidden}
+.rr-b i{display:block;height:100%;border-radius:5px}
+.rr-v{flex:none;width:54px;text-align:right;font-weight:700;
+  font-variant-numeric:tabular-nums}
+.rr-v small{font-size:9px;font-weight:600;color:var(--ink3);margin-left:1px}
+.rr-n{flex:none;width:28px;text-align:right;color:var(--ink3);font-size:11px}
+.rr-p{flex:none;width:34px;text-align:right;color:var(--ink3);font-size:10.5px;
+  font-variant-numeric:tabular-nums}
+.rr-hr{flex:none;width:38px;display:inline-flex;align-items:center;
+  justify-content:flex-end;gap:2px;color:var(--ink3);font-size:10.5px;
+  font-variant-numeric:tabular-nums}
+.rr-hr svg{flex:none;fill:#E0708A}
+.rr.dim .rr-v,.rr.dim .rr-n,.rr.dim .rr-p,.rr.dim .rr-hr{color:#C6CAD1;
+  font-weight:400}
+@media (min-width:560px){
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .hd h1{font-size:34px}
+}
+
+#trend-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-0:checked ~ .plot .tip-trend-0{display:block}
+#trend-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#trend-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-1:checked ~ .plot .tip-trend-1{display:block}
+#trend-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#trend-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-2:checked ~ .plot .tip-trend-2{display:block}
+#trend-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#trend-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-3:checked ~ .plot .tip-trend-3{display:block}
+#trend-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#trend-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-4:checked ~ .plot .tip-trend-4{display:block}
+#trend-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#trend-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-5:checked ~ .plot .tip-trend-5{display:block}
+#trend-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#trend-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-6:checked ~ .plot .tip-trend-6{display:block}
+#trend-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#trend-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-7:checked ~ .plot .tip-trend-7{display:block}
+#trend-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#trend-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-8:checked ~ .plot .tip-trend-8{display:block}
+#trend-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#trend-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-9:checked ~ .plot .tip-trend-9{display:block}
+#trend-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#trend-10:checked ~ .plot svg .seg-10{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-10:checked ~ .plot .tip-trend-10{display:block}
+#trend-10:checked ~ .plot svg .seg:not(.seg-10){opacity:.22}
+#trend-11:checked ~ .plot svg .seg-11{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-11:checked ~ .plot .tip-trend-11{display:block}
+#trend-11:checked ~ .plot svg .seg:not(.seg-11){opacity:.22}
+#trend-12:checked ~ .plot svg .seg-12{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-12:checked ~ .plot .tip-trend-12{display:block}
+#trend-12:checked ~ .plot svg .seg:not(.seg-12){opacity:.22}
+#trend-13:checked ~ .plot svg .seg-13{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-13:checked ~ .plot .tip-trend-13{display:block}
+#trend-13:checked ~ .plot svg .seg:not(.seg-13){opacity:.22}
+#trend-14:checked ~ .plot svg .seg-14{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-14:checked ~ .plot .tip-trend-14{display:block}
+#trend-14:checked ~ .plot svg .seg:not(.seg-14){opacity:.22}
+#trend-15:checked ~ .plot svg .seg-15{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-15:checked ~ .plot .tip-trend-15{display:block}
+#trend-15:checked ~ .plot svg .seg:not(.seg-15){opacity:.22}
+#trend-16:checked ~ .plot svg .seg-16{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-16:checked ~ .plot .tip-trend-16{display:block}
+#trend-16:checked ~ .plot svg .seg:not(.seg-16){opacity:.22}
+#trend-17:checked ~ .plot svg .seg-17{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-17:checked ~ .plot .tip-trend-17{display:block}
+#trend-17:checked ~ .plot svg .seg:not(.seg-17){opacity:.22}
+#trend-18:checked ~ .plot svg .seg-18{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-18:checked ~ .plot .tip-trend-18{display:block}
+#trend-18:checked ~ .plot svg .seg:not(.seg-18){opacity:.22}
+#trend-19:checked ~ .plot svg .seg-19{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-19:checked ~ .plot .tip-trend-19{display:block}
+#trend-19:checked ~ .plot svg .seg:not(.seg-19){opacity:.22}
+#trend-20:checked ~ .plot svg .seg-20{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-20:checked ~ .plot .tip-trend-20{display:block}
+#trend-20:checked ~ .plot svg .seg:not(.seg-20){opacity:.22}
+#trend-21:checked ~ .plot svg .seg-21{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#trend-21:checked ~ .plot .tip-trend-21{display:block}
+#trend-21:checked ~ .plot svg .seg:not(.seg-21){opacity:.22}
+#donut-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-0:checked ~ .plot .tip-donut-0{display:block}
+#donut-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#donut-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-1:checked ~ .plot .tip-donut-1{display:block}
+#donut-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#donut-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-2:checked ~ .plot .tip-donut-2{display:block}
+#donut-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#donut-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-3:checked ~ .plot .tip-donut-3{display:block}
+#donut-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#donut-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-4:checked ~ .plot .tip-donut-4{display:block}
+#donut-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#donut-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-5:checked ~ .plot .tip-donut-5{display:block}
+#donut-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#donut-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-6:checked ~ .plot .tip-donut-6{display:block}
+#donut-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#donut-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-7:checked ~ .plot .tip-donut-7{display:block}
+#donut-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#donut-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-8:checked ~ .plot .tip-donut-8{display:block}
+#donut-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#donut-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#donut-9:checked ~ .plot .tip-donut-9{display:block}
+#donut-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#runs-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-0:checked ~ .plot .tip-runs-0{display:block}
+#runs-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#runs-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-1:checked ~ .plot .tip-runs-1{display:block}
+#runs-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#runs-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-2:checked ~ .plot .tip-runs-2{display:block}
+#runs-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#runs-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-3:checked ~ .plot .tip-runs-3{display:block}
+#runs-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#runs-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-4:checked ~ .plot .tip-runs-4{display:block}
+#runs-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#runs-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-5:checked ~ .plot .tip-runs-5{display:block}
+#runs-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#runs-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-6:checked ~ .plot .tip-runs-6{display:block}
+#runs-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#runs-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-7:checked ~ .plot .tip-runs-7{display:block}
+#runs-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#runs-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-8:checked ~ .plot .tip-runs-8{display:block}
+#runs-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#runs-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-9:checked ~ .plot .tip-runs-9{display:block}
+#runs-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#runs-10:checked ~ .plot svg .seg-10{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-10:checked ~ .plot .tip-runs-10{display:block}
+#runs-10:checked ~ .plot svg .seg:not(.seg-10){opacity:.22}
+#runs-11:checked ~ .plot svg .seg-11{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-11:checked ~ .plot .tip-runs-11{display:block}
+#runs-11:checked ~ .plot svg .seg:not(.seg-11){opacity:.22}
+#runs-12:checked ~ .plot svg .seg-12{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-12:checked ~ .plot .tip-runs-12{display:block}
+#runs-12:checked ~ .plot svg .seg:not(.seg-12){opacity:.22}
+#runs-13:checked ~ .plot svg .seg-13{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-13:checked ~ .plot .tip-runs-13{display:block}
+#runs-13:checked ~ .plot svg .seg:not(.seg-13){opacity:.22}
+#runs-14:checked ~ .plot svg .seg-14{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-14:checked ~ .plot .tip-runs-14{display:block}
+#runs-14:checked ~ .plot svg .seg:not(.seg-14){opacity:.22}
+#runs-15:checked ~ .plot svg .seg-15{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-15:checked ~ .plot .tip-runs-15{display:block}
+#runs-15:checked ~ .plot svg .seg:not(.seg-15){opacity:.22}
+#runs-16:checked ~ .plot svg .seg-16{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-16:checked ~ .plot .tip-runs-16{display:block}
+#runs-16:checked ~ .plot svg .seg:not(.seg-16){opacity:.22}
+#runs-17:checked ~ .plot svg .seg-17{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-17:checked ~ .plot .tip-runs-17{display:block}
+#runs-17:checked ~ .plot svg .seg:not(.seg-17){opacity:.22}
+#runs-18:checked ~ .plot svg .seg-18{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-18:checked ~ .plot .tip-runs-18{display:block}
+#runs-18:checked ~ .plot svg .seg:not(.seg-18){opacity:.22}
+#runs-19:checked ~ .plot svg .seg-19{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-19:checked ~ .plot .tip-runs-19{display:block}
+#runs-19:checked ~ .plot svg .seg:not(.seg-19){opacity:.22}
+#runs-20:checked ~ .plot svg .seg-20{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-20:checked ~ .plot .tip-runs-20{display:block}
+#runs-20:checked ~ .plot svg .seg:not(.seg-20){opacity:.22}
+#runs-21:checked ~ .plot svg .seg-21{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-21:checked ~ .plot .tip-runs-21{display:block}
+#runs-21:checked ~ .plot svg .seg:not(.seg-21){opacity:.22}
+#runs-22:checked ~ .plot svg .seg-22{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-22:checked ~ .plot .tip-runs-22{display:block}
+#runs-22:checked ~ .plot svg .seg:not(.seg-22){opacity:.22}
+#runs-23:checked ~ .plot svg .seg-23{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-23:checked ~ .plot .tip-runs-23{display:block}
+#runs-23:checked ~ .plot svg .seg:not(.seg-23){opacity:.22}
+#runs-24:checked ~ .plot svg .seg-24{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-24:checked ~ .plot .tip-runs-24{display:block}
+#runs-24:checked ~ .plot svg .seg:not(.seg-24){opacity:.22}
+#runs-25:checked ~ .plot svg .seg-25{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-25:checked ~ .plot .tip-runs-25{display:block}
+#runs-25:checked ~ .plot svg .seg:not(.seg-25){opacity:.22}
+#runs-26:checked ~ .plot svg .seg-26{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-26:checked ~ .plot .tip-runs-26{display:block}
+#runs-26:checked ~ .plot svg .seg:not(.seg-26){opacity:.22}
+#runs-27:checked ~ .plot svg .seg-27{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-27:checked ~ .plot .tip-runs-27{display:block}
+#runs-27:checked ~ .plot svg .seg:not(.seg-27){opacity:.22}
+#runs-28:checked ~ .plot svg .seg-28{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-28:checked ~ .plot .tip-runs-28{display:block}
+#runs-28:checked ~ .plot svg .seg:not(.seg-28){opacity:.22}
+#runs-29:checked ~ .plot svg .seg-29{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-29:checked ~ .plot .tip-runs-29{display:block}
+#runs-29:checked ~ .plot svg .seg:not(.seg-29){opacity:.22}
+#runs-30:checked ~ .plot svg .seg-30{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-30:checked ~ .plot .tip-runs-30{display:block}
+#runs-30:checked ~ .plot svg .seg:not(.seg-30){opacity:.22}
+#runs-31:checked ~ .plot svg .seg-31{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-31:checked ~ .plot .tip-runs-31{display:block}
+#runs-31:checked ~ .plot svg .seg:not(.seg-31){opacity:.22}
+#runs-32:checked ~ .plot svg .seg-32{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-32:checked ~ .plot .tip-runs-32{display:block}
+#runs-32:checked ~ .plot svg .seg:not(.seg-32){opacity:.22}
+#runs-33:checked ~ .plot svg .seg-33{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-33:checked ~ .plot .tip-runs-33{display:block}
+#runs-33:checked ~ .plot svg .seg:not(.seg-33){opacity:.22}
+#runs-34:checked ~ .plot svg .seg-34{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-34:checked ~ .plot .tip-runs-34{display:block}
+#runs-34:checked ~ .plot svg .seg:not(.seg-34){opacity:.22}
+#runs-35:checked ~ .plot svg .seg-35{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#runs-35:checked ~ .plot .tip-runs-35{display:block}
+#runs-35:checked ~ .plot svg .seg:not(.seg-35){opacity:.22}
+#pace-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-0:checked ~ .plot .tip-pace-0{display:block}
+#pace-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#pace-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-1:checked ~ .plot .tip-pace-1{display:block}
+#pace-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#pace-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-2:checked ~ .plot .tip-pace-2{display:block}
+#pace-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#pace-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-3:checked ~ .plot .tip-pace-3{display:block}
+#pace-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#pace-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-4:checked ~ .plot .tip-pace-4{display:block}
+#pace-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#pace-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-5:checked ~ .plot .tip-pace-5{display:block}
+#pace-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#pace-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-6:checked ~ .plot .tip-pace-6{display:block}
+#pace-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#pace-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-7:checked ~ .plot .tip-pace-7{display:block}
+#pace-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#pace-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-8:checked ~ .plot .tip-pace-8{display:block}
+#pace-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#pace-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-9:checked ~ .plot .tip-pace-9{display:block}
+#pace-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#pace-10:checked ~ .plot svg .seg-10{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-10:checked ~ .plot .tip-pace-10{display:block}
+#pace-10:checked ~ .plot svg .seg:not(.seg-10){opacity:.22}
+#pace-11:checked ~ .plot svg .seg-11{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-11:checked ~ .plot .tip-pace-11{display:block}
+#pace-11:checked ~ .plot svg .seg:not(.seg-11){opacity:.22}
+#pace-12:checked ~ .plot svg .seg-12{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-12:checked ~ .plot .tip-pace-12{display:block}
+#pace-12:checked ~ .plot svg .seg:not(.seg-12){opacity:.22}
+#pace-13:checked ~ .plot svg .seg-13{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-13:checked ~ .plot .tip-pace-13{display:block}
+#pace-13:checked ~ .plot svg .seg:not(.seg-13){opacity:.22}
+#pace-14:checked ~ .plot svg .seg-14{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-14:checked ~ .plot .tip-pace-14{display:block}
+#pace-14:checked ~ .plot svg .seg:not(.seg-14){opacity:.22}
+#pace-15:checked ~ .plot svg .seg-15{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-15:checked ~ .plot .tip-pace-15{display:block}
+#pace-15:checked ~ .plot svg .seg:not(.seg-15){opacity:.22}
+#pace-16:checked ~ .plot svg .seg-16{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-16:checked ~ .plot .tip-pace-16{display:block}
+#pace-16:checked ~ .plot svg .seg:not(.seg-16){opacity:.22}
+#pace-17:checked ~ .plot svg .seg-17{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-17:checked ~ .plot .tip-pace-17{display:block}
+#pace-17:checked ~ .plot svg .seg:not(.seg-17){opacity:.22}
+#pace-18:checked ~ .plot svg .seg-18{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-18:checked ~ .plot .tip-pace-18{display:block}
+#pace-18:checked ~ .plot svg .seg:not(.seg-18){opacity:.22}
+#pace-19:checked ~ .plot svg .seg-19{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-19:checked ~ .plot .tip-pace-19{display:block}
+#pace-19:checked ~ .plot svg .seg:not(.seg-19){opacity:.22}
+#pace-20:checked ~ .plot svg .seg-20{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-20:checked ~ .plot .tip-pace-20{display:block}
+#pace-20:checked ~ .plot svg .seg:not(.seg-20){opacity:.22}
+#pace-21:checked ~ .plot svg .seg-21{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-21:checked ~ .plot .tip-pace-21{display:block}
+#pace-21:checked ~ .plot svg .seg:not(.seg-21){opacity:.22}
+#pace-22:checked ~ .plot svg .seg-22{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-22:checked ~ .plot .tip-pace-22{display:block}
+#pace-22:checked ~ .plot svg .seg:not(.seg-22){opacity:.22}
+#pace-23:checked ~ .plot svg .seg-23{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-23:checked ~ .plot .tip-pace-23{display:block}
+#pace-23:checked ~ .plot svg .seg:not(.seg-23){opacity:.22}
+#pace-24:checked ~ .plot svg .seg-24{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-24:checked ~ .plot .tip-pace-24{display:block}
+#pace-24:checked ~ .plot svg .seg:not(.seg-24){opacity:.22}
+#pace-25:checked ~ .plot svg .seg-25{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-25:checked ~ .plot .tip-pace-25{display:block}
+#pace-25:checked ~ .plot svg .seg:not(.seg-25){opacity:.22}
+#pace-26:checked ~ .plot svg .seg-26{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-26:checked ~ .plot .tip-pace-26{display:block}
+#pace-26:checked ~ .plot svg .seg:not(.seg-26){opacity:.22}
+#pace-27:checked ~ .plot svg .seg-27{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-27:checked ~ .plot .tip-pace-27{display:block}
+#pace-27:checked ~ .plot svg .seg:not(.seg-27){opacity:.22}
+#pace-28:checked ~ .plot svg .seg-28{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-28:checked ~ .plot .tip-pace-28{display:block}
+#pace-28:checked ~ .plot svg .seg:not(.seg-28){opacity:.22}
+#pace-29:checked ~ .plot svg .seg-29{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-29:checked ~ .plot .tip-pace-29{display:block}
+#pace-29:checked ~ .plot svg .seg:not(.seg-29){opacity:.22}
+#pace-30:checked ~ .plot svg .seg-30{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-30:checked ~ .plot .tip-pace-30{display:block}
+#pace-30:checked ~ .plot svg .seg:not(.seg-30){opacity:.22}
+#pace-31:checked ~ .plot svg .seg-31{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-31:checked ~ .plot .tip-pace-31{display:block}
+#pace-31:checked ~ .plot svg .seg:not(.seg-31){opacity:.22}
+#pace-32:checked ~ .plot svg .seg-32{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-32:checked ~ .plot .tip-pace-32{display:block}
+#pace-32:checked ~ .plot svg .seg:not(.seg-32){opacity:.22}
+#pace-33:checked ~ .plot svg .seg-33{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-33:checked ~ .plot .tip-pace-33{display:block}
+#pace-33:checked ~ .plot svg .seg:not(.seg-33){opacity:.22}
+#pace-34:checked ~ .plot svg .seg-34{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-34:checked ~ .plot .tip-pace-34{display:block}
+#pace-34:checked ~ .plot svg .seg:not(.seg-34){opacity:.22}
+#pace-35:checked ~ .plot svg .seg-35{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#pace-35:checked ~ .plot .tip-pace-35{display:block}
+#pace-35:checked ~ .plot svg .seg:not(.seg-35){opacity:.22}
+#hr-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-0:checked ~ .plot .tip-hr-0{display:block}
+#hr-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#hr-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-1:checked ~ .plot .tip-hr-1{display:block}
+#hr-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#hr-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-2:checked ~ .plot .tip-hr-2{display:block}
+#hr-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#hr-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-3:checked ~ .plot .tip-hr-3{display:block}
+#hr-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#hr-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-4:checked ~ .plot .tip-hr-4{display:block}
+#hr-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#hr-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-5:checked ~ .plot .tip-hr-5{display:block}
+#hr-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+#hr-6:checked ~ .plot svg .seg-6{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-6:checked ~ .plot .tip-hr-6{display:block}
+#hr-6:checked ~ .plot svg .seg:not(.seg-6){opacity:.22}
+#hr-7:checked ~ .plot svg .seg-7{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-7:checked ~ .plot .tip-hr-7{display:block}
+#hr-7:checked ~ .plot svg .seg:not(.seg-7){opacity:.22}
+#hr-8:checked ~ .plot svg .seg-8{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-8:checked ~ .plot .tip-hr-8{display:block}
+#hr-8:checked ~ .plot svg .seg:not(.seg-8){opacity:.22}
+#hr-9:checked ~ .plot svg .seg-9{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#hr-9:checked ~ .plot .tip-hr-9{display:block}
+#hr-9:checked ~ .plot svg .seg:not(.seg-9){opacity:.22}
+#st-0:checked ~ .plot svg .seg-0{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-0:checked ~ .plot .tip-st-0{display:block}
+#st-0:checked ~ .plot svg .seg:not(.seg-0){opacity:.22}
+#st-1:checked ~ .plot svg .seg-1{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-1:checked ~ .plot .tip-st-1{display:block}
+#st-1:checked ~ .plot svg .seg:not(.seg-1){opacity:.22}
+#st-2:checked ~ .plot svg .seg-2{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-2:checked ~ .plot .tip-st-2{display:block}
+#st-2:checked ~ .plot svg .seg:not(.seg-2){opacity:.22}
+#st-3:checked ~ .plot svg .seg-3{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-3:checked ~ .plot .tip-st-3{display:block}
+#st-3:checked ~ .plot svg .seg:not(.seg-3){opacity:.22}
+#st-4:checked ~ .plot svg .seg-4{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-4:checked ~ .plot .tip-st-4{display:block}
+#st-4:checked ~ .plot svg .seg:not(.seg-4){opacity:.22}
+#st-5:checked ~ .plot svg .seg-5{opacity:1;filter:brightness(1.12);transform:scale(1.08)}
+#st-5:checked ~ .plot .tip-st-5{display:block}
+#st-5:checked ~ .plot svg .seg:not(.seg-5){opacity:.22}
+/* ===== 悬浮「首页」键：随时能退回封面 =====
+   ⚠️ 白底**几乎不透明**（.96）而不是毛玻璃：它会随滚动滑进滑出，
+      移动的 backdrop-filter 元素每帧都要重新取景身后内容（卡顿 + WebKit 合成 bug 出品红杂线），
+      详见 home_btn.py 顶部注释。视觉差别小到看不出，稳得多。 */
+.home{position:fixed;left:13px;top:calc(11px + env(safe-area-inset-top));z-index:58;
+  display:inline-flex;align-items:center;gap:3px;height:35px;
+  padding:0 13px 0 9px;border-radius:18px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 6px 18px rgba(14,40,28,.17),0 1px 3px rgba(14,40,28,.07);
+  color:#0A8F55;font-size:13px;font-weight:700;letter-spacing:.4px;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:transform .28s cubic-bezier(.32,.72,0,1),opacity .2s}
+.home svg{width:17px;height:17px;flex:none;display:block;fill:none;stroke:currentColor;
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+/* 按下去：`.press` 由 HOME_JS 驱动，`:active` 只当兜底（iOS 上 :active 不可靠，见文件头注释） */
+.home:active,.home.press{transform:translateY(1px) scale(.95);transition-duration:.08s}
+/* 往下读正文时整枚滑出左边缘 —— 注意是**移走**不是淡出：淡出后它还在那儿挡着字，
+   仍然点得到（误触）。缓动用 iOS 曲线，跟 Safari 工具栏一个路子。 */
+.home.hide{transform:translateX(-84px);opacity:0;pointer-events:none}
+/* ⚠️ 三个次级页面的页头 `.hd` 是**左对齐**的（徽标 + 大标题），左上角正好就是标题的位置，
+   会被这枚按钮压住（实测："本月速览 · 2026-09"和"目标 140 斤"都被盖掉半截）。
+   所以把页头顶部下移一枚按钮 + 呼吸位。报告页没有 `.hd`（它的头图是居中的），不受影响。 */
+.hd{padding-top:calc(56px + env(safe-area-inset-top))}
+
+
+/* 本页没有底部 Tab Bar，把 HOME_CSS 给 tabbar 留的 112px 收回去 */
+body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.dmonth{margin:10px 0;border:1px solid var(--line);border-radius:14px;
+  background:var(--card);overflow:hidden;box-shadow:0 4px 14px rgba(90,105,180,.06)}
+/* ⚠️ summary 必须 display:block，不能直接用 flex：Chrome 对 summary 有特例，
+   display:flex 时那个 ▾ marker 照旧生成、还变成一个 flex item，
+   把左边的月份名顶到中间去（2026-10-01 实测踩到）。flex 挑进内层 .srow / .drow。 */
+.dmonth>summary,.dday>summary{display:block;padding:0;cursor:pointer;list-style:none;
+  -webkit-tap-highlight-color:transparent}
+.dmonth>summary::-webkit-details-marker,.dday>summary::-webkit-details-marker{display:none}
+/* ⚠️ BASE_CSS 全局有 `details summary:before{content:'▸ '}` + `color:var(--acc)`
+   （权重 0,0,2），会在我这两个 summary 左上角画一个**绿色小三角**。
+   必须用更高权重（0,1,n）压掉 —— 页面里 .ry-h 也是这么处理的。 */
+.dmonth>summary:before,.dday>summary:before,
+.dmonth[open]>summary:before,.dday[open]>summary:before{content:none!important}
+.dmonth>summary,.dday>summary{text-indent:0}
+.dmonth>summary>.srow{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:13px 14px}
+.dday>summary>.drow{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:11px 0}
+.dmonth>summary>.srow>b{font-size:14px;font-weight:500;color:var(--ink)}
+.dmonth>summary>.srow>span{font-size:11.5px;color:var(--ink2);white-space:nowrap}
+.dmonth[open]>summary{border-bottom:1px solid var(--line)}
+.dmb{padding:2px 14px 12px}
+.dday{border-top:1px solid var(--line)}
+.dday:first-child{border-top:0}
+.dday>summary>.drow>i{font-style:normal;font-size:13px;color:var(--ink);flex:none}
+.dday>summary>.drow>span{font-size:11.5px;color:var(--ink2);text-align:right}
+.dday[open]>summary>.drow>i{color:var(--acc)}
+.dseg{padding:2px 0 10px}
+.dsr{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11.5px;color:var(--ink2)}
+.dsr .dst{width:36px;flex:none;color:var(--ink3);font-variant-numeric:tabular-nums}
+.dsr .dsn{flex:1;color:var(--ink1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dsr em{font-style:normal;flex:none;color:var(--ink2);font-variant-numeric:tabular-nums}
+.dsr em.k{color:var(--acc);min-width:52px;text-align:right}
+.dhint{font-size:11px;color:var(--ink3);text-align:center;padding:14px 0 4px}
+
+</style>
+</head><body>
+<a class="home" href="index.html" aria-label="回到封面首页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.6 5.4 8 12l6.6 6.6"/></svg><span>首页</span></a>
+<section class="blk pnl" style="--gc:#0FA9C9">
+  <header class="hero"><div class="hico">
+    <svg viewBox="0 0 24 24"><rect x="3.2" y="4.6" width="17.6" height="16" rx="4.2"/><path d="M3.2 9.4h17.6"/><path d="M8 3.1v3.4M16 3.1v3.4"/><circle cx="8.6" cy="14.6" r="1.5" fill="#fff" stroke="none"/><circle cx="12.4" cy="14.6" r="1.5" fill="#fff" stroke="none"/><circle cx="16.2" cy="14.6" r="1.5" fill="#fff" stroke="none"/></svg></div>
+    <h1>每日明细</h1>
+    <div class="hsub">每天练了多久、消耗多少 · 可翻到任意月份</div></header>
+  <div class="cnt">
+    <div class="card">
+      <h2>总计</h2>
+      <div class="desc">点月份展开 · 点某天看当天每一段</div>
+      <div class="jrm">共 104 天有运动 · 累计 129 小时 4 分 · 44,309 kcal</div>
+    </div>
+    <details class="dmonth" open><summary><span class="srow"><b>2026年10月</b><span>1 天 · 1 小时 44 分 · 632 kcal · 5 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>10月1日 周四</i><span>2 项 · 1 小时 44 分 · 632 kcal · 5.02 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#A855F722;width:14px;height:14px;font-size:9px">💪</span><span class="dst">19:16</span><span class="dsn">力量训练</span><em>72 分</em><em>—</em><em class="k">280 kcal</em><em>96 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:38</span><span class="dsn">跑步</span><em>32 分</em><em>5.02 km</em><em class="k">352 kcal</em><em>164 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年9月</b><span>14 天 · 23 小时 54 分 · 8,314 kcal · 206 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>9月25日 周五</i><span>4 项 · 2 小时 42 分 · 896 kcal · 23.61 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:55</span><span class="dsn">骑行</span><em>32 分</em><em>8.51 km</em><em class="k">160 kcal</em><em>117 bpm</em></div><div class="dsr"><span class="ic" style="background:#A855F722;width:14px;height:14px;font-size:9px">💪</span><span class="dst">20:11</span><span class="dsn">力量训练</span><em>61 分</em><em>—</em><em class="k">237 kcal</em><em>89 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:25</span><span class="dsn">跑步</span><em>31 分</em><em>5.03 km</em><em class="k">329 kcal</em><em>160 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">22:21</span><span class="dsn">骑行</span><em>38 分</em><em>10.07 km</em><em class="k">170 kcal</em><em>121 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月24日 周四</i><span>2 项 · 1 小时 27 分 · 267 kcal · 11.15 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:40</span><span class="dsn">骑行</span><em>59 分</em><em>11.15 km</em><em class="k">131 kcal</em><em>103 bpm</em></div><div class="dsr"><span class="ic" style="background:#9E8CF222;width:14px;height:14px;font-size:9px">🧘</span><span class="dst">21:13</span><span class="dsn">核心训练</span><em>28 分</em><em>—</em><em class="k">136 kcal</em><em>104 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月23日 周三</i><span>2 项 · 2 小时 12 分 · 602 kcal · 8.01 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:28</span><span class="dsn">骑行</span><em>33 分</em><em>8.01 km</em><em class="k">148 kcal</em><em>129 bpm</em></div><div class="dsr"><span class="ic" style="background:#A855F722;width:14px;height:14px;font-size:9px">💪</span><span class="dst">20:25</span><span class="dsn">力量训练</span><em>100 分</em><em>—</em><em class="k">454 kcal</em><em>103 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月21日 周一</i><span>1 项 · 1 小时 2 分 · 737 kcal · 8.79 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">19:53</span><span class="dsn">跑步</span><em>62 分</em><em>8.79 km</em><em class="k">737 kcal</em><em>170 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月19日 周六</i><span>1 项 · 22 分 · 247 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#E6B23A22;width:14px;height:14px;font-size:9px"><svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><path d="M3 21V16h4.5v-4.5H12V7h4.5V2.5H21V21z" fill="#B38A2D"/></svg></span><span class="dst">09:41</span><span class="dsn">爬楼梯</span><em>22 分</em><em>—</em><em class="k">247 kcal</em><em>151 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月17日 周四</i><span>4 项 · 2 小时 43 分 · 1,212 kcal · 22.04 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:49</span><span class="dsn">骑行</span><em>34 分</em><em>8.64 km</em><em class="k">157 kcal</em><em>116 bpm</em></div><div class="dsr"><span class="ic" style="background:#A855F722;width:14px;height:14px;font-size:9px">💪</span><span class="dst">19:32</span><span class="dsn">力量训练</span><em>65 分</em><em>—</em><em class="k">519 kcal</em><em>128 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:48</span><span class="dsn">跑步</span><em>31 分</em><em>5.05 km</em><em class="k">393 kcal</em><em>172 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">22:53</span><span class="dsn">骑行</span><em>34 分</em><em>8.35 km</em><em class="k">143 kcal</em><em>136 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月15日 周二</i><span>3 项 · 1 小时 40 分 · 682 kcal · 21.98 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:08</span><span class="dsn">骑行</span><em>33 分</em><em>8.43 km</em><em class="k">154 kcal</em><em>110 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:11</span><span class="dsn">跑步</span><em>31 分</em><em>5.03 km</em><em class="k">389 kcal</em><em>162 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">22:15</span><span class="dsn">骑行</span><em>35 分</em><em>8.52 km</em><em class="k">139 kcal</em><em>119 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月8日 周二</i><span>3 项 · 1 小时 36 分 · 684 kcal · 22.21 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:46</span><span class="dsn">骑行</span><em>37 分</em><em>8.70 km</em><em class="k">160 kcal</em><em>109 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:57</span><span class="dsn">跑步</span><em>31 分</em><em>5.01 km</em><em class="k">364 kcal</em><em>162 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:58</span><span class="dsn">骑行</span><em>29 分</em><em>8.50 km</em><em class="k">160 kcal</em><em>129 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月7日 周一</i><span>3 项 · 1 小时 40 分 · 748 kcal · 22.25 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:56</span><span class="dsn">骑行</span><em>34 分</em><em>8.53 km</em><em class="k">161 kcal</em><em>113 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:15</span><span class="dsn">跑步</span><em>34 分</em><em>5.24 km</em><em class="k">433 kcal</em><em>168 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">22:19</span><span class="dsn">骑行</span><em>32 分</em><em>8.48 km</em><em class="k">154 kcal</em><em>128 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月6日 周日</i><span>1 项 · 2 小时 13 分 · 477 kcal · 4.95 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">14:55</span><span class="dsn">徒步</span><em>133 分</em><em>4.95 km</em><em class="k">477 kcal</em><em>105 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月5日 周六</i><span>1 项 · 2 小时 12 分 · 440 kcal · 5.00 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">14:31</span><span class="dsn">徒步</span><em>132 分</em><em>5.00 km</em><em class="k">440 kcal</em><em>113 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月4日 周五</i><span>3 项 · 1 小时 45 分 · 684 kcal · 22.23 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:34</span><span class="dsn">骑行</span><em>38 分</em><em>8.66 km</em><em class="k">135 kcal</em><em>108 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:38</span><span class="dsn">跑步</span><em>32 分</em><em>5.04 km</em><em class="k">391 kcal</em><em>170 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:47</span><span class="dsn">骑行</span><em>34 分</em><em>8.53 km</em><em class="k">158 kcal</em><em>127 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月3日 周四</i><span>2 项 · 1 小时 9 分 · 310 kcal · 17.17 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:34</span><span class="dsn">骑行</span><em>35 分</em><em>8.61 km</em><em class="k">161 kcal</em><em>115 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:18</span><span class="dsn">骑行</span><em>34 分</em><em>8.56 km</em><em class="k">149 kcal</em><em>114 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月1日 周二</i><span>2 项 · 1 小时 10 分 · 328 kcal · 17.05 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:08</span><span class="dsn">骑行</span><em>29 分</em><em>8.61 km</em><em class="k">171 kcal</em><em>129 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:09</span><span class="dsn">骑行</span><em>41 分</em><em>8.44 km</em><em class="k">157 kcal</em><em>136 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年8月</b><span>11 天 · 11 小时 23 分 · 4,393 kcal · 61 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>8月31日 周一</i><span>1 项 · 26 分 · 165 kcal · 7.82 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:23</span><span class="dsn">骑行</span><em>26 分</em><em>7.82 km</em><em class="k">165 kcal</em><em>138 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月30日 周日</i><span>1 项 · 1 小时 34 分 · 437 kcal · 3.53 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">10:31</span><span class="dsn">徒步</span><em>94 分</em><em>3.53 km</em><em class="k">437 kcal</em><em>136 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月29日 周六</i><span>1 项 · 1 小时 0 分 · 238 kcal · 14.72 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:57</span><span class="dsn">骑行</span><em>60 分</em><em>14.72 km</em><em class="k">238 kcal</em><em>115 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月27日 周四</i><span>1 项 · 1 小时 0 分 · 301 kcal · 2.09 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">04:13</span><span class="dsn">徒步</span><em>60 分</em><em>2.09 km</em><em class="k">301 kcal</em><em>131 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月23日 周日</i><span>2 项 · 1 小时 46 分 · 606 kcal · 1.88 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#E6B23A22;width:14px;height:14px;font-size:9px"><svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><path d="M3 21V16h4.5v-4.5H12V7h4.5V2.5H21V21z" fill="#B38A2D"/></svg></span><span class="dst">08:42</span><span class="dsn">爬楼梯</span><em>38 分</em><em>—</em><em class="k">396 kcal</em><em>152 bpm</em></div><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">14:33</span><span class="dsn">徒步</span><em>68 分</em><em>1.88 km</em><em class="k">210 kcal</em><em>108 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月16日 周日</i><span>1 项 · 48 分 · 342 kcal · 2.39 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">08:22</span><span class="dsn">徒步</span><em>48 分</em><em>2.39 km</em><em class="k">342 kcal</em><em>152 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月13日 周四</i><span>1 项 · 42 分 · 367 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#E6B23A22;width:14px;height:14px;font-size:9px"><svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><path d="M3 21V16h4.5v-4.5H12V7h4.5V2.5H21V21z" fill="#B38A2D"/></svg></span><span class="dst">08:50</span><span class="dsn">爬楼梯</span><em>42 分</em><em>—</em><em class="k">367 kcal</em><em>144 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月8日 周六</i><span>1 项 · 32 分 · 336 kcal · 5.03 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:51</span><span class="dsn">跑步</span><em>32 分</em><em>5.03 km</em><em class="k">336 kcal</em><em>165 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月7日 周五</i><span>1 项 · 36 分 · 350 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#E6B23A22;width:14px;height:14px;font-size:9px"><svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><path d="M3 21V16h4.5v-4.5H12V7h4.5V2.5H21V21z" fill="#B38A2D"/></svg></span><span class="dst">08:47</span><span class="dsn">爬楼梯</span><em>36 分</em><em>—</em><em class="k">350 kcal</em><em>153 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月3日 周一</i><span>4 项 · 2 小时 20 分 · 873 kcal · 23.14 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:09</span><span class="dsn">骑行</span><em>36 分</em><em>9.13 km</em><em class="k">157 kcal</em><em>111 bpm</em></div><div class="dsr"><span class="ic" style="background:#A855F722;width:14px;height:14px;font-size:9px">💪</span><span class="dst">19:53</span><span class="dsn">力量训练</span><em>38 分</em><em>—</em><em class="k">216 kcal</em><em>118 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:35</span><span class="dsn">跑步</span><em>32 分</em><em>5.05 km</em><em class="k">346 kcal</em><em>166 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:26</span><span class="dsn">骑行</span><em>34 分</em><em>8.96 km</em><em class="k">154 kcal</em><em>126 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>8月2日 周日</i><span>1 项 · 37 分 · 378 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#E6B23A22;width:14px;height:14px;font-size:9px"><svg viewBox="0 0 24 24" width="10" height="10" aria-hidden="true"><path d="M3 21V16h4.5v-4.5H12V7h4.5V2.5H21V21z" fill="#B38A2D"/></svg></span><span class="dst">09:11</span><span class="dsn">爬楼梯</span><em>37 分</em><em>—</em><em class="k">378 kcal</em><em>158 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年7月</b><span>9 天 · 14 小时 38 分 · 5,601 kcal · 169 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>7月30日 周四</i><span>3 项 · 1 小时 43 分 · 684 kcal · 22.92 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:49</span><span class="dsn">骑行</span><em>37 分</em><em>8.95 km</em><em class="k">154 kcal</em><em>118 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:18</span><span class="dsn">跑步</span><em>32 分</em><em>5.01 km</em><em class="k">376 kcal</em><em>176 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">22:06</span><span class="dsn">骑行</span><em>34 分</em><em>8.96 km</em><em class="k">154 kcal</em><em>132 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月29日 周三</i><span>4 项 · 2 小时 28 分 · 938 kcal · 23.09 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:32</span><span class="dsn">骑行</span><em>32 分</em><em>9.08 km</em><em class="k">170 kcal</em><em>122 bpm</em></div><div class="dsr"><span class="ic" style="background:#9E8CF222;width:14px;height:14px;font-size:9px">🧘</span><span class="dst">19:14</span><span class="dsn">核心训练</span><em>50 分</em><em>—</em><em class="k">244 kcal</em><em>119 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:13</span><span class="dsn">跑步</span><em>33 分</em><em>5.05 km</em><em class="k">361 kcal</em><em>165 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:08</span><span class="dsn">骑行</span><em>32 分</em><em>8.96 km</em><em class="k">163 kcal</em><em>128 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月28日 周二</i><span>3 项 · 2 小时 9 分 · 593 kcal · 20.72 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:20</span><span class="dsn">骑行</span><em>40 分</em><em>10.24 km</em><em class="k">194 kcal</em><em>123 bpm</em></div><div class="dsr"><span class="ic" style="background:#35C2E822;width:14px;height:14px;font-size:9px">🏊</span><span class="dst">20:18</span><span class="dsn">游泳</span><em>52 分</em><em>0.51 km</em><em class="k">212 kcal</em><em>124 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:27</span><span class="dsn">骑行</span><em>37 分</em><em>9.97 km</em><em class="k">187 kcal</em><em>132 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月10日 周五</i><span>3 项 · 1 小时 44 分 · 651 kcal · 23.37 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:08</span><span class="dsn">骑行</span><em>38 分</em><em>9.20 km</em><em class="k">149 kcal</em><em>103 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:55</span><span class="dsn">跑步</span><em>32 分</em><em>5.21 km</em><em class="k">332 kcal</em><em>158 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:42</span><span class="dsn">骑行</span><em>34 分</em><em>8.96 km</em><em class="k">170 kcal</em><em>128 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月9日 周四</i><span>1 项 · 29 分 · 337 kcal · 5.04 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:04</span><span class="dsn">跑步</span><em>29 分</em><em>5.04 km</em><em class="k">337 kcal</em><em>168 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月7日 周二</i><span>3 项 · 1 小时 42 分 · 704 kcal · 23.11 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:52</span><span class="dsn">骑行</span><em>36 分</em><em>9.01 km</em><em class="k">170 kcal</em><em>115 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:20</span><span class="dsn">跑步</span><em>33 分</em><em>5.15 km</em><em class="k">381 kcal</em><em>164 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">22:16</span><span class="dsn">骑行</span><em>34 分</em><em>8.95 km</em><em class="k">153 kcal</em><em>117 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月5日 周日</i><span>1 项 · 51 分 · 317 kcal · 2.51 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">09:29</span><span class="dsn">徒步</span><em>51 分</em><em>2.51 km</em><em class="k">317 kcal</em><em>144 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月3日 周五</i><span>3 项 · 1 小时 45 分 · 654 kcal · 24.17 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:53</span><span class="dsn">骑行</span><em>37 分</em><em>9.68 km</em><em class="k">175 kcal</em><em>118 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:27</span><span class="dsn">跑步</span><em>31 分</em><em>5.01 km</em><em class="k">327 kcal</em><em>155 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:54</span><span class="dsn">骑行</span><em>37 分</em><em>9.48 km</em><em class="k">152 kcal</em><em>111 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月1日 周三</i><span>3 项 · 1 小时 48 分 · 723 kcal · 24.03 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">19:10</span><span class="dsn">骑行</span><em>42 分</em><em>9.43 km</em><em class="k">182 kcal</em><em>121 bpm</em></div><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:55</span><span class="dsn">跑步</span><em>32 分</em><em>5.02 km</em><em class="k">354 kcal</em><em>160 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">21:55</span><span class="dsn">骑行</span><em>35 分</em><em>9.58 km</em><em class="k">187 kcal</em><em>129 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年6月</b><span>5 天 · 4 小时 47 分 · 2,237 kcal · 57 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>6月30日 周二</i><span>1 项 · 19 分 · 235 kcal · 3.01 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:20</span><span class="dsn">跑步</span><em>19 分</em><em>3.01 km</em><em class="k">235 kcal</em><em>172 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>6月28日 周日</i><span>1 项 · 32 分 · 398 kcal · 5.01 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">14:15</span><span class="dsn">跑步</span><em>32 分</em><em>5.01 km</em><em class="k">398 kcal</em><em>184 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>6月27日 周六</i><span>1 项 · 31 分 · 394 kcal · 5.03 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">08:47</span><span class="dsn">跑步</span><em>31 分</em><em>5.03 km</em><em class="k">394 kcal</em><em>183 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>6月25日 周四</i><span>2 项 · 1 小时 20 分 · 587 kcal · 13.75 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">19:51</span><span class="dsn">跑步</span><em>34 分</em><em>5.23 km</em><em class="k">423 kcal</em><em>185 bpm</em></div><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">20:37</span><span class="dsn">骑行</span><em>47 分</em><em>8.52 km</em><em class="k">164 kcal</em><em>127 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>6月24日 周三</i><span>1 项 · 2 小时 6 分 · 623 kcal · 30.07 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">18:21</span><span class="dsn">骑行</span><em>126 分</em><em>30.07 km</em><em class="k">623 kcal</em><em>139 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年5月</b><span>3 天 · 4 小时 5 分 · 2,094 kcal · 29 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>5月17日 周日</i><span>1 项 · 3 小时 3 分 · 1,302 kcal · 18.91 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">07:58</span><span class="dsn">徒步</span><em>183 分</em><em>18.91 km</em><em class="k">1302 kcal</em><em>150 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>5月10日 周日</i><span>1 项 · 30 分 · 389 kcal · 5.01 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">09:32</span><span class="dsn">跑步</span><em>30 分</em><em>5.01 km</em><em class="k">389 kcal</em><em>187 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>5月2日 周六</i><span>1 项 · 32 分 · 403 kcal · 5.03 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">10:03</span><span class="dsn">跑步</span><em>32 分</em><em>5.03 km</em><em class="k">403 kcal</em><em>184 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年4月</b><span>2 天 · 1 小时 6 分 · 807 kcal · 10 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>4月12日 周日</i><span>1 项 · 33 分 · 407 kcal · 5.09 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">09:41</span><span class="dsn">跑步</span><em>33 分</em><em>5.09 km</em><em class="k">407 kcal</em><em>174 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>4月2日 周四</i><span>1 项 · 33 分 · 400 kcal · 5.00 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">18:37</span><span class="dsn">跑步</span><em>33 分</em><em>5.00 km</em><em class="k">400 kcal</em><em>171 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年3月</b><span>2 天 · 4 小时 13 分 · 1,250 kcal · 20 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>3月28日 周六</i><span>1 项 · 4 小时 9 分 · 1,202 kcal · 19.64 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">08:32</span><span class="dsn">徒步</span><em>249 分</em><em>19.64 km</em><em class="k">1202 kcal</em><em>129 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月22日 周日</i><span>1 项 · 4 分 · 48 kcal · 0.78 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">15:32</span><span class="dsn">跑步</span><em>4 分</em><em>0.78 km</em><em class="k">48 kcal</em><em>157 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2026年2月</b><span>1 天 · 1 小时 46 分 · 453 kcal · 4 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>2月19日 周四</i><span>1 项 · 1 小时 46 分 · 453 kcal · 3.88 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">11:14</span><span class="dsn">徒步</span><em>106 分</em><em>3.88 km</em><em class="k">453 kcal</em><em>123 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年11月</b><span>3 天 · 3 小时 8 分 · 2,175 kcal · 27 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>11月23日 周日</i><span>1 项 · 1 小时 10 分 · 658 kcal · 8.97 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">09:19</span><span class="dsn">跑步</span><em>70 分</em><em>8.97 km</em><em class="k">658 kcal</em><em>170 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>11月12日 周三</i><span>1 项 · 1 小时 4 分 · 830 kcal · 10.04 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">18:47</span><span class="dsn">跑步</span><em>64 分</em><em>10.04 km</em><em class="k">830 kcal</em><em>180 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>11月10日 周一</i><span>1 项 · 53 分 · 687 kcal · 8.14 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">18:50</span><span class="dsn">跑步</span><em>53 分</em><em>8.14 km</em><em class="k">687 kcal</em><em>184 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年10月</b><span>4 天 · 4 小时 24 分 · 1,741 kcal · 30 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>10月25日 周六</i><span>1 项 · 2 小时 20 分 · 768 kcal · 11.50 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">09:05</span><span class="dsn">徒步</span><em>140 分</em><em>11.50 km</em><em class="k">768 kcal</em><em>144 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>10月19日 周日</i><span>1 项 · 39 分 · 480 kcal · 6.01 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">18:06</span><span class="dsn">跑步</span><em>39 分</em><em>6.01 km</em><em class="k">480 kcal</em><em>194 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>10月4日 周六</i><span>1 项 · 49 分 · 144 kcal · 7.13 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#0FA9C922;width:14px;height:14px;font-size:9px">🚴</span><span class="dst">20:58</span><span class="dsn">骑行</span><em>49 分</em><em>7.13 km</em><em class="k">144 kcal</em><em>112 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>10月2日 周四</i><span>1 项 · 37 分 · 349 kcal · 5.02 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">18:07</span><span class="dsn">跑步</span><em>37 分</em><em>5.02 km</em><em class="k">349 kcal</em><em>154 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年9月</b><span>2 天 · 1 小时 1 分 · 705 kcal · 9 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>9月3日 周三</i><span>1 项 · 36 分 · 412 kcal · 4.99 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">19:01</span><span class="dsn">跑步</span><em>36 分</em><em>4.99 km</em><em class="k">412 kcal</em><em>170 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>9月1日 周一</i><span>1 项 · 26 分 · 293 kcal · 4.01 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">19:07</span><span class="dsn">跑步</span><em>26 分</em><em>4.01 km</em><em class="k">293 kcal</em><em>163 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年7月</b><span>2 天 · 52 分 · 606 kcal · 7 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>7月7日 周一</i><span>1 项 · 21 分 · 250 kcal · 3.03 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:56</span><span class="dsn">跑步</span><em>21 分</em><em>3.03 km</em><em class="k">250 kcal</em><em>167 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>7月3日 周四</i><span>1 项 · 31 分 · 356 kcal · 4.28 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">20:06</span><span class="dsn">跑步</span><em>31 分</em><em>4.28 km</em><em class="k">356 kcal</em><em>174 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年5月</b><span>1 天 · 20 分 · 201 kcal · 2 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>5月17日 周六</i><span>1 项 · 20 分 · 201 kcal · 2.44 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#7B61FF22;width:14px;height:14px;font-size:9px">🏃</span><span class="dst">21:10</span><span class="dsn">跑步</span><em>20 分</em><em>2.44 km</em><em class="k">201 kcal</em><em>166 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年4月</b><span>4 天 · 5 小时 35 分 · 877 kcal · 13 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>4月16日 周三</i><span>1 项 · 42 分 · 151 kcal · 2.55 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">08:37</span><span class="dsn">步行</span><em>42 分</em><em>2.55 km</em><em class="k">151 kcal</em><em>102 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>4月14日 周一</i><span>1 项 · 30 分 · 92 kcal · 1.71 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">12:16</span><span class="dsn">步行</span><em>30 分</em><em>1.71 km</em><em class="k">92 kcal</em><em>97 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>4月5日 周六</i><span>1 项 · 2 小时 12 分 · 224 kcal · 1.97 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">14:30</span><span class="dsn">徒步</span><em>132 分</em><em>1.97 km</em><em class="k">224 kcal</em><em>97 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>4月4日 周五</i><span>1 项 · 2 小时 10 分 · 410 kcal · 6.73 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:17</span><span class="dsn">步行</span><em>130 分</em><em>6.73 km</em><em class="k">410 kcal</em><em>81 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年3月</b><span>10 天 · 10 小时 33 分 · 3,122 kcal · 27 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>3月31日 周一</i><span>1 项 · 38 分 · 160 kcal · 2.70 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:58</span><span class="dsn">步行</span><em>38 分</em><em>2.70 km</em><em class="k">160 kcal</em><em>97 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月27日 周四</i><span>1 项 · 58 分 · 225 kcal · 0.61 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:19</span><span class="dsn">乒乓球</span><em>58 分</em><em>0.61 km</em><em class="k">225 kcal</em><em>86 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月17日 周一</i><span>1 项 · 1 小时 20 分 · 401 kcal · 7.32 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:07</span><span class="dsn">步行</span><em>80 分</em><em>7.32 km</em><em class="k">401 kcal</em><em>115 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月16日 周日</i><span>1 项 · 1 小时 34 分 · 387 kcal · 7.36 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:49</span><span class="dsn">步行</span><em>94 分</em><em>7.36 km</em><em class="k">387 kcal</em><em>101 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月14日 周五</i><span>1 项 · 45 分 · 218 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F0619A22;width:14px;height:14px;font-size:9px">🎮</span><span class="dst">19:23</span><span class="dsn">健身游戏</span><em>45 分</em><em>—</em><em class="k">218 kcal</em><em>100 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月12日 周三</i><span>1 项 · 1 小时 13 分 · 513 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F0619A22;width:14px;height:14px;font-size:9px">🎮</span><span class="dst">18:53</span><span class="dsn">健身游戏</span><em>73 分</em><em>—</em><em class="k">513 kcal</em><em>124 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月6日 周四</i><span>1 项 · 30 分 · 109 kcal · 1.73 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:56</span><span class="dsn">步行</span><em>30 分</em><em>1.73 km</em><em class="k">109 kcal</em><em>90 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月4日 周二</i><span>1 项 · 1 小时 1 分 · 424 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F0619A22;width:14px;height:14px;font-size:9px">🎮</span><span class="dst">18:27</span><span class="dsn">健身游戏</span><em>61 分</em><em>—</em><em class="k">424 kcal</em><em>120 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月3日 周一</i><span>1 项 · 58 分 · 239 kcal</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F0619A22;width:14px;height:14px;font-size:9px">🎮</span><span class="dst">18:45</span><span class="dsn">健身游戏</span><em>58 分</em><em>—</em><em class="k">239 kcal</em><em>109 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>3月1日 周六</i><span>1 项 · 1 小时 36 分 · 446 kcal · 7.45 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:35</span><span class="dsn">步行</span><em>96 分</em><em>7.45 km</em><em class="k">446 kcal</em><em>103 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年2月</b><span>13 天 · 13 小时 21 分 · 3,459 kcal · 57 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>2月28日 周五</i><span>1 项 · 1 小时 20 分 · 427 kcal · 7.07 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:58</span><span class="dsn">步行</span><em>80 分</em><em>7.07 km</em><em class="k">427 kcal</em><em>106 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月24日 周一</i><span>1 项 · 49 分 · 183 kcal · 3.05 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:11</span><span class="dsn">步行</span><em>49 分</em><em>3.05 km</em><em class="k">183 kcal</em><em>94 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月23日 周日</i><span>1 项 · 1 小时 21 分 · 429 kcal · 7.10 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:00</span><span class="dsn">步行</span><em>81 分</em><em>7.10 km</em><em class="k">429 kcal</em><em>112 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月22日 周六</i><span>1 项 · 1 小时 27 分 · 473 kcal · 7.70 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:36</span><span class="dsn">步行</span><em>87 分</em><em>7.70 km</em><em class="k">473 kcal</em><em>116 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月21日 周五</i><span>1 项 · 38 分 · 178 kcal · 2.91 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:49</span><span class="dsn">步行</span><em>38 分</em><em>2.91 km</em><em class="k">178 kcal</em><em>113 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月17日 周一</i><span>1 项 · 18 分 · 68 kcal · 1.34 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:07</span><span class="dsn">步行</span><em>18 分</em><em>1.34 km</em><em class="k">68 kcal</em><em>98 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月16日 周日</i><span>1 项 · 54 分 · 269 kcal · 4.51 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:46</span><span class="dsn">步行</span><em>54 分</em><em>4.51 km</em><em class="k">269 kcal</em><em>109 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月11日 周二</i><span>1 项 · 13 分 · 48 kcal · 0.19 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:31</span><span class="dsn">乒乓球</span><em>13 分</em><em>0.19 km</em><em class="k">48 kcal</em><em>85 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月10日 周一</i><span>1 项 · 37 分 · 138 kcal · 2.35 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:46</span><span class="dsn">步行</span><em>37 分</em><em>2.35 km</em><em class="k">138 kcal</em><em>101 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月5日 周三</i><span>1 项 · 6 分 · 23 kcal · 0.14 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">19:04</span><span class="dsn">乒乓球</span><em>6 分</em><em>0.14 km</em><em class="k">23 kcal</em><em>86 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月4日 周二</i><span>1 项 · 30 分 · 75 kcal · 1.34 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">10:09</span><span class="dsn">步行</span><em>30 分</em><em>1.34 km</em><em class="k">75 kcal</em><em>94 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月3日 周一</i><span>1 项 · 17 分 · 54 kcal · 0.91 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">20:18</span><span class="dsn">步行</span><em>17 分</em><em>0.91 km</em><em class="k">54 kcal</em><em>86 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>2月1日 周六</i><span>2 项 · 4 小时 50 分 · 1,094 kcal · 18.86 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#52C87822;width:14px;height:14px;font-size:9px">🥾</span><span class="dst">13:12</span><span class="dsn">徒步</span><em>137 分</em><em>10.61 km</em><em class="k">592 kcal</em><em>98 bpm</em></div><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:14</span><span class="dsn">步行</span><em>153 分</em><em>8.25 km</em><em class="k">502 kcal</em><em>100 bpm</em></div></div></details></div></details><details class="dmonth"><summary><span class="srow"><b>2025年1月</b><span>17 天 · 22 小时 14 分 · 5,642 kcal · 54 km</span></span></summary><div class="dmb"><details class="dday"><summary><span class="drow"><i>1月31日 周五</i><span>1 项 · 18 分 · 86 kcal · 1.37 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">19:27</span><span class="dsn">步行</span><em>18 分</em><em>1.37 km</em><em class="k">86 kcal</em><em>104 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月30日 周四</i><span>1 项 · 42 分 · 159 kcal · 2.75 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">19:50</span><span class="dsn">步行</span><em>42 分</em><em>2.75 km</em><em class="k">159 kcal</em><em>91 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月29日 周三</i><span>2 项 · 4 小时 14 分 · 928 kcal · 13.49 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">13:22</span><span class="dsn">步行</span><em>156 分</em><em>7.61 km</em><em class="k">593 kcal</em><em>104 bpm</em></div><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:51</span><span class="dsn">步行</span><em>98 分</em><em>5.88 km</em><em class="k">335 kcal</em><em>94 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月28日 周二</i><span>1 项 · 1 小时 19 分 · 287 kcal · 5.40 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">19:42</span><span class="dsn">步行</span><em>79 分</em><em>5.40 km</em><em class="k">287 kcal</em><em>96 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月26日 周日</i><span>1 项 · 2 小时 4 分 · 258 kcal · 5.27 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:35</span><span class="dsn">步行</span><em>124 分</em><em>5.27 km</em><em class="k">258 kcal</em><em>81 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月20日 周一</i><span>1 项 · 50 分 · 201 kcal · 1.03 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:04</span><span class="dsn">乒乓球</span><em>50 分</em><em>1.03 km</em><em class="k">201 kcal</em><em>97 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月17日 周五</i><span>1 项 · 31 分 · 112 kcal · 1.79 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">17:49</span><span class="dsn">步行</span><em>31 分</em><em>1.79 km</em><em class="k">112 kcal</em><em>77 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月13日 周一</i><span>1 项 · 32 分 · 127 kcal · 0.53 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">21:01</span><span class="dsn">乒乓球</span><em>32 分</em><em>0.53 km</em><em class="k">127 kcal</em><em>87 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月10日 周五</i><span>1 项 · 33 分 · 109 kcal · 2.42 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:36</span><span class="dsn">步行</span><em>33 分</em><em>2.42 km</em><em class="k">109 kcal</em><em>91 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月9日 周四</i><span>1 项 · 1 小时 2 分 · 248 kcal · 1.27 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:21</span><span class="dsn">乒乓球</span><em>62 分</em><em>1.27 km</em><em class="k">248 kcal</em><em>87 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月8日 周三</i><span>1 项 · 24 分 · 92 kcal · 0.28 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:03</span><span class="dsn">乒乓球</span><em>24 分</em><em>0.28 km</em><em class="k">92 kcal</em><em>86 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月7日 周二</i><span>1 项 · 1 小时 23 分 · 338 kcal · 1.90 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:19</span><span class="dsn">乒乓球</span><em>83 分</em><em>1.90 km</em><em class="k">338 kcal</em><em>89 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月6日 周一</i><span>1 项 · 1 小时 8 分 · 296 kcal · 1.60 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:05</span><span class="dsn">乒乓球</span><em>68 分</em><em>1.60 km</em><em class="k">296 kcal</em><em>103 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月5日 周日</i><span>1 项 · 1 小时 24 分 · 383 kcal · 2.48 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:48</span><span class="dsn">乒乓球</span><em>84 分</em><em>2.48 km</em><em class="k">383 kcal</em><em>107 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月3日 周五</i><span>1 项 · 1 小时 19 分 · 275 kcal · 5.13 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#00C86F22;width:14px;height:14px;font-size:9px">🚶</span><span class="dst">18:34</span><span class="dsn">步行</span><em>79 分</em><em>5.13 km</em><em class="k">275 kcal</em><em>91 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月2日 周四</i><span>1 项 · 1 小时 45 分 · 827 kcal · 2.83 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:24</span><span class="dsn">乒乓球</span><em>105 分</em><em>2.83 km</em><em class="k">827 kcal</em><em>126 bpm</em></div></div></details><details class="dday"><summary><span class="drow"><i>1月1日 周三</i><span>2 项 · 2 小时 47 分 · 916 kcal · 4.67 km</span></span></summary><div class="dseg"><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">12:33</span><span class="dsn">乒乓球</span><em>66 分</em><em>1.92 km</em><em class="k">377 kcal</em><em>115 bpm</em></div><div class="dsr"><span class="ic" style="background:#F5A52422;width:14px;height:14px;font-size:9px">🏓</span><span class="dst">18:13</span><span class="dsn">乒乓球</span><em>101 分</em><em>2.75 km</em><em class="k">539 kcal</em><em>109 bpm</em></div></div></details></div></details>
+    <div class="dhint">数据来自 Apple 健康（手表 / iPhone）· 器械训练若有手表记录也计入</div>
+  </div>
+</section>
+  <div class="foot">
+    数据截止 2026-10 · 共 146 次运动 · 统计区间 2025年1月 ~ 2026年10月<br>
+    更新于 2026-10-01 23:35 · 数据来源：Apple 健康（Apple Watch / iPhone）
+  </div>
+<script>
+(function(){
+ var h=document.querySelector('.home');
+
+ /* ① 返回封面：**优先 history.back()**（不是整页跳 index.html）。
+    ⚠️ 用户原话："点了首页，回到运动报告首页的时候，它就会出现像截图里面这种叉叉和那个，
+       就变成一个网页版的了" —— 整页跳转是**一次新导航**，在"添加到主屏幕"的容器里
+       这次导航有时会被交给普通浏览器打开，于是地址栏 + ✕ 全回来了。
+       back() 退回的是**本容器里已经加载过的那份封面文档**，不产生新导航 ⇒ 绝不会掉出去，
+       而且是瞬时的（不重新下载、不重新绘）。
+    只在"上一条历史确实是本站"时才拦截（有历史 + referrer 同源），否则老老实实走 href
+    —— 免得用户从外部链接直接打开次级页时，back() 把他带出站点。 */
+ if(h){
+   h.addEventListener('click',function(e){
+     try{
+       if(history.length>1&&document.referrer&&
+          document.referrer.indexOf(location.origin)===0){
+         e.preventDefault();history.back();
+       }
+     }catch(_){}
+   });
+
+ /* ② 按压反馈：pointerdown 立刻下沉，up/cancel/leave 任一到达就弹回。
+    ⚠️ pointercancel 必须监听（iOS 判成滚动时只发 cancel、不发 up），漏了会永远"按着"。 */
+ h.addEventListener('pointerdown',function(){h.classList.add('press');});
+ var off=function(){h.classList.remove('press');};
+ h.addEventListener('pointerup',off);
+ h.addEventListener('pointercancel',off);
+ h.addEventListener('pointerleave',off);
+ /* ③ 收起/滑出：向下滚正文就收进左边缘（不挡字），向上滚或回到顶部立刻滑出来。 */
+ var last=0,busy=false;
+ addEventListener('scroll',function(){
+   if(busy)return;busy=true;
+   requestAnimationFrame(function(){
+     var y=scrollY||document.documentElement.scrollTop||0;
+     if(y<120){h.classList.remove('hide');}
+     else if(y>last+4){h.classList.add('hide');}
+     else if(y<last-4){h.classList.remove('hide');}
+     last=y;busy=false;});
+ },{passive:true});
+ }
+
+ /* ④ 点屏幕顶端 ＝ 滚回本页最上面。
+    "点状态栏回顶"是 iOS **只给 Safari** 的特权，装到桌面的独立 App / WebView 里不生效，
+    所以自己补一个：落在顶部 ZONE 内的"轻点"（位移很小、不是滚动）就平滑回顶。
+    ⚠️ 挂在 window 上、且**什么都不 preventDefault** ⇒ 不抢滚动手势、不挡任何链接按钮；
+       点在 a/button/label/input 上直接放过 —— 报告页的图表热区全是 <label>，
+       放过的意思是"那一下仍旧是选中数据点"，不会被我们抢去回顶。 */
+ var ZONE=130,sy=0,sx=0,armed=false;
+ addEventListener('pointerdown',function(e){
+   armed=false;
+   if(e.isPrimary===false)return;
+   if(e.target&&e.target.closest&&
+      e.target.closest('a,button,label,input,select,textarea'))return;
+   if(e.clientY>ZONE)return;
+   sy=e.clientY;sx=e.clientX;armed=true;
+ },{passive:true});
+ addEventListener('pointerup',function(e){
+   if(!armed)return;armed=false;
+   if(Math.abs(e.clientY-sy)>12||Math.abs(e.clientX-sx)>12)return;  /* 是滚动/拖拽，不是轻点 */
+   var y=scrollY||document.documentElement.scrollTop||0;
+   if(y<24)return;                                                  /* 已经在最上面 */
+   try{scrollTo({top:0,behavior:'smooth'});}catch(_){scrollTo(0,0);}
+ },{passive:true});
+ addEventListener('pointercancel',function(){armed=false;},{passive:true});
+})();
+</script>
+</body></html>
