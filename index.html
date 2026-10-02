@@ -19,7 +19,9 @@
 :root{
   --bg:#EFEEEA; --bg2:#E6E4DE; --card:#FFFFFF; --emb:#FAF9F6;
   --line:rgba(23,26,32,.11); --line2:rgba(23,26,32,.06);
-  --ink:#101318; --ink2:#4E5766; --ink3:#7A8290;
+  /* --ink3 原来是 #7A8290，在浅色底上对比度只有 3.5:1（小字要 4.5:1 才够清）。
+     调到 #656E7C 后是 4.7:1，视觉上几乎看不出差别，但说明文字清楚多了。 */
+  --ink:#101318; --ink2:#4E5766; --ink3:#656E7C;
   --gold:#90702F; --run:#2263C4; --lift:#6B33D6; --green:#0F7A52; --warn:#B4622C;
   --grid:rgba(23,26,32,.07); --hl:rgba(255,255,255,.9); --bar:rgba(250,249,246,.92);
   --tear:#DED9CA; --tearHi:#EBE7DB;
@@ -48,9 +50,12 @@ body{background:var(--bg);color:var(--ink);
 .cover:after{content:"";position:absolute;right:-46px;top:-34px;width:190px;height:190px;border-radius:50%;
   background:radial-gradient(circle,rgba(200,169,106,.18),transparent 70%);pointer-events:none}
 .topbar{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
-.brand{font-size:10px;letter-spacing:2.6px;color:var(--gold);font-weight:700}
-.sw{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--card)}
-.sw button{border:0;background:transparent;color:var(--ink3);font-size:11px;padding:5px 11px;cursor:pointer;font-family:inherit}
+.brand{font-size:10px;letter-spacing:2.6px;color:var(--gold);font-weight:700;cursor:pointer}
+.sw{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--card);
+  -webkit-tap-highlight-color:transparent}
+.sw button{border:0;background:transparent;color:var(--ink3);font-size:11px;padding:6px 11px;cursor:pointer;
+  font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .2s}
+.sw button:not(.on):active{color:var(--ink)}
 .sw button.on{background:var(--gold);color:#fff;font-weight:600}
 .dk .sw button.on{color:#171102}
 .month{font-size:13px;font-weight:400;letter-spacing:6px;color:var(--gold);margin:20px 0 3px}
@@ -379,6 +384,13 @@ body.dk .quote{background:rgba(255,255,255,.04)}
 </style>
 </head>
 <body>
+<script>
+/* 首屏就把深浅色定好 —— 否则在深色手机上会先闪一下白底再变黑（阿成 2026-10-03）。
+   这段必须在 CSS 之后、页面内容之前跑，且逻辑要和下面 syncTh() 保持一致。 */
+try{var _m=localStorage.getItem('thm')||'auto';
+  var _d=_m==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:(_m==='d');
+  if(_d)document.body.classList.add('dk');}catch(e){}
+</script>
 
 <div id="app"></div>
 
@@ -399,7 +411,12 @@ const D={};
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
-  '健身游戏':['🎮','lift'],'椭圆机':['⚙️','lift']};
+  '健身游戏':['🎮','lift'],'椭圆机':['⚙️','lift'],'游泳':['🏊','run']};
+
+/* 哪些类型的"配速（分钟/公里）"有意义 ——
+   游泳按每公里算会显示成 102'45" 这种怪数字，干脆不显示。 */
+const PACE_TYPES=['跑步','骑行','步行','徒步','爬楼梯'];
+function hasPace(w){return !!w&&PACE_TYPES.indexOf(w.类型)>=0&&(w.距离||0)>0&&w.配速显示&&w.配速显示!=='—'}
 
 /* 当前月 / 当前月的文字标签 —— 一切跟“今天”有关的东西都从这里取，
    ⚠️ 以前这里写死过 '2026-10'，换个月份页面就全错。 */
@@ -445,8 +462,12 @@ function tagText(t){return TAGS[t]||t}
 
 function head(title,en){
   return `<div class="cover">
-    <div class="topbar"><span class="brand">Health Report</span>
-      <div class="sw"><button data-m="auto" onclick="setTh('auto')">自动</button><button data-m="l" onclick="setTh('l')">浅色</button><button data-m="d" onclick="setTh('d')">深色</button></div></div>
+    <div class="topbar"><span class="brand" onclick="goHome()" title="回到首页">Health Report</span>
+      <div class="sw" role="group" aria-label="深浅色">
+        <button type="button" data-m="auto" aria-pressed="false" onclick="setTh('auto')" title="跟随手机系统">自动</button>
+        <button type="button" data-m="l" aria-pressed="false" onclick="setTh('l')" title="一直浅色">浅色</button>
+        <button type="button" data-m="d" aria-pressed="false" onclick="setTh('d')" title="一直深色">深色</button>
+      </div></div>
     <div class="month">${title.month}</div><div class="title">${title.t}</div><div class="en">${en}</div>
     <div class="sub">${title.s}</div>
     ${title.badge?`<div class="srcpill">${title.badge}</div>`:''}
@@ -505,7 +526,7 @@ function viewHome(){
             <div style="font-size:30px">${(TY[last.类型]||['🏃'])[0]}</div>
             <div><div style="font-size:15px;font-weight:600">${last.类型} · ${mins(last.时长)}</div>
               <div style="font-size:10.5px;color:var(--ink3);margin-top:3px">${
-                [last.距离?last.距离+' km':'', last.配速显示&&last.配速显示!=='—'?('配速 '+last.配速显示):'', last.平均心率?('心率 '+last.平均心率):''].filter(Boolean).join(' · ')}</div></div>
+                [last.距离?last.距离+' km':'', hasPace(last)?('配速 '+last.配速显示):'', last.平均心率?('心率 '+last.平均心率):''].filter(Boolean).join(' · ')}</div></div>
             <div style="margin-left:auto;text-align:right"><div style="font-size:16px;font-weight:600;color:var(--gold)">${last.消耗}</div>
               <div style="font-size:9px;color:var(--ink3)">千卡</div></div>
           </div>
@@ -519,14 +540,15 @@ function viewHome(){
             <div style="font-size:26px;font-weight:600;letter-spacing:-.6px">${b.weight_jin}<u style="font-size:11px;color:var(--ink2);text-decoration:none"> 斤</u></div>
             <div style="font-size:10px;color:var(--ink3);margin-top:2px">体脂 ${b.bf_pct}% · 内脏脂肪 ${b.visceral} 级</div></div>
           <div style="width:1px;height:44px;background:var(--line)"></div>
-          <div style="flex:1"><div style="font-size:10px;color:var(--ink3);letter-spacing:1px">距目标 140 斤</div>
-            <div style="font-size:26px;font-weight:600;letter-spacing:-.6px">${(b.weight_jin-140).toFixed(1)}<u style="font-size:11px;color:var(--ink2);text-decoration:none"> 斤</u></div>
+          <div style="flex:1"><div style="font-size:10px;color:var(--ink3);letter-spacing:1px">距目标 ${D.profile['目标斤']} 斤</div>
+            <div style="font-size:26px;font-weight:600;letter-spacing:-.6px">${Math.abs(b.weight_jin-D.profile['目标斤']).toFixed(1)}<u style="font-size:11px;color:var(--ink2);text-decoration:none"> 斤</u></div>
             <div style="font-size:10px;color:var(--ink3);margin-top:2px">身高 ${D.profile['身高cm']} cm · ${D.profile['年龄']} 岁</div></div>
         </div>
         <div class="cap">按住图表上的点可以看具体数值</div>
       </div></div>
 
-    <div class="empty-tip">数据与健康报告同源 · Apple Watch + 手动补录 · 最近一次 ${last.date.slice(5)}</div>
+    <div class="empty-tip">数据与健康报告同源 · Apple Watch + 手动补录 · 最近一次 ${last.date.slice(5)}<br>
+      <span style="color:var(--gold)">← 手指从屏幕左边缘往右滑，任何页面都直接回首页</span></div>
   </div>`;
 }
 
@@ -958,6 +980,17 @@ function viewAdvice(){
   const wkg=b.weight_jin/2, h=D.profile['身高cm']/100;
   const bmi=wkg/(h*h), tgt=D.profile['目标斤'], gap=b.weight_jin-tgt;
   const hr=D.recent.filter(r=>r.类型==='跑步'&&r.平均心率)[0]||{};
+  /* ── 下面这些一律现算，不写死；数据一变文案自动跟着变 ── */
+  const avgHrNow=hr.平均心率||164;
+  const obsHr=Math.max(...D.recent.map(w=>w.最高心率||0));                    // 记录里出现过的最高心率
+  const obsHrW=D.recent.find(w=>(w.最高心率||0)===obsHr)||{};
+  const st6=D.strength.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,6);    // 最近 6 次器械
+  const ptN=p=>st6.filter(s=>(s.items||[]).some(i=>i['部位']===p)).length;
+  const ptC=ptN('胸'), ptB=ptN('背'), ptL=ptN('腿臀');
+  const runMon=(()=>{const last=D.runs.length?D.runs[D.runs.length-1].date:null;
+    if(!last) return 1;
+    const [y,m]=last.split('-').map(Number), n=new Date();
+    return (n.getFullYear()-y)*12+(n.getMonth()+1-m)})();
   const ZN=[['Z1 热身','50–60%','#7FB3E8'],['Z2 轻松','60–70%','#3F9C6B'],
     ['Z3 有氧','70–80%','#E3B23C'],['Z4 很用力','80–90%','#D9762B'],['Z5 冲刺','90–100%','#C0392B']];
   const z=(lo,hi)=>Math.round(hrMax*lo)+'–'+Math.round(hrMax*hi);
@@ -971,7 +1004,7 @@ function viewAdvice(){
 
   return head({month:nowMonthLabel(),t:'训练建议',
     s:`按你的真实数据算的：身高 ${D.profile['身高cm']} cm · 体重 ${b.weight_jin} 斤 · 最大心率 ${hrMax}`,
-    badge:'依据：近 17 个月 '+D.runs.length+' 次跑 · '+D.strength.length+' 次器械 · '+D.body.length+' 次称重'},
+    badge:`依据：近 ${runMon} 个月 ${D.runs.length} 次跑 · ${D.strength.length} 次器械 · ${D.body.length} 次称重`},
     'Training Advice')+
   `<div class="wrap">
 
@@ -982,13 +1015,14 @@ function viewAdvice(){
          '这周去查一次肩部超声，排除肩袖部分撕裂',
          '想练上半身就改成拉类：高位下拉、坐姿划船、弹力带外旋',
          '疼的时候别做拉伸硬掰，越掰越刺激'])}
-      ${card('a2','p2','跑步心率太高了，慢下来更快',
-        `10/01 那次 5 公里，平均心率 ${hr.平均心率||164} bpm，是你最大心率 ${hrMax} 的 ${Math.round((hr.平均心率||164)/hrMax*100)}%——这已经落在"很用力"这一档。天天这么跑，练不到耐力底子，还容易累垮和恢复不过来。`,
+      ${card('a2','p2','跑步太快了，慢下来反而进步更快',
+        `10/01 那次 5 公里，平均心率 ${avgHrNow} bpm。按你档案里设的最大心率 ${hrMax} 算是 ${Math.round(avgHrNow/hrMax*100)}%，落在"很用力"这一档；就算按记录里跑出过的峰值 ${obsHr} 算，也有 ${Math.round(avgHrNow/obsHr*100)}% —— 已经是能练耐力底子的上限了。<br>
+         问题不在某一次跑得狠，而在"几乎每次都这么快"：轻松跑占比太低，有氧地基就搭不起来，还容易累积疲劳、恢复不过来。`,
         ['把 70% 的跑量放到轻松区（心率 '+z(.6,.7)+' bpm），能边跑边说话',
          '每周只留 1 次强度课（间歇或节奏跑），其余都慢',
          '判断标准很简单：跑的时候能说完整句子，就对了'])}
       ${card('a2','p3','力量训练里腿练得太少',
-        '最近 6 次器械：胸练了 4 次、背 3 次，腿臀只有 2 次（还都是硬拉）。上身练得多、下身练得少，长期会让体态和膝盖都吃亏，也不利于减脂——腿是人体最大的肌肉群。',
+        `最近 ${st6.length} 次器械：胸 ${ptC} 次、背 ${ptB} 次，腿臀只有 ${ptL} 次${ptL&&ptL<=2?'（还都是硬拉）':''}。上身练得多、下身练得少 —— 腿是全身最大的肌群，长期偏科会让体态和膝盖吃亏，也拖慢减脂。`,
         ['每周至少排 1 次下肢：深蹲或腿举 4 组 × 10 次',
          '膝盖不舒服就用腿举、坐姿腿屈伸代替深蹲',
          '核心放在力量日最后 10 分钟，不用单独占一天'])}
@@ -998,7 +1032,7 @@ function viewAdvice(){
       <div class="card block">
         <div style="font-size:11.5px;color:var(--ink2);line-height:1.65">
           下面这条是按你的最大心率 <b style="color:var(--gold)">${hrMax} bpm</b> 算的五个区间。
-          竖线是你 10/01 那次跑步的平均心率 <b style="color:var(--gold)">${hr.平均心率||164} bpm</b>。点任意一段看说明。</div>
+          竖线是你 10/01 那次跑步的平均心率 <b style="color:var(--gold)">${avgHrNow} bpm</b>。点任意一段看说明。</div>
         <div class="chartbox" style="margin-top:12px">
           <svg viewBox="0 0 342 96" width="100%" height="96">
             ${ZN.map((zn,i)=>{const x=8+i*66.4;
@@ -1010,24 +1044,28 @@ function viewAdvice(){
             ${mk!==null?`<line x1="${(8+mk*3.32).toFixed(1)}" y1="8" x2="${(8+mk*3.32).toFixed(1)}" y2="44"
                 stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="3 2"/>
               <text x="${(8+mk*3.32).toFixed(1)}" y="82" font-size="9" fill="var(--ink)" text-anchor="middle"
-                font-weight="700">↑ 你上次 ${hr.平均心率} bpm（${ZN[zoneOf(hr.平均心率)][0]}）</text>`:''}
+                font-weight="700">↑ 你上次 ${avgHrNow} bpm（${ZN[zoneOf(avgHrNow)][0]}）</text>`:''}
           </svg>
         </div>
         <div class="cap">竖线越靠左越轻松 · 平时跑步让它落在 Z2 那一段最好</div>
+        <div style="font-size:10.5px;line-height:1.6;color:var(--ink3);margin-top:8px;padding-top:8px;border-top:1px solid var(--line2)">
+          说明：${hrMax} 这个最大心率是你档案里设的；记录里最高跑出过 <b>${obsHr} bpm</b>${obsHrW.date?'（'+obsHrW.date.slice(5)+' '+obsHrW.类型+'）':''}，比设定值高。
+          真实最大心率越高，同一心率占的百分比就越低 —— 但不管按哪个算，你那次都贴在"该慢下来"的边界上，方向不变。
+          想更准可以实测一次：充分热身后全力跑 5 分钟，取最后 1 分钟的最高心率。</div>
       </div></div>
 
     <div class="sec"><div class="shead"><span class="no">03</span><span class="tt">减重节奏</span><span class="en2">Weight</span><span class="ln"></span></div>
       <div class="card block">
         <div class="srow2"><b>现在的 BMI</b><span>${bmi.toFixed(1)}（${bmi>=28?'属于肥胖区间，减下来收益最大':bmi>=24?'超重':'正常'}）</span></div>
         <div class="srow2"><b>体重 / 目标</b><span>${b.weight_jin} 斤 → ${tgt} 斤，还差 <b style="color:var(--gold)">${gap.toFixed(1)} 斤</b></span></div>
-        <div class="srow2"><b>体脂率</b><span>${b.bf_pct} % · 内脏脂肪 ${b.visceral} 级（10 级以内更好）</span></div>
+        <div class="srow2"><b>体脂率</b><span>${b.bf_pct} % · 内脏脂肪 ${b.visceral} 级（多数体脂秤的参考线在 9–10 以下）</span></div>
         <div class="srow2"><b>按健康速度</b><span>每周减 0.5–0.8 斤，约需 <b style="color:var(--gold)">${Math.round(gap/0.8)}–${Math.round(gap/0.5)} 周</b></span></div>
-        <div class="quote">每天比现在少吃 300–500 千卡就够，不用节食。内脏脂肪对"少吃精制碳水 + 每周 150 分钟有氧"最敏感，比盯着体重秤有用。</div>
+        <div class="quote">每天比现在少吃 300–500 千卡就够，不用节食。内脏脂肪对"少精制碳水 + 每周 150 分钟中等强度有氧"反应比较明显（150 分钟是世界卫生组织给成年人的最低推荐量），比盯着体重秤有用。</div>
       </div></div>
 
     <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">一周可以这样排</span><span class="en2">Weekly Plan</span><span class="ln"></span></div>
       <div class="card block">
-        ${[['周一','器械 · 胸 + 背','40 分钟 · 推类先停，改拉类为主'],
+        ${[['周一','器械 · 以拉类为主（推类暂停）','40 分钟 · 左肩没查清前，胸推、夹胸先不排'],
            ['周二','跑步 · 轻松跑','30 分钟 · 心率 '+z(.6,.7)+'，能聊天'],
            ['周三','休息 / 散步','30 分钟快走，不做强度'],
            ['周四','器械 · 腿臀 + 核心','40 分钟 · 深蹲/腿举 4 组'],
@@ -1036,15 +1074,15 @@ function viewAdvice(){
            ['周日','完全休息','睡够 7 小时，比多练一次值钱']]
           .map(d=>`<div class="wkrow"><b class="dw">${d[0]}</b>
             <div class="wc"><b>${d[1]}</b><div class="ws">${d[2]}</div></div></div>`).join('')}
-        <div class="cap">器械和跑步放同一天的话，中间歇 20–30 分钟再跑（你 9/25 只歇了 13 分钟，太短）</div>
+        <div class="cap">器械和跑步放同一天，最好隔开 6 小时以上（比如早上练力量、晚上跑步）；实在要连着做，也要把跑步放在力量之后。你 9/25 只歇 13 分钟就上跑步，太赶 —— 两边的效果都会打折。</div>
       </div></div>
 
     <div class="sec"><div class="shead"><span class="no">05</span><span class="tt">恢复这一块</span><span class="en2">Recovery</span><span class="ln"></span></div>
       ${card('a3','p3','睡不够，练就白练',
-        '手记里两次提到 23:00 才到家、睡不够。力量训练的效果是在休息时长出来的，不是练的时候。',
+        '手记里写着 23:00 才到家、睡不够。力量训练的效果是在休息时长出来的，不是练的时候。',
         ['力量日后 48 小时不再练同一部位',
          '尽量在 23:30 前睡，目标 7 小时',
-         '训练中补水按每 30 分钟 300–500 毫升算（你 9/25 的 1.4 升只算及格）',
+         '训练中补水按每小时 400–800 毫升（约每 15–20 分钟 100–200 毫升）；9/25 那 1.4 升摊到近 4 小时，刚好在下限',
          '连续两天出现"抬手没劲"就停练，别硬撑'])}
     </div>
 
@@ -1242,7 +1280,7 @@ function detailDay(ds,kind){
   if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'明细':'训练明细'}</div>`+
    list.map(r=>`<div class="srow2" style="margin-top:6px">
       <b>${(TY[r.类型]||['·'])[0]} ${r.类型}</b>
-      <span>${r.time} · ${Math.round(r.时长)}分${r.距离?' · '+r.距离+'km':''}${r.配速显示&&r.配速显示!=='—'?' · '+r.配速显示:''}</span></div>
+      <span>${r.time} · ${Math.round(r.时长)}分${r.距离?' · '+r.距离+'km':''}${hasPace(r)?' · '+r.配速显示:''}</span></div>
     <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>`).join('');
   if(st){
     html+=`<div class="sh2">力量动作 · ${esc(st.title||'')}（${st.items.length} 个）</div>
@@ -1282,30 +1320,86 @@ function toast(t){
   setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),250)},2200);
 }
 
-/* ── 路由 ── */
+/* ── 路由 ──
+   历史策略（阿成 2026-10-03 要求「一划就回首页，别一级一级退」）：
+     · 首页 → 子页 ：pushState，压一条
+     · 子页 → 子页 ：replaceState，替换
+     · 任何 → 首页 ：replaceState，把中间站全部顶掉
+   这样不管在站里点了多少层，从屏幕左侧往右滑（系统的返回手势）
+   都一步落到首页，而不是一层层往回退。 */
 const V={'#/':viewHome,'#/overview':viewOvr,'#/calendar':viewCal,'#/records':viewRec,
   '#/train':viewTrain,'#/body':viewBody,'#/advice':viewAdvice};
-function go(h){location.hash=h}
-function route(){
+let CUR=location.hash||'#/';
+
+function paint(){
   const h=location.hash||'#/';
   const app=document.getElementById('app');
   app.innerHTML=(V[h]||viewHome)();
   app.style.animation='none'; void app.offsetWidth; app.style.animation='';
   document.querySelectorAll('#tab a').forEach(a=>a.classList.toggle('on',a.dataset.r===h));
   if(h==='#/overview'){renderMix();renderPace();renderJ();}
-  if(h==='#/'){}
   window.scrollTo(0,0);
   syncTh();
 }
+/* 重渲染（hash 没变也要重画时用，比如日历翻月） */
+function route(){CUR=location.hash||'#/';paint()}
+
+function navigate(t){
+  if(t===CUR) return;
+  try{
+    if(t==='#/') history.replaceState(null,'',t);
+    else if(CUR==='#/') history.pushState(null,'',t);
+    else history.replaceState(null,'',t);
+  }catch(e){ location.hash=t; return; }   // 极老浏览器兜底
+  CUR=t; paint();
+}
+function goHome(){ if(CUR!=='#/') navigate('#/') }
+
+/* 站内所有 <a href="#/…"> 交给 navigate 处理（内联 onclick 仍会照常跑） */
+document.addEventListener('click',e=>{
+  const a=e.target.closest&&e.target.closest('a[href^="#/"]');
+  if(!a) return;
+  e.preventDefault();
+  navigate(a.getAttribute('href'));
+},true);
+
+/* 屏幕左边缘往右滑 → 直接回首页。
+   占位 28px、横向位移 64px 内触发、竖向为主就放弃（不干扰上下滚动）。
+   在 Safari 里系统的边缘返回手势可能抢先接管（此时我们收不到 pointer 事件），
+   但因为有上面的浅历史，系统返回同样落在首页 —— 两条路殊途同归。 */
+let _sg=null;
+document.addEventListener('pointerdown',e=>{
+  if(e.clientX>28) return;
+  if(document.getElementById('sheet').classList.contains('on')) return;   // 明细弹层开着时不抢
+  _sg={x:e.clientX,y:e.clientY,ok:true};
+},{passive:true});
+document.addEventListener('pointermove',e=>{
+  if(!_sg||!_sg.ok) return;
+  const dx=e.clientX-_sg.x, dy=e.clientY-_sg.y;
+  if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12){_sg.ok=false;return}      // 竖向滚动，放行
+  if(dx>64){_sg.ok=false; goHome()}
+},{passive:true});
+document.addEventListener('pointerup',()=>{_sg=null},{passive:true});
+document.addEventListener('pointercancel',()=>{_sg=null},{passive:true});
+
 function setTh(m){THMODE=m;localStorage.setItem('thm',m);syncTh()}   // 'auto' | 'l' | 'd'
 function syncTh(){
   ST.theme=wantDark();            // 每次都从 THMODE 重算 —— 别只更新 auto 分支，否则点浅色没反应
   document.body.classList.toggle('dk',ST.theme);
-  document.querySelectorAll('.sw button').forEach(b=>b.classList.toggle('on',b.dataset.m===THMODE));
+  document.querySelectorAll('.sw button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.m===THMODE);
+    b.setAttribute('aria-pressed',b.dataset.m===THMODE?'true':'false');
+  });
 }
-/* 手机系统切换深/浅色时，只有「自动」模式跟着换；手动选过的不动 */
-MQ.addEventListener('change',()=>{if(THMODE==='auto')syncTh()});
-window.addEventListener('hashchange',route);
+/* 手机系统切换深/浅色时，只有「自动」模式跟着换；手动选过的不动。
+   除了 change 事件，回到前台/从缓存恢复时也补一次同步 ——
+   iOS 在后台切主题时不一定会派发 change，光靠它会有"没及时跟上"。 */
+MQ.addEventListener('change',syncTh);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncTh()});
+window.addEventListener('pageshow',syncTh);
+window.addEventListener('focus',syncTh);
+window.addEventListener('popstate',()=>{CUR=location.hash||'#/';paint()});
+window.addEventListener('hashchange',()=>{CUR=location.hash||'#/';paint()});
 
 fetch('data.json').then(r=>r.json()).then(d=>{Object.assign(D,d);route();})
   .catch(e=>{document.getElementById('app').innerHTML='<div class="empty-tip">数据加载失败：'+e+'</div>'});
