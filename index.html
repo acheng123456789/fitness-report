@@ -401,7 +401,26 @@ const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','wal
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
   '健身游戏':['🎮','lift'],'椭圆机':['⚙️','lift']};
 
-let ST={theme:localStorage.getItem('th')!=='l', ym:'2026-10'};
+/* 当前月 / 当前月的文字标签 —— 一切跟“今天”有关的东西都从这里取，
+   ⚠️ 以前这里写死过 '2026-10'，换个月份页面就全错。 */
+function nowYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function nowMonthLabel(){const d=new Date();return d.getFullYear()+' · '+String(d.getMonth()+1).padStart(2,'0')}
+
+/* 主题：默认**跟随手机系统的深/浅色**（阿成 2026-10-03 要求）。
+   手动点过「浅色/深色」就固定成手动，点「自动」回到跟随系统。
+   偏好存在 'thm'（auto/d/l）；旧的 'th' 不再读 —— 否则他以前点过一次浅色，
+   就永远不跟随系统了。 */
+const MQ=matchMedia('(prefers-color-scheme: dark)');
+let THMODE=localStorage.getItem('thm')||'auto';
+const wantDark=()=>THMODE==='auto'?MQ.matches:THMODE==='d';
+let ST={theme:wantDark(), ym:nowYM()};
+
+/* 当月汇总：当月没数据就退回数据里最新的那个月（别让页面读到 undefined） */
+function curOv(){
+  const ks=Object.keys(D.overview||{}).sort();
+  return (D.overview||{})[nowYM()]||(ks.length?D.overview[ks[ks.length-1]]:null)
+      ||{次数:0,天数:0,总时长:0,总距离:0,总消耗:0,workouts:[],types:[]};
+}
 
 function fmtDay(s){const p=s.split('-');return +p[2]}
 function hm(m){m=Math.round(m);return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0')+'m'}
@@ -427,7 +446,7 @@ function tagText(t){return TAGS[t]||t}
 function head(title,en){
   return `<div class="cover">
     <div class="topbar"><span class="brand">Health Report</span>
-      <div class="sw"><button onclick="setTh(false)">浅色</button><button onclick="setTh(true)">深色</button></div></div>
+      <div class="sw"><button data-m="auto" onclick="setTh('auto')">自动</button><button data-m="l" onclick="setTh('l')">浅色</button><button data-m="d" onclick="setTh('d')">深色</button></div></div>
     <div class="month">${title.month}</div><div class="title">${title.t}</div><div class="en">${en}</div>
     <div class="sub">${title.s}</div>
     ${title.badge?`<div class="srcpill">${title.badge}</div>`:''}
@@ -457,13 +476,13 @@ function weekStrip(){
 
 /* ── 首页 ── */
 function viewHome(){
-  const o=D.overview['2026-10'], b=D.body[0], last=D.recent[0];
+  const o=curOv(), b=D.body[0], last=D.recent[0];
   const strip=`<div class="strip">
     <div><b>${o.次数}<u>次</u></b><span>本月运动</span></div>
     <div><b>${hm(o.总时长)}</b><span>总时长</span></div>
     <div><b>${o.总消耗}<u>kcal</u></b><span>总消耗</span></div>
     <div><b>${o.总距离}<u>km</u></b><span>总距离</span></div></div>`;
-  return head({month:'2026 · 10',t:'运动健康报告',
+  return head({month:nowMonthLabel(),t:'运动健康报告',
     s:`最近一次：${last.date.slice(5)} ${last.类型} · 数据每天 00:05 自动更新`,
     badge:'数据来源 · Apple Watch + 手动补录',strip,week:weekStrip()},'Health Dashboard')+
   `<div class="wrap">
@@ -507,22 +526,25 @@ function viewHome(){
         <div class="cap">按住图表上的点可以看具体数值</div>
       </div></div>
 
-    <div class="empty-tip">概念稿 · 数据与健康报告正式版一致（截至 10-01）</div>
+    <div class="empty-tip">数据与健康报告同源 · Apple Watch + 手动补录 · 最近一次 ${last.date.slice(5)}</div>
   </div>`;
 }
 
 /* ── 速览 ── */
 function viewOvr(){
-  const o=D.overview['2026-10'], last=D.recent[0];
+  const o=curOv(), last=D.recent[0];
   const t19=D.recent.filter(r=>r.类型==='跑步').slice(0,10);
-  return head({month:'2026 · 10',t:'本月速览',s:'数据截至 10 月 1 日 · 每天 00:05 自动更新'},'Monthly Overview')+
+  const hrs=o.workouts.filter(w=>w.平均心率), hrN=hrs.length;
+  const avgHr=hrN?Math.round(hrs.reduce((s,w)=>s+w.平均心率,0)/hrN):'—';
+  const at=`${+last.date.slice(5,7)} 月 ${+last.date.slice(8,10)} 日`;
+  return head({month:nowMonthLabel(),t:'本月速览',s:`数据截至 ${at} · 每天 00:05 自动更新`},'Monthly Overview')+
   `<div class="wrap">
     <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">核心指标</span><span class="en2">Core</span><span class="ln"></span></div>
       <div class="kgrid">
-        <div class="kpi tap" onclick="toast('本月只有 10 月 1 日练过，练了力量 + 跑步')"><div class="lb">运动天数</div><div class="v">${o.天数}<u>天</u></div><div class="e">共 ${o.天数} 天有训练</div><div class="mb"><i style="width:8%"></i></div></div>
-        <div class="kpi tap" onclick="toast('两次加起来 1 小时 44 分，平均每次 52 分钟')"><div class="lb">单次均时长</div><div class="v">${Math.round(o.总时长/o.次数)}<u>分</u></div><div class="e">共 ${hm(o.总时长)}</div><div class="mb"><i style="width:52%"></i></div></div>
-        <div class="kpi tap" onclick="toast('两次运动的心率平均得来：力量 96 + 跑步 164')"><div class="lb">平均心率</div><div class="v">117<u>bpm</u></div><div class="e">两次运动的均值</div><div class="mb"><i style="width:59%"></i></div></div>
-        <div class="kpi tap" onclick="toast('按 1 个训练日算的日均消耗')"><div class="lb">日均消耗</div><div class="v">${o.总消耗}<u>kcal</u></div><div class="e">按 ${o.天数} 个训练日计</div><div class="mb"><i style="width:63%"></i></div></div>
+        <div class="kpi tap" onclick="toast('本月有 ${o.天数} 天练过，一共 ${o.次数} 次')"><div class="lb">运动天数</div><div class="v">${o.天数}<u>天</u></div><div class="e">共 ${o.天数} 天有训练</div><div class="mb"><i style="width:8%"></i></div></div>
+        <div class="kpi tap" onclick="toast('${o.次数} 次加起来 ${hm(o.总时长)}，平均每次 ${Math.round(o.总时长/Math.max(o.次数,1))} 分钟')"><div class="lb">单次均时长</div><div class="v">${Math.round(o.总时长/Math.max(o.次数,1))}<u>分</u></div><div class="e">共 ${hm(o.总时长)}</div><div class="mb"><i style="width:52%"></i></div></div>
+        <div class="kpi tap" onclick="toast('本月 ${hrN} 次运动的心率平均得来')"><div class="lb">平均心率</div><div class="v">${avgHr}<u>bpm</u></div><div class="e">${hrN} 次运动的均值</div><div class="mb"><i style="width:59%"></i></div></div>
+        <div class="kpi tap" onclick="toast('按 ${o.天数} 个训练日算的日均消耗')"><div class="lb">日均消耗</div><div class="v">${o.总消耗}<u>kcal</u></div><div class="e">按 ${o.天数} 个训练日计</div><div class="mb"><i style="width:63%"></i></div></div>
       </div>
       <div class="cap">点任意一张卡，会说清楚这个数是怎么来的</div></div>
 
@@ -545,7 +567,7 @@ function viewOvr(){
 
 /* 渲染：构成环形 */
 function renderMix(){
-  const o=D.overview['2026-10'], tot=o.总时长||1;
+  const o=curOv(), tot=o.总时长||1;
   let acc=0, segs='';
   const cols={'跑步':'var(--run)','力量训练':'var(--lift)','骑行':'var(--green)','步行':'var(--warn)'};
   o.types.forEach(t=>{
@@ -641,8 +663,11 @@ function viewCal(){
     cells+=`<div class="${cls}" onclick="${list.length?`detailDay('${ds}')`:`toast('${d} 号没有训练记录')`}">
       <span class="cdn">${d}</span>${pills}</div>`;
   }
-  const prev=ymp==='2026-08'?'off':'';
-  const nx=(Y===2026&&M===10)?'off':'';
+  /* 翻月边界：最晚＝本月（翻不到未来），最早＝本月往前 2 个月。
+     ⚠️ 这两个值以前写死成 '2026-08' / (Y===2026&&M===10)，过一个月就错。 */
+  const _p=new Date(Y,M-3,1), minYm=_p.getFullYear()+'-'+String(_p.getMonth()+1).padStart(2,'0');
+  const prev=ymp===minYm?'off':'';
+  const nx=ymp===CUR_YM?'off':'';
   return head({month:`${Y} · ${String(M).padStart(2,'0')}`,t:'训练日历',s:'点任意一天，看当天练了什么'},'Calendar')+
   `<div class="wrap"><div class="sec">
     <div class="card block">
@@ -944,7 +969,7 @@ function viewAdvice(){
     <div class="why">${why}</div>
     <div class="do"><div class="dt">怎么做</div>${dos.map(d=>`<li>${d}</li>`).join('')}</div></div>`;
 
-  return head({month:'2026 · 10',t:'训练建议',
+  return head({month:nowMonthLabel(),t:'训练建议',
     s:`按你的真实数据算的：身高 ${D.profile['身高cm']} cm · 体重 ${b.weight_jin} 斤 · 最大心率 ${hrMax}`,
     badge:'依据：近 17 个月 '+D.runs.length+' 次跑 · '+D.strength.length+' 次器械 · '+D.body.length+' 次称重'},
     'Training Advice')+
@@ -1272,12 +1297,14 @@ function route(){
   window.scrollTo(0,0);
   syncTh();
 }
-function setTh(dk){ST.theme=dk;localStorage.setItem('th',dk?'d':'l');syncTh()}
+function setTh(m){THMODE=m;localStorage.setItem('thm',m);syncTh()}   // 'auto' | 'l' | 'd'
 function syncTh(){
+  ST.theme=wantDark();            // 每次都从 THMODE 重算 —— 别只更新 auto 分支，否则点浅色没反应
   document.body.classList.toggle('dk',ST.theme);
-  const sw=document.querySelectorAll('.sw button');
-  if(sw.length===2){sw[0].classList.toggle('on',!ST.theme);sw[1].classList.toggle('on',ST.theme);}
+  document.querySelectorAll('.sw button').forEach(b=>b.classList.toggle('on',b.dataset.m===THMODE));
 }
+/* 手机系统切换深/浅色时，只有「自动」模式跟着换；手动选过的不动 */
+MQ.addEventListener('change',()=>{if(THMODE==='auto')syncTh()});
 window.addEventListener('hashchange',route);
 
 fetch('data.json').then(r=>r.json()).then(d=>{Object.assign(D,d);route();})
