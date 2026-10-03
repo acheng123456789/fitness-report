@@ -23,6 +23,8 @@
      调到 #656E7C 后是 4.7:1，视觉上几乎看不出差别，但说明文字清楚多了。 */
   --ink:#101318; --ink2:#4E5766; --ink3:#656E7C;
   --gold:#90702F; --run:#2263C4; --lift:#6B33D6; --green:#0F7A52; --warn:#B4622C;
+  /* --heart：心率♥专用色。跟 --warn 的橙分开，红色更像"心跳"，也一眼能和蓝色配速区分开。 */
+  --heart:#C6364F;
   --grid:rgba(23,26,32,.07); --hl:rgba(255,255,255,.9); --bar:rgba(250,249,246,.92);
   --tear:#DED9CA; --tearHi:#EBE7DB;
   --sh:0 1px 2px rgba(20,23,28,.04),0 6px 18px rgba(20,23,28,.05);
@@ -32,6 +34,7 @@ body.dk{
   --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.05);
   --ink:#F0F2F5; --ink2:#A3ACB9; --ink3:#7C8593;
   --gold:#D2B571; --run:#68A4FF; --lift:#AF92F7; --green:#4BD6A0; --warn:#E9AC66;
+  --heart:#FF7B8C;
   --grid:rgba(255,255,255,.06); --hl:rgba(255,255,255,.07); --bar:rgba(16,20,28,.92);
   --tear:rgba(255,255,255,.16); --tearHi:rgba(255,255,255,.28);
   --sh:0 1px 0 var(--hl) inset,0 8px 26px rgba(0,0,0,.45);
@@ -143,6 +146,25 @@ body.dk .abox .do{background:rgba(255,255,255,.04)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh)}
 body.dk .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
 .block{padding:14px}
+
+/* 「05 心率与配速对照」一行一条。
+   ⚠️ 右列必须用**固定宽度**（84px）而不是 auto：每行是各自独立的 grid 容器，
+   用 auto 时行与行宽度不同，左侧条形会左右错位。配速位数可能从 5 字符
+   （6'28"）变到 6 字符（10'02"），所以配速格给 42px 并右对齐 + 等宽数字。 */
+.prow{display:grid;grid-template-columns:42px 1fr 84px;gap:9px;align-items:center;
+  padding:5px 0;font-size:10px;border-radius:7px}
+.prow.tap:active{background:var(--line2)}
+.pdate{color:var(--ink3);font-family:ui-monospace,Menlo,monospace;
+  font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.ptrack{height:8px;background:var(--line2);border-radius:4px;overflow:hidden}
+.ptrack i{display:block;height:100%;border-radius:4px;background:var(--run)}
+.ptrack i.fast{background:var(--gold)}
+.pval{display:flex;align-items:center;justify-content:space-between;gap:6px;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.ppace{width:42px;text-align:right;color:var(--ink);font-weight:600}
+.phr{width:36px;display:flex;align-items:center;justify-content:flex-end;gap:3px;
+  color:var(--heart);font-weight:600}
+.phr svg{width:10px;height:10px;flex:none;display:block;fill:currentColor}
 .cap{font-size:10px;color:var(--ink3);margin-top:9px;line-height:1.5}
 
 /* 可点卡片：按下反馈（箭头必须显式加 .arr，否则会压住右侧的数值） */
@@ -730,6 +752,9 @@ function repsNum(s){
 }
 function volOf(it){return (it.kg||0)*(it.sets||0)*repsNum(it.reps)}
 function secOf(s){const m=String(s||'').match(/(\d+)'(\d+)"/);return m?(+m[1])*60+(+m[2]):0}
+/* 心率用的实心 ♥（SVG 而非 emoji：emoji 在 iOS/安卓上样式和大小都不一样，
+   而且彩色 emoji 不跟随深/浅色主题，这里用 currentColor 吃到 --heart）。 */
+const HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.2 4.1 13.3a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg>';
 
 function viewTrain(){
   const tab=localStorage.getItem('tseg')||'run';
@@ -828,14 +853,21 @@ function runBody(){
 
   <div class="sec"><div class="shead"><span class="no">05</span><span class="tt">心率与配速对照</span><span class="en2">HR vs Pace</span><span class="ln"></span></div>
     <div class="card block">
-      ${rs.slice(0,10).map(r=>{const p=secOf(r.配速显示);
-        const w=((worst-p)/(worst-best||1))*100;
-        return `<div style="display:grid;grid-template-columns:44px 1fr 62px;gap:8px;align-items:center;padding:4px 0;font-size:10px">
-          <span style="color:var(--ink3)">${r.date.slice(5)}</span>
-          <span style="height:8px;background:var(--line2);border-radius:4px;overflow:hidden">
-            <i style="display:block;height:100%;width:${Math.max(w,4).toFixed(0)}%;background:var(--run);border-radius:4px"></i></span>
-          <span style="text-align:right;color:var(--ink2);font-family:ui-monospace,Menlo,monospace">${r.配速显示} · ${r.平均心率}</span></div>`}).join('')}
-      <div class="cap">条越长越快 · 右侧为配速与平均心率</div>
+      ${(()=>{const top=rs.slice(0,10);
+        /* 条形比例和「金色＝最快」都按**这 10 次自己**比。
+           ⚠️ 别再借用 viewTrain 顶层的 best/worst —— 那是全量跑步算出来的，
+           全量最快的一次多半不在这 10 条里，金色永远不会亮。 */
+        const tp=top.map(r=>secOf(r.配速显示)).filter(v=>v>0);
+        const tb=Math.min(...tp), tw=Math.max(...tp);
+        /* 条形长度：最慢的也留 12%，否则 10 次里出现一次特别慢的（如 7'02"）
+           会被压成一个几乎看不见的点，看着像没渲染出来。 */
+        return top.map(r=>{const p=secOf(r.配速显示);
+          const w=Math.min(100,Math.max(((tw-p)/(tw-tb||1))*100,12));
+          return `<div class="prow tap" onclick="detailDay('${r.date}','跑步')">
+          <span class="pdate">${r.date.slice(5)}</span>
+          <span class="ptrack"><i class="${p===tb?'fast':''}" style="width:${w.toFixed(0)}%"></i></span>
+          <span class="pval"><span class="ppace">${r.配速显示}</span><span class="phr">${HEART}${r.平均心率||'—'}</span></span></div>`}).join('')})()}
+      <div class="cap">条越长越快，金色＝这 10 次里最快 · 右侧：配速 ｜ ♥ 平均心率（bpm）· 点任意一行看当天明细</div>
     </div></div>
 
   <div class="sec"><div class="shead"><span class="no">06</span><span class="tt">跑步明细</span><span class="en2">Log</span><span class="ln"></span></div>
