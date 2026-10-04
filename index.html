@@ -613,7 +613,7 @@ function viewOvr(){
 function renderMix(){
   const o=curOv(), tot=o.总时长||1;
   let acc=0, segs='';
-  const cols={'跑步':'var(--run)','力量训练':'var(--lift)','骑行':'var(--green)','步行':'var(--warn)'};
+  const cols={'跑步':'var(--run)','力量训练':'var(--lift)','核心训练':'var(--lift)','骑行':'var(--green)','步行':'var(--warn)','徒步':'var(--warn)','爬楼梯':'var(--warn)','乒乓球':'var(--gold)','游泳':'var(--green)'};
   o.types.forEach(t=>{
     const frac=t.时长/tot, C=2*Math.PI*46;
     segs+=`<circle cx="60" cy="60" r="46" fill="none" stroke="${cols[t.名称]||'var(--lift)'}" stroke-width="13"
