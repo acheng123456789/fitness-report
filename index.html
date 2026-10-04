@@ -1433,7 +1433,9 @@ window.addEventListener('focus',syncTh);
 window.addEventListener('popstate',()=>{CUR=location.hash||'#/';paint()});
 window.addEventListener('hashchange',()=>{CUR=location.hash||'#/';paint()});
 
-fetch('data.json').then(r=>r.json()).then(d=>{Object.assign(D,d);route();})
+/* data.json 加 cache-bust：GitHub Pages 会给它 10 分钟缓存，不破一下的话
+   手机刷新看到的还是旧数据（他反馈过"改了没生效"）。文件才 120KB 级，不值一提。 */
+fetch('data.json?v='+Date.now()).then(r=>r.json()).then(d=>{Object.assign(D,d);route();})
   .catch(e=>{document.getElementById('app').innerHTML='<div class="empty-tip">数据加载失败：'+e+'</div>'});
 </script>
 </body>
