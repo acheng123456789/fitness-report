@@ -452,6 +452,10 @@ try{var _m=localStorage.getItem('thm')||'auto';
 
 <script>
 const D={};
+/* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
+   主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
+   data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
+const APPV="b0315171eb3";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1627,8 +1631,22 @@ window.addEventListener('hashchange',()=>{CUR=location.hash||'#/';paint()});
 
 /* data.json 加 cache-bust：GitHub Pages 会给它 10 分钟缓存，不破一下的话
    手机刷新看到的还是旧数据（他反馈过"改了没生效"）。文件才 120KB 级，不值一提。 */
-fetch('data.json?v='+Date.now()).then(r=>r.json()).then(d=>{Object.assign(D,d);route();})
+fetch('data.json?v='+Date.now()).then(r=>r.json()).then(d=>{
+  if(d.v && d.v!==APPV && !upgrading(d.v)) return;   // 页面旧、数据新 → 自动刷一次新版
+  Object.assign(D,d);route();
+})
   .catch(e=>{document.getElementById('app').innerHTML='<div class="empty-tip">数据加载失败：'+e+'</div>'});
+
+/* 检测到线上有新版本：提示后换 URL 重载（带 cb 参数绕开 Safari 的文档缓存）。
+   用 sessionStorage 兜底，避免万一拉不到新版时反复重载。 */
+function upgrading(v){
+  let done=false;
+  try{ done = sessionStorage.getItem('up_'+v)==='1'; sessionStorage.setItem('up_'+v,'1'); }catch(e){}
+  if(done) return false;
+  try{ toast('已更新到新版，正在刷新…'); }catch(e){}
+  setTimeout(()=>{location.replace(location.href.split('?')[0].split('#')[0]+'?cb='+Date.now());},900);
+  return true;
+}
 </script>
 </body>
 </html>
