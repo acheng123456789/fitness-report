@@ -692,6 +692,83 @@ function renderPace(){
       <span>${rs[0].date.slice(5)}</span><span>最快 ${rs.map(r=>r.配速显示).sort()[0]}</span><span>${rs[rs.length-1].date.slice(5)}</span></div>`;
 }
 
+/* ══ 手记配图：多次同类运动对比（2026-10-06 加）══
+   只在手记详情 sheet 里出现，别的地方不引用。
+   距离/爬升/心率/消耗一律从 D.recent 现算；只有「运动后心率恢复」这种
+   原始明细里才有的数值跟在手记的 图表.恢复 上（recent 没这个字段）。 */
+function jcBox(t,sub,svg,note){
+  return `<div style="background:var(--emb);border:0.5px solid var(--line2);border-radius:10px;padding:9px 10px 6px;margin-top:9px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+      <b style="font-size:11px;font-weight:500;color:var(--ink)">${t}</b>
+      <span style="font-size:8.5px;color:var(--ink3);white-space:nowrap">${sub}</span></div>
+    ${svg}${note?`<div style="font-size:8.5px;color:var(--ink3);margin-top:3px">${note}</div>`:''}</div>`;
+}
+const jcSw=(c,o)=>`<i style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${c};opacity:${o||1};vertical-align:-1px;margin-right:3px;margin-left:3px"></i>`;
+
+function jCharts(e){
+  const c=e.图表; if(!c||!c.日期) return '';
+  const days=c.日期, ty=c.类型, W=342;
+  const lbl=days.map(d=>d===e.date?d.slice(5)+' 今天':d.slice(5));
+  const recs=days.map(d=>D.recent.filter(r=>r.date===d&&(!ty||r.类型===ty))[0]);
+  if(recs.some(r=>!r)) return '';                    // 记录被删/没同步到就不画，别画半截
+  const cl=i=>i===days.length-1?'var(--gold)':'var(--ink3)';
+
+  /* ① 心率：均心 + 峰值（纵轴 130 起，否则三天差 7 bpm 根本看不出来） */
+  const A=118,La=27,Ra=8,Ta=12,Ba=19,ha=A-Ta-Ba,va=v=>Ta+ha-(v-130)/65*ha,ga=(W-La-Ra)/days.length;
+  let s1='';
+  [130,150,170,190].forEach(v=>{s1+=`<line x1="${La}" y1="${va(v)}" x2="${W-Ra}" y2="${va(v)}" stroke="var(--grid)" stroke-width=".6"/>`
+    +`<text x="${La-4}" y="${va(v)}" font-size="8" fill="var(--ink3)" text-anchor="end" dominant-baseline="middle">${v}</text>`});
+  recs.forEach((r,i)=>{const cx=La+ga*(i+.5);
+    [[r.平均心率,1],[r.最高心率,.42]].forEach((p,k)=>{
+      const bw=21,bx=cx-23+k*24,y=va(p[0]);
+      s1+=`<rect x="${bx.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${(Ta+ha-y).toFixed(1)}" rx="2" fill="var(--heart)" opacity="${p[1]}"/>`
+        +`<text x="${(bx+bw/2).toFixed(1)}" y="${(y-3).toFixed(1)}" font-size="9" fill="var(--ink)" text-anchor="middle">${p[0]}</text>`});
+    s1+=`<text x="${cx.toFixed(1)}" y="${A-6}" font-size="9" fill="${cl(i)}" text-anchor="middle">${lbl[i]}</text>`});
+  const c1=jcBox('心率对比','bpm '+jcSw('var(--heart)')+' 均心 '+jcSw('var(--heart)',.42)+' 峰值',
+    `<svg viewBox="0 0 ${W} ${A}" width="100%" height="${A}">${s1}</svg>`,'纵轴从 130 起');
+
+  /* ② 运动后心率恢复：三条折线（结束时 → 60 秒 → 120 秒） */
+  const rd=c.恢复; if(!rd||!rd.数据) return `<div class="sh2">数据对比</div>${c1}`;
+  const B=126,Lb=27,Rb=30,Tb=12,Bb=19,hb=B-Tb-Bb,vb=v=>Tb+hb-(v-90)/100*hb;
+  const st=(W-Lb-Rb)/(rd.标签.length-1), cols=['var(--ink3)','var(--run)','var(--gold)'];
+  let s2='';
+  [100,130,160,190].forEach(v=>{s2+=`<line x1="${Lb}" y1="${vb(v)}" x2="${W-Rb}" y2="${vb(v)}" stroke="var(--grid)" stroke-width=".6"/>`
+    +`<text x="${Lb-4}" y="${vb(v)}" font-size="8" fill="var(--ink3)" text-anchor="end" dominant-baseline="middle">${v}</text>`});
+  rd.数据.forEach((d,i)=>{
+    s2+=`<polyline points="${d.map((v,j)=>`${(Lb+j*st).toFixed(1)},${vb(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${cols[i]}" stroke-width="${i===rd.数据.length-1?2.2:1.5}" opacity="${i===rd.数据.length-1?1:.8}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    d.forEach((v,j)=>{s2+=`<circle cx="${(Lb+j*st).toFixed(1)}" cy="${vb(v).toFixed(1)}" r="${i===rd.数据.length-1?3:2.3}" fill="${cols[i]}"/>`});
+  });
+  const lab=rd.数据.map((d,i)=>({v:d[d.length-1],y:vb(d[d.length-1]),c:cols[i]})).sort((a,b)=>a.y-b.y);
+  for(let k=1;k<lab.length;k++) if(lab[k].y-lab[k-1].y<11) lab[k].y=lab[k-1].y+11;
+  lab.forEach(o=>{s2+=`<text x="${(Lb+(rd.标签.length-1)*st+4).toFixed(1)}" y="${o.y.toFixed(1)}" font-size="9" fill="${o.c}" dominant-baseline="middle">${o.v}</text>`});
+  rd.标签.forEach((t,j)=>{s2+=`<text x="${(Lb+j*st).toFixed(1)}" y="${B-6}" font-size="8.5" fill="var(--ink3)" text-anchor="${j===0?'start':j===rd.标签.length-1?'end':'middle'}">${t}</text>`});
+  const c2=jcBox('运动后心率恢复','bpm '+days.map((d,i)=>jcSw(cols[i])+d.slice(5)).join(' '),
+    `<svg viewBox="0 0 ${W} ${B}" width="100%" height="${B}">${s2}</svg>`,'线越陡＝恢复越快');
+
+  /* ③ 距离（柱）＋ 每公里消耗（线，右轴） */
+  const C=126,Lc=27,Rc=30,Tc=12,Bc=19,hc=C-Tc-Bc,gc=(W-Lc-Rc)/days.length;
+  const pk=recs.map(r=>Math.round((r.消耗||0)/(r.距离||1)));
+  const vd=v=>Tc+hc-(v/3.5)*hc, vk=v=>Tc+hc-(v-100)/40*hc;
+  let s3='';
+  [0,1,2,3].forEach(v=>{s3+=`<line x1="${Lc}" y1="${vd(v)}" x2="${W-Rc}" y2="${vd(v)}" stroke="var(--grid)" stroke-width=".6"/>`
+    +`<text x="${Lc-4}" y="${vd(v)}" font-size="8" fill="var(--ink3)" text-anchor="end" dominant-baseline="middle">${v}</text>`});
+  [100,120,140].forEach(v=>{s3+=`<line x1="${W-Rc}" y1="${vk(v)}" x2="${W-Rc+3}" y2="${vk(v)}" stroke="var(--line)" stroke-width=".6"/>`
+    +`<text x="${W-Rc+5}" y="${vk(v)}" font-size="8" fill="var(--ink3)" dominant-baseline="middle">${v}</text>`});
+  const cx3=recs.map((r,i)=>Lc+gc*(i+.5));
+  s3+=`<polyline points="${pk.map((v,i)=>`${cx3[i].toFixed(1)},${vk(v).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linejoin="round"/>`;
+  recs.forEach((r,i)=>{
+    const bw=26,bx=cx3[i]-bw/2,y=vd(r.距离||0);
+    s3+=`<rect x="${bx.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${(Tc+hc-y).toFixed(1)}" rx="2" fill="var(--run)" opacity=".85"/>`
+      +`<text x="${cx3[i].toFixed(1)}" y="${(y-3).toFixed(1)}" font-size="9" fill="var(--ink)" text-anchor="middle">${r.距离}</text>`
+      +`<circle cx="${cx3[i].toFixed(1)}" cy="${vk(pk[i]).toFixed(1)}" r="3" fill="var(--gold)"/>`
+      +`<text x="${cx3[i].toFixed(1)}" y="${(vk(pk[i])-6).toFixed(1)}" font-size="9" fill="var(--gold)" text-anchor="middle">${pk[i]}</text>`
+      +`<text x="${cx3[i].toFixed(1)}" y="${C-6}" font-size="9" fill="${cl(i)}" text-anchor="middle">${lbl[i]}</text>`});
+  const c3=jcBox('走得越远 · 越省','km '+jcSw('var(--run)',.85)+' 距离　'+jcSw('var(--gold)')+' kcal/公里',
+    `<svg viewBox="0 0 ${W} ${C}" width="100%" height="${C}">${s3}</svg>`,'柱越高＝走得越远；金线越低＝每公里越省力');
+
+  return `<div class="sh2">数据对比</div>${c1}${c2}${c3}`;
+}
+
 /* 渲染：手记列表 */
 function renderJ(){
   document.getElementById('jlist').innerHTML=D.journal.map(e=>`
@@ -715,6 +792,7 @@ function openJ(date){
     <div class="sh2">点评</div>
     <b style="font-size:12.5px">${esc(e.结论||'')}</b>
     <div class="adv" style="margin-top:6px">${(e.要点||[]).map(p=>`<li><span class="tag">${tagText(p[0])}</span>${esc(p[1])}</li>`).join('')}</div>
+    ${jCharts(e)}
     ${(e.建议&&e.建议.length)?`<div class="sh2">建议</div><div class="adv">${e.建议.map(s=>`<li>${esc(s)}</li>`).join('')}</div>`:''}`);
 }
 
