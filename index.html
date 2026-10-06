@@ -455,7 +455,7 @@ const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="bca4f5c1c4b";
+const APPV="b5bddc86b08";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1497,7 +1497,6 @@ function detailDay(ds,kind){
           <span style="font-size:9.5px;color:var(--ink2)">${FL[j.疲劳-1]||''}</span>
         </div>`:''}
       </div></div>`;
-  if(j) html+=`<div class="sh2" style="margin-top:14px">训练手记${(j.图表&&j.图表.日期)?' · '+j.图表.日期.length+' 天数据对比':''}</div>${jBlock(j)}`;
   if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'构成':'当天训练构成'}</div>`+
    list.map(r=>`<div style="display:grid;grid-template-columns:70px 1fr 52px;gap:8px;align-items:center;padding:4px 0;font-size:10.5px">
       <span style="color:var(--ink2)">${(TY[r.类型]||['·'])[0]} ${r.类型}</span>
@@ -1521,6 +1520,7 @@ function detailDay(ds,kind){
           <span>${it.sets} 组 × ${it.reps}</span></div>
       </div>`).join('')}</div>`;
   }
+  if(j) html+=`<div class="sh2" style="margin-top:14px">训练手记${(j.图表&&j.图表.日期)?' · '+j.图表.日期.length+' 天数据对比':''}</div>${jBlock(j)}`;
   openSheet(html);
 }
 
