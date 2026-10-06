@@ -784,16 +784,23 @@ function renderJ(){
       </div></div>`).join('');
 }
 
+/* 手记正文（感受 / 结论 / 图表 / 要点 / 建议）—— 日历详情页与手记弹层共用同一段 */
+function jBlock(e){
+  if(!e||!e.date) return '';
+  let h='';
+  if(e.感受) h+=`<div class="sh2" style="margin-top:14px">他的感受</div><div class="quote">${esc(e.感受)}</div>`;
+  if(e.结论) h+=`<div class="sh2">点评</div><b style="font-size:12.5px">${esc(e.结论)}</b>`;
+  h+=jCharts(e);
+  if(e.要点&&e.要点.length) h+=`<div class="sh2">关键数据</div><div class="adv" style="margin-top:6px">${
+    e.要点.map(p=>`<li><span class="tag">${tagText(p[0])}</span>${esc(p[1])}</li>`).join('')}</div>`;
+  if(e.建议&&e.建议.length) h+=`<div class="sh2">建议</div><div class="adv">${
+    e.建议.map(s=>`<li>${esc(s)}</li>`).join('')}</div>`;
+  return h;
+}
+
 function openJ(date){
   const e=D.journal.find(x=>x.date===date)||{};
-  openSheet(`<h3>${date.slice(5)} 训练手记</h3><div class="sst">记录时间 ${e.time||'—'} · 疲劳度 ${e.疲劳}/5（${['轻松','有点累','累但能扛','很累','撑不住'][e.疲劳-1]||'—'}）</div>
-    <div class="sh2" style="margin-top:14px">他的感受</div>
-    <div class="quote">${esc(e.感受||'')}</div>
-    <div class="sh2">点评</div>
-    <b style="font-size:12.5px">${esc(e.结论||'')}</b>
-    <div class="adv" style="margin-top:6px">${(e.要点||[]).map(p=>`<li><span class="tag">${tagText(p[0])}</span>${esc(p[1])}</li>`).join('')}</div>
-    ${jCharts(e)}
-    ${(e.建议&&e.建议.length)?`<div class="sh2">建议</div><div class="adv">${e.建议.map(s=>`<li>${esc(s)}</li>`).join('')}</div>`:''}`);
+  openSheet(`<h3>${date.slice(5)} 训练手记</h3><div class="sst">记录时间 ${e.time||'—'} · 疲劳度 ${e.疲劳}/5（${['轻松','有点累','累但能扛','很累','撑不住'][e.疲劳-1]||'—'}）</div>${jBlock(e)}`);
 }
 
 /* ── 日历 ── */
@@ -1484,9 +1491,9 @@ function detailDay(ds,kind){
           <span style="display:flex;gap:2px">${[1,2,3,4,5].map(i=>
             `<i style="width:15px;height:5px;border-radius:2px;background:${i<=j.疲劳?'var(--warn)':'var(--line2)'}"></i>`).join('')}</span>
           <span style="font-size:9.5px;color:var(--ink2)">${FL[j.疲劳-1]||''}</span>
-          ${j.图表?`<span class="tap" onclick="openJ('${ds}')" style="margin-left:auto;flex:none;font-size:9.5px;color:var(--gold);border:0.5px solid var(--line);border-radius:6px;padding:3px 7px">手记 · 数据图 ▸</span>`:''}
         </div>`:''}
       </div></div>`;
+  if(j) html+=`<div class="sh2" style="margin-top:14px">训练手记${(j.图表&&j.图表.日期)?' · '+j.图表.日期.length+' 天数据对比':''}</div>${jBlock(j)}`;
   if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'构成':'当天训练构成'}</div>`+
    list.map(r=>`<div style="display:grid;grid-template-columns:70px 1fr 52px;gap:8px;align-items:center;padding:4px 0;font-size:10.5px">
       <span style="color:var(--ink2)">${(TY[r.类型]||['·'])[0]} ${r.类型}</span>
@@ -1497,7 +1504,7 @@ function detailDay(ds,kind){
    list.map(r=>`<div class="srow2" style="margin-top:6px">
       <b>${(TY[r.类型]||['·'])[0]} ${r.类型}</b>
       <span>${r.time} · ${Math.round(r.时长)}分${r.距离?' · '+r.距离+'km':''}${hasPace(r)?' · '+r.配速显示:''}</span></div>
-    <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>`).join('');
+     <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>`).join('');
   if(st){
     html+=`<div class="sh2">力量动作 · ${esc(st.title||'')}（${st.items.length} 个）</div>
       <div>${st.items.map((it,i)=>`<div class="ex">
