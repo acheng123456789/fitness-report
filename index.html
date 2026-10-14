@@ -455,7 +455,7 @@ const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="b717f4efdd0";
+const APPV="bfa34bc92ef";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1451,7 +1451,184 @@ function viewBody(){
         ${D.body.map(r=>`<tr class="tap" onclick="evB(${D.body.slice().sort((x,y)=>x.date<y.date?-1:1).findIndex(v=>v.date===r.date)})">
           <td>${r.date.slice(5)}</td><td>${r.weight_jin}</td><td>${r.bf_pct}</td><td>${r.lean_jin}</td><td>${r.bmr}</td></tr>`).join('')}
       </table></div></div>
+    ${recSec()}
   </div>`;
+}
+
+/* ══ 恢复（睡眠 / 静息心率 / HRV / 血氧）══
+   数据来自 数据/recovery.json，由 脚本/build_recovery.py 从 Apple Health 全量导出抽出来。
+   ⚠️ 三个必须记住的差异（别当运动记录那样处理）：
+     1. **不会每天更新** —— 只有重跑「健康 App → 导出所有健康数据」才有新数据。
+        所以这一节要显示"截至哪天"，不能让人以为停在今天就是漏了。
+     2. **半空是常态** —— 戴表跑步的日子有静息心率，但没戴表睡觉的日子没有睡眠。
+        缺就显示 —，绝不能当 0（0 会被画成"跌到谷底"，误导）。
+     3. 睡眠数据只到 2026-07 中（之后没戴表睡），页面上如实说明，不粉饰。 */
+function REC(){
+  return D.recovery||{};
+}
+/* 睡眠一行小结（某天明细弹层里用）。date 传的是"那一觉的日期"，要说清是哪晚。
+   ⚠️ 只给 7 天内的，超过就别显示 —— 实测踩过：10-13 那次跑步翻出来是"前一晚 07-24、
+   距今 82 天"，机制对了但毫无参考价值，看着还像当天数据（真会误导）。超期改成一句提示。 */
+function recStrip(date,bits){
+  if(!date||!bits.length) return '';
+  const gap=Math.round((new Date()-new Date(date))/864e5);
+  if(gap>7)
+    return `<div class="sh2">休息数据</div>
+      <div style="font-size:10.5px;color:var(--ink3);line-height:1.6">最近一次睡眠记录是 ${date.slice(5)}（${gap} 天前）。
+        那之后没戴表睡觉，所以这一晚没有数据 —— 不是漏记。</div>`;
+  return `<div class="sh2">前一晚的休息 · ${date.slice(5)}</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">${bits.map(b=>
+      `<span class="chip">${b}</span>`).join('')}</div>
+    <div style="font-size:9.5px;color:var(--ink3);margin-top:5px">${
+      gap>0?`距今 ${gap} 天`:'就是昨天'}</div>`;
+}
+/* 取最近 N 天有某项指标的记录（往前找，允许中间断档 —— 只认"最近一次全量导出"覆盖到的范围） */
+function recRecent(field,n){
+  const R=REC();
+  return Object.keys(R).filter(d=>R[d][field]!=null).sort().reverse().slice(0,n||14);
+}
+/* 「最近一次睡眠」要排除碎片：低于 3 小时的其实是午睡片段或忘戴表，
+   拿它当代表会显示成"你只睡了 2.3 小时"，看着像出了大问题。
+   —— 但图上仍然如实画出来（那是事实），只是不当"头条数字"。 */
+function recHeadlineSleep(){
+  const R=REC();
+  return Object.keys(R).filter(d=>R[d]['睡眠时长']>=180).sort().reverse()[0]||null;
+}
+function recSec(){
+  const R=REC(), ks=Object.keys(R).sort();
+  if(!ks.length) return '';                    // 压根没数据 → 整节不出现
+  const lastAll=ks[ks.length-1];
+  const sl=recRecent('睡眠时长',14), hr=recRecent('静息心率',14);
+  const slLast=sl.length?sl[0]:null;
+  const slHead=recHeadlineSleep();                 // ≥3 小时的那一晚，没有就退回最近一条
+  const stale=slLast&&(new Date()-new Date(slLast))>864e5*30;
+
+  return `<div class="sec"><div class="shead"><span class="no">05</span><span class="tt">恢复与休息</span><span class="en2">Recovery</span><span class="ln"></span></div>
+
+    <div class="card block">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="flex:1"><div style="font-size:10px;color:var(--ink3);letter-spacing:1px">最近一次像样的睡眠</div>
+          <div style="font-size:26px;font-weight:600;letter-spacing:-.6px">${
+            slHead?`${(R[slHead]['睡眠时长']/60).toFixed(1)}<u style="font-size:11px;color:var(--ink2);text-decoration:none"> 小时</u>`:'—'}</div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:2px">${
+            slHead?`${slHead.slice(5)} 那一夜 · 效率 ${R[slHead]['睡眠效率']||'—'}%`:'没有记录'}${
+            slLast&&slHead&&slLast!==slHead?`<br><span style="color:var(--warn)">${slLast.slice(5)} 那晚只有 ${(R[slLast]['睡眠时长']/60).toFixed(1)} 小时（见下图）</span>`:''}</div></div>
+        <div style="width:1px;align-self:stretch;background:var(--line)"></div>
+        <div style="flex:1"><div style="font-size:10px;color:var(--ink3);letter-spacing:1px">静息心率</div>
+          <div style="font-size:26px;font-weight:600;letter-spacing:-.6px">${
+            hr.length?`${R[hr[0]]['静息心率']}<u style="font-size:11px;color:var(--ink2);text-decoration:none"> bpm</u>`:'—'}</div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:2px">${
+            hr.length?`${hr[0].slice(5)} · 越低越好`:'没有记录'}</div></div>
+      </div>
+      ${stale?`<div class="cap" style="color:var(--warn)">⚠ 睡眠数据停在 ${slLast.slice(5)} —— 之后没戴表睡觉了。
+        戴一晚就有，不必重跑导出。</div>`:
+        `<div class="cap">数据截至 ${lastAll.slice(5)} · 睡眠与心率来自 Apple Watch，不每天更新</div>`}
+    </div>
+
+    ${sl.length>=3?`<div class="card block">
+      <div class="chartbox" id="sleepChart"></div>
+      <div class="cap">柱子＝当晚总共睡着多久（小时）· 红色虚线是 7 小时参考线，线下那段淡红＝欠的觉</div></div>`:''}
+
+    ${hr.length>=3?`<div class="card block">
+      <div class="chartbox" id="rhrChart"></div>
+      <div class="cap">静息心率走势 · 线越低说明恢复越好、越不容易累</div></div>`:''}
+  </div>`;
+}
+
+/* 睡眠堆叠柱：深睡 / 浅睡 / REM，底下垫一条 7 小时参考线 */
+function renderSleep(){
+  const el=document.getElementById('sleepChart'); if(!el) return;
+  const days=recRecent('睡眠时长',14).reverse();
+  if(days.length<3){el.innerHTML='<div class="empty-tip">睡眠记录不足</div>';return}
+  const R=REC(), W=342, H=140, pad=16, base=H-pad;
+  const segs=days.map(d=>{
+    const r=R[d], deep=r['深睡']||0, rem=r['REM']||0;
+    const lite=Math.max(0,(r['浅睡']!=null?r['浅睡']:r['睡眠时长'])-deep-rem);
+    return {deep,rem,lite,tot:r['睡眠时长']};
+  });
+  const mx=Math.max(...segs.map(s=>s.tot),420);       // 至少留到 420 分（7h），否则参考线顶格
+  const vy=v=>base-(v/mx)*(H-pad-24);
+  const gw=(W-pad*2)/days.length, bw=Math.min(bwMax(gw),16);
+  function bwMax(g){return g*0.56}
+  let s=`<line x1="0" y1="${vy(420).toFixed(1)}" x2="${W}" y2="${vy(420).toFixed(1)}"
+      stroke="var(--line)" stroke-width=".8" stroke-dasharray="3 3"/>`;
+  // 7 小时参考线：线下面要盖一层淡红，提醒"睡不够"
+  if(420<mx){
+    s+=`<rect x="0" y="${vy(420).toFixed(1)}" width="${W}" height="${(base-vy(420)).toFixed(1)}"
+        fill="var(--heart)" opacity=".05"/>`;
+  }
+  s+=`<text x="${W}" y="${(vy(420)-3).toFixed(1)}" font-size="8" fill="var(--ink3)" text-anchor="end">7 小时</text>`;
+  segs.forEach((g,i)=>{
+    const cx=pad+gw*(i+.5), x=cx-bw/2;
+    const hDeep=g.deep/mx*(H-pad-24), hRem=g.rem/mx*(H-pad-24),
+          hLite=g.lite/mx*(H-pad-24), hTot=g.tot/mx*(H-pad-24);
+    /* 堆叠自下而上：深睡 → 浅睡 → REM。
+       ⚠️ 顺序不能反：一开始把 REM 放最上层，深睡只有最底下那一小条，
+       看着像"REM 占了一大半"，跟事实正好相反（实测截图里就是这样）。 */
+    s+=`<rect x="${x.toFixed(1)}" y="${(base-hDeep).toFixed(1)}" width="${bw.toFixed(1)}" height="${hDeep.toFixed(1)}"
+        fill="var(--lift)"/>`;
+    s+=`<rect x="${x.toFixed(1)}" y="${(base-hDeep-hLite).toFixed(1)}" width="${bw.toFixed(1)}" height="${hLite.toFixed(1)}"
+        fill="var(--run)" opacity=".55"/>`;
+    s+=`<rect x="${x.toFixed(1)}" y="${(base-hTot).toFixed(1)}" width="${bw.toFixed(1)}" height="${hRem.toFixed(1)}"
+        fill="var(--green)"/>`;
+    // 缺觉的那天标红字，一眼看出不是"没数据"而是"没睡够"
+    const short=g.tot<420;
+    s+=`<text x="${cx.toFixed(1)}" y="${(base-hTot-4).toFixed(1)}" font-size="8.5" text-anchor="middle"
+        fill="${short?'var(--warn)':'var(--ink3)'}">${(g.tot/60).toFixed(1)}</text>`;
+    s+=`<rect x="${(cx-gw/2).toFixed(1)}" y="0" width="${gw.toFixed(1)}" height="${H}" fill="transparent"
+        class="barhit" onclick="toast('${days[i].slice(5)}：睡 ${(g.tot/60).toFixed(1)} 小时${g.deep?'（深睡 '+g.deep+' 分）':''}')"/>`;
+  });
+  [0,mx/2,mx].forEach(v=>{s+=`<line x1="0" y1="${vy(v).toFixed(1)}" x2="${W}" y2="${vy(v).toFixed(1)}" stroke="var(--grid)" stroke-width=".6"/>`});
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">${s}</svg>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:3px">
+      <span>${days[0].slice(5)}</span><span>中间 ${days[Math.floor(days.length/2)].slice(5)}</span><span>${days[days.length-1].slice(5)}</span></div>
+    <div style="display:flex;gap:11px;justify-content:center;font-size:9px;color:var(--ink3);margin-top:5px">
+      <span><i style="display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--lift);vertical-align:-1px;margin-right:3px"></i>深睡</span>
+      <span><i style="display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--run);opacity:.55;vertical-align:-1px;margin-right:3px"></i>浅睡</span>
+      <span><i style="display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--green);vertical-align:-1px;margin-right:3px"></i>REM</span></div>`;
+}
+
+/* 静息心率折线：纵轴按数据自适应，别写死范围（他 53~64 都出现过） */
+function renderRhr(){
+  const el=document.getElementById('rhrChart'); if(!el) return;
+  const days2=recRecent('静息心率',14).reverse();
+  if(days2.length<3){el.innerHTML='<div class="empty-tip">静息心率记录不足</div>';return}
+  const R=REC(), W=342, H=130, pad=16;
+  const vs=days2.map(d=>R[d]['静息心率']);
+  let mn=Math.min(...vs), mx=Math.max(...vs);
+  const rg=Math.max(mx-mn,4); mn=Math.floor((mn-rg*0.25)); mx=Math.ceil((mx+rg*0.25));
+  const vy=v=>H-pad-((v-mn)/(mx-mn))*(H-pad*2-20);
+  const st=(W-pad*2)/Math.max(days2.length-1,1);
+  let s='';
+  [mn,(mn+mx)/2,mx].forEach(v=>{s+=`<line x1="0" y1="${vy(v).toFixed(1)}" x2="${W}" y2="${vy(v).toFixed(1)}" stroke="var(--grid)" stroke-width=".6"/>
+    <text x="${W}" y="${(vy(v)-3).toFixed(1)}" font-size="8" fill="var(--ink3)" text-anchor="end">${Math.round(v)}</text>`});
+  const pts=days2.map((d,i)=>[pad+i*st, vy(R[d]['静息心率'])]);
+  s+=`<polyline fill="none" stroke="var(--heart)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"
+      points="${pts.map(p=>`${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}"/>`;
+  /* X 轴标签抽稀：全标会挤成一团糊（实测 09-17/18/19 三个叠在一起）。
+     ⚠️ 光靠 `i%every` 不够 —— 末位必标，而末位常常紧挨着上一个标签，照样撞。
+     所以改成**从末位往回推**：先定死最后一个（text-anchor=end），
+     再每 every 个标一个，且与上一个标签间距不足就跳过那个。*/
+  const labW=40, maxLab=Math.max(2,Math.floor((W-pad*2)/labW));
+  const every=Math.max(1,Math.ceil(days2.length/maxLab));
+  const showLab=[days2.length-1];                       // 末位必标
+  for(let i=days2.length-2;i>=0;i-=every){
+    if((pts[showLab[showLab.length-1]][0]-pts[i][0])>=labW) showLab.push(i);
+  }
+  const showSet=new Set(showLab);
+  pts.forEach((p,i)=>{const last=i===pts.length-1;
+    s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${last?5:3.2}"
+        fill="${last?'var(--gold)':'var(--heart)'}" opacity="${last?1:.6}" class="barhit"
+        onclick="toast('${days2[i].slice(5)}：静息心率 ${R[days2[i]]['静息心率']} bpm${R[days2[i]]['HRV']?' · HRV '+R[days2[i]]['HRV']+'ms':''}')"/>
+      <rect x="${(p[0]-14).toFixed(1)}" y="${(p[1]-16).toFixed(1)}" width="28" height="30" fill="transparent"
+        class="barhit" onclick="toast('${days2[i].slice(5)}：静息心率 ${R[days2[i]]['静息心率']} bpm${R[days2[i]]['HRV']?' · HRV '+R[days2[i]]['HRV']+'ms':''}')"/>`;
+    if(showSet.has(i))
+      s+=`<text x="${p[0].toFixed(1)}" y="${H-4}" font-size="8.5" fill="var(--ink3)"
+        text-anchor="${i===0?'start':last?'end':'middle'}">${days2[i].slice(5)}</text>`;
+  });
+  const avg=Math.round(vs.reduce((a,b)=>a+b,0)/vs.length);
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">${s}</svg>
+    <div class="cap">最近 ${vs.length} 天平均 ${avg} bpm · 纵轴 ${mn}~${mx}，只看出趋势不用纠结具体数字</div>`;
 }
 function evB(i){
   const b=D.body.slice().sort((x,y)=>x.date<y.date?-1:1)[i];
@@ -1482,9 +1659,20 @@ function detailDay(ds,kind){
   const FL=['轻松','有点累','累但能扛','很累','撑不住'];
   const maxT=Math.max(...list.map(r=>r.时长),1);
   const KIND={run:'跑步',lift:'器械'};
+  /* 前一晚的睡眠：训练表现要能对着它看。
+     ⚠️ 找的是**之前最近的一条**（多数情况就是前一天），不是当天 ——
+     半夜的觉 HealthKit 记在醒来的那天，而"10-13 早上那次跑步"该对应"12 号夜里那觉"。
+     找不到就整块不显示，别写"无数据"（他会以为坏了）。 */
+  const prevK=Object.keys(REC()).filter(k=>k<ds&&(REC()[k]['睡眠时长']||0)>=180).sort().reverse()[0];
+  const rc=prevK?REC()[prevK]:null;
+  const sleepBits=rc&&rc['睡眠时长']?[
+    `睡 ${(rc['睡眠时长']/60).toFixed(1)} 小时`,
+    rc['睡眠效率']?`效率 ${rc['睡眠效率']}%`:null,
+    rc['静息心率']?`静息 ${rc['静息心率']}`:null,
+    rc['HRV']?`HRV ${rc['HRV']}`:null].filter(Boolean):[];
   if(!list.length&&!st){
     openSheet(`<h3>${ds.slice(5).replace('-',' 月 ')} 日</h3>
-      <div class="sst">这天没有${KIND[kind]||''}记录</div>`);return;
+      <div class="sst">这天没有${KIND[kind]||''}记录</div>${sleepBits.length?recStrip(prevK,sleepBits):''}`);return;
   }
   let html=`<div style="display:flex;gap:12px;align-items:center">
       <div class="calbox"><div class="tear"></div><div class="m">${+ds.slice(5,7)} 月</div>
@@ -1499,7 +1687,7 @@ function detailDay(ds,kind){
             `<i style="width:15px;height:5px;border-radius:2px;background:${i<=j.疲劳?'var(--warn)':'var(--line2)'}"></i>`).join('')}</span>
           <span style="font-size:9.5px;color:var(--ink2)">${FL[j.疲劳-1]||''}</span>
         </div>`:''}
-      </div></div>`;
+      </div></div>${sleepBits.length?recStrip(prevK,sleepBits):''}`;
   if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'构成':'当天训练构成'}</div>`+
    list.map(r=>`<div style="display:grid;grid-template-columns:70px 1fr 52px;gap:8px;align-items:center;padding:4px 0;font-size:10.5px">
       <span style="color:var(--ink2)">${(TY[r.类型]||['·'])[0]} ${r.类型}</span>
@@ -1561,6 +1749,7 @@ function paint(){
   app.style.animation='none'; void app.offsetWidth; app.style.animation='';
   document.querySelectorAll('#tab a').forEach(a=>a.classList.toggle('on',a.dataset.r===h));
   if(h==='#/overview'){renderMix();renderPace();renderJ();}
+  if(h==='#/body'){renderSleep();renderRhr();}
   window.scrollTo(0,0);
   syncTh();
 }
