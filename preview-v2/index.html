@@ -267,6 +267,11 @@ body.dk .segbar button.on{background:var(--card);box-shadow:0 1px 0 var(--hl) in
 .legend span b{font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .legend span.off{opacity:.3;text-decoration:line-through}
 .legend span:active{background:var(--emb);border-color:var(--line)}
+/* 聚焦态：点中的那类描金边，其余变灰但仍可点（点了就切换过去） */
+.legend span.on{border-color:var(--gold);color:var(--ink);
+  background:color-mix(in srgb,var(--gold) 13%,transparent);font-weight:600}
+.legend span.dim{opacity:.42}
+.legend .allchip{border-color:var(--gold);color:var(--gold);font-weight:700}
 .legend.ro{pointer-events:none}
 
 /* 联动明细条 */
@@ -281,23 +286,30 @@ body.dk .pick{background:rgba(255,255,255,.045)}
 /* ② 训练热力图
    ⚠️ 别用 aspect-ratio:1 —— 7 列平分 330pt 宽，每格会到 50px，
    6 周就313px 高、整张卡 496px，占掉两屏多。改成固定 30px 方格才紧凑。 */
-.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:12px}
-.heat .hc{height:30px;border-radius:4px;background:var(--line2);position:relative;
-  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink3);
-  transition:transform .14s,box-shadow .14s}
-.heat .hc.l1{background:color-mix(in srgb,var(--gold) 22%,transparent)}
-.heat .hc.l2{background:color-mix(in srgb,var(--gold) 45%,transparent);color:var(--ink)}
-.heat .hc.l3{background:color-mix(in srgb,var(--gold) 70%,transparent);color:#fff;font-weight:700}
-.heat .hc.l4{background:var(--gold);color:#171102;font-weight:700}
+/* ② 训练热力图（真日历版：一周一行，一格一天，格内上行日期、下行分钟数）
+   阿成 2026-10-16 反馈原版"一堆色块方框看不懂、不知道对应哪天、底部七八九十月标签对不上"，
+   所以：每格自带日期数字，跨月处显示"月/日"，底部月份标签行删掉。 */
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.heat .hc{height:38px;border-radius:6px;background:var(--emb);border:1px solid var(--line2);
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;color:var(--ink3);cursor:pointer;
+  transition:transform .14s,box-shadow .14s,background .16s}
+.heat .hc .d{font-size:8.5px;line-height:1;font-style:normal;opacity:.8}
+.heat .hc .m{font-size:10.5px;line-height:1;font-weight:700;text-decoration:none;
+  font-family:ui-monospace,Menlo,monospace}
+.heat .hc.l1{background:color-mix(in srgb,var(--gold) 20%,var(--emb));color:var(--ink2)}
+.heat .hc.l2{background:color-mix(in srgb,var(--gold) 40%,var(--emb));color:var(--ink)}
+.heat .hc.l3{background:color-mix(in srgb,var(--gold) 68%,var(--emb));color:#fff}
+.heat .hc.l4{background:var(--gold);color:#171102}
 body.dk .heat .hc.l3,body.dk .heat .hc.l4{color:#171102}
-.heat .hc.tdy{box-shadow:0 0 0 1.6px var(--run) inset}
-.heat .hc.on{transform:scale(1.16);box-shadow:0 0 0 2px var(--ink) inset,0 2px 8px rgba(0,0,0,.25);z-index:2}
-.heat .hc:active{transform:scale(.9)}
-.heatwk{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:6px}
-.heatwk div{text-align:center;font-size:8px;color:var(--ink3)}
-.heatmo{display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:7px}
+.heat .hc.fut{opacity:.35;pointer-events:none}
+.heat .hc.tdy{border-color:var(--run);box-shadow:0 0 0 1.6px var(--run) inset}
+.heat .hc.on{transform:scale(1.1);box-shadow:0 0 0 2px var(--ink) inset,0 2px 8px rgba(0,0,0,.25);z-index:2}
+.heat .hc:active{transform:scale(.92)}
+.heatwk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px}
+.heatwk div{text-align:center;font-size:8.5px;color:var(--ink3)}
 
-/* ③ 配速—心率双轴 */
+/* ③ 跑步配速折线（v4 单轴，v3 双轴已砍） */
 .dual{position:relative}
 .dual .tipbox{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
   border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
@@ -306,8 +318,9 @@ body.dk .heat .hc.l3,body.dk .heat .hc.l4{color:#171102}
 .dual .tipbox b{font-size:12px;font-weight:700}
 .dgrid{stroke:var(--grid);stroke-width:1}
 .daxl{font-size:8px;fill:var(--ink3);font-family:ui-monospace,Menlo,monospace}
-.dbar{transition:opacity .16s}
+.dfast{font-size:8.5px;fill:var(--gold);font-weight:700}
 .ddot{transition:r .16s,opacity .16s;cursor:pointer}
+.ddot:hover{filter:brightness(1.1)}
 
 /* ④ 体重双线 */
 .wl2 .tipbox{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
@@ -690,7 +703,7 @@ function nowMonthLabel(){const d=new Date();return d.getFullYear()+' · '+String
 const MQ=matchMedia('(prefers-color-scheme: dark)');
 let THMODE=localStorage.getItem('thm')||'auto';
 const wantDark=()=>THMODE==='auto'?MQ.matches:THMODE==='d';
-let ST={theme:wantDark(), ym:nowYM(), pick:{}, legendOff:{}, hmode:'chart'};
+let ST={theme:wantDark(), ym:nowYM(), pick:{}, focus:null, hmode:'chart'};
 
 /* 当月汇总：当月没数据就退回数据里最新的那个月（别让页面读到 undefined） */
 function curOv(){
@@ -1134,19 +1147,18 @@ function monthChartHTML(){
   const byTot={}; allTypes.forEach(n=>byTot[n]=0);
   ms.forEach(m=>m.types.forEach(t=>byTot[t.名称]+=t.时长));
   ST.__order=allTypes.slice().sort((a,b)=>byTot[b]-byTot[a]);
-  const off=ST.legendOff||{};
   const on=ST.pick.month;
   /* 图例关掉某类后，柱子要按「可见时长」重新归一化 —— 否则 9 月隐藏骑行后
      柱子还是全高、里面只剩一小段彩色（空心柱），图例就失去了"只看某一类"的意义。
      visMin=0（该类全被关掉）时柱子整根消失，也不再给选中态。 */
-  const visMin=m=>m.types.filter(t=>!off[t.名称]).reduce((a,t)=>a+t.时长,0);
+  const visMin=m=>m.types.filter(t=>!lgOff(t.名称)).reduce((a,t)=>a+t.时长,0);
   const mx=Math.max(...ms.map(visMin),1);
 
   const bars=ms.map(m=>{
     const vm=visMin(m);
     const h=vm>0?Math.max(8,(vm/mx)*100):0;
     const segs=m.types.map(t=>{
-      if(off[t.名称]) return '';
+      if(lgOff(t.名称)) return '';
       const sh=vm>0?(t.时长/vm)*100:0;   /* 每段占「可见总时长」的比例 */
       return `<i style="height:${sh.toFixed(2)}%;background:${mixColor(t.名称)}"></i>`;
     }).join('');
@@ -1178,8 +1190,7 @@ function paintMonthChart(){
   }
   Array.prototype.forEach.call(card.querySelectorAll('.mg'), el=>{
     const m=ST.__ms.find(x=>x.ym===el.dataset.month);
-    const off=ST.legendOff||{};
-    const vm=m?m.types.filter(t=>!off[t.名称]).reduce((a,t)=>a+t.时长,0):0;
+    const vm=m?m.types.filter(t=>!lgOff(t.名称)).reduce((a,t)=>a+t.时长,0):0;
     el.classList.toggle('on', el.dataset.month===on&&vm>0);
     el.classList.toggle('dim', !!on && el.dataset.month!==on);
     const top=el.querySelector('.mtop');
@@ -1194,9 +1205,15 @@ function paintMonthChart(){
   if(old) old.replaceWith(nb);
   else card.appendChild(nb);
 }
+/* 图例聚焦：ST.focus=null 看全部；=某类型名时只看那一类。
+   ⚠️ 旧版是"多选隐藏"（ST.legendOff 逐个点掉），阿成反馈"我想看其中一个得把其他
+   全部点掉，看起来好累"——参照淘宝/小红书筛选 chip 的逻辑改成**单选聚焦**：
+   点一下只看它，再点同一项恢复全部，点其他项切换过去，随时有「全部」可回。 */
+function lgOff(name){ return !!ST.focus && ST.focus!==name; }
 function legendHTML(){
-  const order=ST.__order||[], off=ST.legendOff||{};
-  return order.map(n=>`<span class="${off[n]?'off':''}" onclick="tglLegend('${esc(n)}')">
+  const order=ST.__order||[], f=ST.focus;
+  const all=f?`<span class="allchip" onclick="tglLegend('__all__')">全部</span>`:'';
+  return all+order.map(n=>`<span class="${f===n?'on':(f?'dim':'')}" onclick="tglLegend('${esc(n)}')">
       <i style="background:${mixColor(n)}"></i><b>${esc(n)}</b></span>`).join('');
 }
 function pickBodyHTML(){
@@ -1204,17 +1221,20 @@ function pickBodyHTML(){
   const sel=on?ST.__ms.find(m=>m.ym===on):null;
   if(!sel) return `<div class="pick" data-pick="1" style="opacity:.72">
       <div class="pk-s">点任意一根柱子看那个月的构成 · 点图例可只看某一类</div></div>`;
-  const off=ST.legendOff||{};
-  const vt=sel.types.filter(t=>!off[t.名称]).reduce((a,t)=>a+t.时长,0);
-  const tot=vt>0?vt:sel.总时长;
-  const hidN=sel.types.filter(t=>off[t.名称]).length;
+  const vis=sel.types.filter(t=>!lgOff(t.名称));
+  const tot=vis.reduce((a,t)=>a+t.时长,0);
+  if(!vis.length) return `<div class="pick" data-pick="1">
+      <div class="pk-t">${+sel.ym.slice(5)} 月</div>
+      <div class="pk-s">这个月没练过「${esc(ST.focus)}」· 点图例里的「全部」看所有类型</div>
+      <div class="pk-x" onclick="pickAt('month','${sel.ym}')">×</div></div>`;
+  const tip=ST.focus?` · 正在只看「${esc(ST.focus)}」`:'';
   return `<div class="pick" data-pick="1">
       <div class="pk-t">${+sel.ym.slice(5)} 月</div>
-      <div class="pk-s">${sel.次数} 次 · ${sel.天数} 天 · ${hrsOf(tot)} 小时 · ${sel.距离.toFixed(1)} km · ${sel.消耗} kcal
-        ${isCurrentMonth(sel.ym)?'（至今）':''}${hidN?` · 已隐藏 ${hidN} 类，时长与占比按可见部分算`:''}</div>
+      <div class="pk-s">${sel.次数} 次 · ${sel.天数} 天 · ${hrsOf(tot)} 小时 · ${sel.距离.toFixed(1)} km · ${sel.消耗} kcal${tip}
+        ${isCurrentMonth(sel.ym)?'（至今）':''}</div>
       <div class="pk-x" onclick="pickAt('month','${sel.ym}')">×</div>
     </div>
-    <div class="legend" data-live="1" style="margin-top:10px">${sel.types.filter(t=>!off[t.名称]).map(t=>
+    <div class="legend" data-live="1" style="margin-top:10px">${vis.map(t=>
       `<span style="pointer-events:none"><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′ · ${Math.round(t.时长/tot*100)}%</span>`).join('')}</div>`;
 }
 /* 图例开关：只重画这张图这张卡，不整页重绘（否则滚动位置会丢）
@@ -1225,8 +1245,8 @@ function pickBodyHTML(){
    必须用 outerHTML 整块替换，且替换后不用再手动补 on/dim class
    （monthChartHTML() 生成时已经按 ST.pick.month 写好了）。 */
 function tglLegend(n){
-  ST.legendOff=ST.legendOff||{};
-  ST.legendOff[n]=!ST.legendOff[n];
+  /* 单选聚焦：点同一项或「全部」→ 恢复全部；点其他项 → 切换聚焦到它 */
+  ST.focus=(n==='__all__'||ST.focus===n)?null:n;
   const anchor=document.querySelector('#app .mg');
   if(!anchor) return;
   const card=anchor.closest('.gsec');
@@ -1244,41 +1264,40 @@ function heatHTML(){
   const on=ST.pick.heat;
   const expanded=!!ST.heatAll;
   const visible=expanded?h.weeks:h.weeks.slice(HEAT_WEEKS/2);
-  const off=HEAT_WEEKS-visible.length;
 
-  const grid=visible.map((wk,wi)=>wk.map(c=>{
-    const txt=c.lv?Math.round(c.min):'';
+  /* 跨月处（或当月 1 号）日期带月份前缀 —— 阿成反馈"下面是七八九十月，不知道对应哪"
+     所以底部月份标签行整个去掉，让每格自己说"我是哪天" */
+  const dLabel=ds=>{
+    const d=new Date(ds);
+    const yest=new Date(ds); yest.setDate(d.getDate()-1);
+    const cross=yest.getMonth()!==d.getMonth()||d.getDate()===1;
+    return cross?`${d.getMonth()+1}/${d.getDate()}`:`${d.getDate()}`;
+  };
+
+  /* 一周一行：上行日期（小）、下行分钟数（粗，有训练才显示） */
+  const grid=visible.map(wk=>wk.map(c=>{
     const cls=['hc','l'+c.lv,c.today?'tdy':'',on===c.ds?'on':'',c.fut?'fut':''].filter(Boolean).join(' ');
-    return `<div class="${cls}" data-ds="${c.ds}" ${c.fut?'':`onclick="pickAt('heat','${c.ds}')"`}
-      >${txt}</div>`;
+    return `<div class="${cls}" data-ds="${c.ds}" ${c.fut?'':`onclick="pickAt('heat','${c.ds}')"`}>
+      <i class="d">${dLabel(c.ds)}</i>${c.min>0?`<b class="m">${Math.round(c.min)}′</b>`:'<s class="m"></s>'}</div>`;
   }).join('')).join('');
-
-  /* 月份标签：只在某个月第一格出现的列下标一次 */
-  let lastM=-1;
-  const moLabels=visible.map(wk=>{
-    const m=+wk[0].ds.slice(5,7);
-    const show=m!==lastM; lastM=m;
-    return `<span style="visibility:${show?'visible':'hidden'}">${m}月</span>`;
-  });
 
   const all=h.weeks.flat(), act=all.filter(c=>c.min>0);
   const totalMin=all.reduce((a,c)=>a+c.min,0);
+  const weeks=expanded?HEAT_WEEKS:HEAT_WEEKS/2;
 
   const sel=on?all.find(c=>c.ds===on):null;
   const selBody=sel?heatPickHTML(sel):'';
 
   return `<div class="gsec">
     <div class="gt">训练节奏</div>
-    <div class="gd">一格一天，颜色越深练得越多，今天是蓝框那格。点任意格子看那天练了什么。</div>
+    <div class="gd">一周一行，一格一天，颜色越深练得越久。蓝框是今天。点格子看那天练了什么。</div>
     <div class="chart" id="ch-heat">
       <div class="heatwk">${WD.map(d=>`<div>${d[1]}</div>`).join('')}</div>
       <div class="heat">${grid}</div>
-      <div class="heatmo">${moLabels.join('')}</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:11px">
       <div style="flex:1;font-size:11.5px;color:var(--ink2)">
-        ${expanded?`近 ${HEAT_WEEKS} 周`:`近 ${HEAT_WEEKS/2} 周`} ·
-        <b style="color:var(--ink);font-weight:600">${act.length}</b> 天有训练 · 周均 <b style="color:var(--ink);font-weight:600">${Math.round(totalMin/(expanded?HEAT_WEEKS:HEAT_WEEKS/2)/6)/10}</b> 小时
+        近 ${weeks} 周 · <b style="color:var(--ink);font-weight:600">${act.length}</b> 天有训练 · 周均 <b style="color:var(--ink);font-weight:600">${Math.round(totalMin/weeks/6)/10}</b> 小时
       </div>
       <button class="minibtn" onclick="toggleHeat()">${expanded?'收起':'看更早 6 周'}</button>
     </div>
@@ -1289,13 +1308,14 @@ function heatPickHTML(c){
   const list=D.recent.filter(r=>r.date===c.ds);
   return `<div class="pick" style="flex-direction:column;align-items:stretch;gap:9px" data-pick-heat="1">
       <div style="display:flex;align-items:center;gap:10px">
-        <div class="pk-t">${c.ds.slice(5)} 周${WD[(new Date(c.ds).getDay()+6)%7]}</div>
-        <div class="pk-s">${Math.round(c.min)} 分钟</div>
+        <div class="pk-t">${c.ds.slice(5)} ${WD[(new Date(c.ds).getDay()+6)%7]}</div>
+        <div class="pk-s">${c.min>0?Math.round(c.min)+' 分钟':'这天没训练'}</div>
         <div class="pk-x" onclick="pickAt('heat','${c.ds}')">×</div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map(r=>
         `<span style="font-size:10.5px;padding:3px 8px;border-radius:99px;background:var(--card);
-           border:1px solid var(--line2)">${(TY[r.类型]||['·'])[0]} ${esc(r.类型)} ${Math.round(r.时长)}′${r.距离?' · '+r.距离+'km':''}</span>`).join('')}</div>
+           border:1px solid var(--line2)">${(TY[r.类型]||['·'])[0]} ${esc(r.类型)} ${Math.round(r.时长)}′${r.距离?' · '+r.距离+'km':''}</span>`).join('')||
+        `<span style="font-size:10.5px;color:var(--ink3)">这天没有记录，休息也是训练的一部分</span>`}</div>
       <div style="font-size:10.5px;color:var(--ink3)">在「记录」里能看当天完整明细</div>
     </div>`;
 }
@@ -1325,87 +1345,101 @@ function paintHeatChart(){
 /* ═══════════ v3 图表：③ 配速 — 心率 双轴 ═══════════
    左轴＝配速（秒，越短越高），右轴＝平均心率。
    柱＝配速（越快越高），点＝心率。两个轴各自归一，各自标注单位。 */
+/* ═══════════ v4 图表：③ 跑步配速折线（单轴，砍掉双轴） ═══════════
+   ⚠️ v3 这里是「柱=配速 + 点=心率」双轴图，阿成反馈"柱状图跟点状图结合很奇怪、
+   怎么看都怪怪的、一眼不知道在看什么"。双轴对普通用户学习成本太高。
+   v4 改回**只说一件事**：配速趋势。线越靠上=跑得越快，金圈=最快那次。
+   心率从图上撤掉，进选中明细 + 标题小结（避免一图两尺）。 */
+function paceTxt(sec){return Math.floor(sec/60)+"'"+String(Math.round(sec%60)).padStart(2,'0')+'"'}
 function dualHTML(){
   const d=runSeries(14);
   if(!d) return '';
-  const W=330,H=140,padL=30,padR=30,padT=12,padB=26;
+  const W=330,H=150,padL=36,padR=14,padT=18,padB=26;
   const iw=W-padL-padR, ih=H-padT-padB;
   const n=d.rs.length;
-  const step=iw/n, bw=Math.min(22,step*0.52);
-  /* 配速轴：best→worst 映射到满高 */
   const spR=(d.worst-d.best)||1;
-  const ySp=sp=>padT+ih-((sp-d.best)/spR)*ih;
-  const hrR=(d.hrMax-d.hrMin)||1;
-  const yHr=hr=>padT+ih-((hr-d.hrMin)/hrR)*ih;
-  const cx=i=>padL+step*i+step/2;
+  const X=i=>padL+(n===1?iw/2:iw*i/(n-1));
+  const Y=sp=>padT+((sp-d.best)/spR)*ih;      /* 秒数越小越快 → 越靠上 */
   const on=ST.pick.dual;
+  const pts=d.rs.map((r,i)=>({x:X(i),y:Y(d.sp[i]),r,i}));
+  const line=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const area=`${padL},${(padT+ih).toFixed(1)} ${line} ${X(n-1).toFixed(1)},${(padT+ih).toFixed(1)}`;
+  const fastI=d.sp.indexOf(d.best);
 
   const grid=[0,.5,1].map(t=>{
-    const y=padT+ih*t*0+ih*t;
-    return `<line class="dgrid" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>`;
+    const y=padT+ih*t;
+    return `<line class="dgrid" x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}"/>`;
   }).join('');
 
-  const bars=d.rs.map((r,i)=>{
-    const y=ySp(d.sp[i]), h=padT+ih-y;
-    const sel=on===r.date;
-    return `<rect class="dbar hit" data-dual="${r.date}" data-cx="${cx(i)}" data-cy="${y}"
-      x="${(cx(i)-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${Math.max(2,h).toFixed(1)}"
-      rx="3" fill="${sel?'var(--gold)':'var(--run)'}" opacity="${on&&!sel?.34:1}"
-      onpointerenter="dualTip('${r.date}',${cx(i)},${(y-6).toFixed(0)})"
+  /* y 轴配速刻度：上=最快，下=最慢 */
+  const yl=[0,.5,1].map(t=>{
+    const sp=d.best+spR*t;
+    return `<text class="daxl" x="${padL-6}" y="${(padT+ih*t).toFixed(0)}" text-anchor="end"
+      dominant-baseline="central">${paceTxt(sp)}</text>`;
+  }).join('');
+
+  const dots=pts.map(p=>{
+    const r=p.r, sel=on===r.date, fast=p.i===fastI;
+    return `<circle class="ddot" data-dual="${r.date}" data-cx="${p.x.toFixed(0)}" data-cy="${(p.y-8).toFixed(0)}"
+      cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${sel?6:4.2}"
+      fill="${sel?'var(--gold)':'var(--card)'}" stroke="${fast?'var(--gold)':'var(--run)'}"
+      stroke-width="${fast?2.8:2}" opacity="${on&&!sel?.4:1}"
+      onpointerenter="dualTip('${r.date}',${p.x.toFixed(0)},${(p.y-8).toFixed(0)})"
       onpointerdown="dualTap('${r.date}')"/>`;
   }).join('');
 
-  const dots=d.rs.filter(r=>r.平均心率).map(r=>{
-    const i=d.rs.indexOf(r), sel=on===r.date;
-    return `<circle class="ddot" data-dual="${r.date}" data-cx="${cx(i)}" data-cy="${(yHr(r.平均心率)-10).toFixed(0)}"
-      cx="${cx(i).toFixed(1)}" cy="${yHr(r.平均心率).toFixed(1)}" r="${sel?5.5:4}"
-      fill="var(--heart)" opacity="${on&&!sel?.3:1}" stroke="var(--card)" stroke-width="1.4"
-      onpointerenter="dualTip('${r.date}',${cx(i)},${(yHr(r.平均心率)-16).toFixed(0)})"
-      onpointerdown="dualTap('${r.date}')"/>`;
-  }).join('');
+  /* 最快那点上方标两个字，不用猜哪个是最快 */
+  const fp=pts[fastI];
+  const fastMark=`<text class="dfast" x="${fp.x.toFixed(1)}" y="${(fp.y-13).toFixed(1)}" text-anchor="middle">最快</text>`;
 
-  /* ⚠️ (n-1)/2 可能带 .5（n=14 → 6.5），d.rs[6.5] 是 undefined，
-     一取 .date 就抛 "Cannot read properties of undefined"。必须 Math.floor。 */
+  /* ⚠️ (n-1)/2 可能带 .5（n=14 → 6.5），取 .date 会抛 undefined。必须 Math.floor。 */
   const xl=[0,Math.floor((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>{
     const r=d.rs[i];
-    return `<text class="daxl" x="${cx(i).toFixed(1)}" y="${H-9}" text-anchor="middle">${r.date.slice(5)}</text>`;
+    return `<text class="daxl" x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${r.date.slice(5)}</text>`;
   }).join('');
 
-  const ylL=[0,1].map(t=>{
-    const sp=Math.round(d.best+spR*t);
-    return `<text class="daxl" x="${padL-5}" y="${(padT+ih-ih*t).toFixed(0)}" text-anchor="end"
-      dominant-baseline="central">${Math.floor(sp/60)}'${String(sp%60).padStart(2,'0')}"</text>`;
-  }).join('');
-  const ylR=[0,1].map(t=>{
-    const hr=Math.round(d.hrMin+hrR*t);
-    return `<text class="daxl" x="${W-padR+5}" y="${(padT+ih-ih*t).toFixed(0)}" text-anchor="middle"
-      dominant-baseline="central">${hr}</text>`;
-  }).join('');
-
-  const sel=on?d.rs.find(r=>r.date===on):null;
-  const selBody=sel?(()=>{
-    const sp=d.sp[d.rs.indexOf(sel)];
-    const ratio=Math.round(sp/(d.best)*100);
-    return `<div class="pick">
-      <div class="pk-t">${sel.date.slice(5)}</div>
-      <div class="pk-s">${sel.距离} km · ${sel.配速显示}/km · ♥${sel.平均心率}（最高 ${sel.最高心率}）· ${Math.round(sel.时长)} 分钟
-        ${ratio<100?`<span style="color:var(--gold)">比最快慢 ${ratio-100}%</span>`:'<span style="color:var(--gold)">是这批里最快的一次</span>'}</div>
-      <div class="pk-x" onclick="pickAt('dual','${sel.date}')">×</div></div>`;
-  })():'';
+  const avgSp=d.sp.reduce((a,b)=>a+b,0)/n;
+  const hrs=d.rs.map(r=>r.平均心率).filter(Boolean);
+  const avgHr=hrs.length?Math.round(hrs.reduce((a,b)=>a+b,0)/hrs.length):null;
+  const fast=d.rs[fastI];
 
   return `<div class="gsec">
-    <div class="gt">跑步：配速与心率</div>
-    <div class="gd">柱子＝配速（左轴，越高越快），红点＝平均心率（右轴，越高越累）。点柱子或红点看那天详情。</div>
+    <div class="gt">跑步配速</div>
+    <div class="gd">线越靠上＝跑得越快，金圈是这 ${n} 次里最快的。平均 ${paceTxt(avgSp)}，最快 ${fast.配速显示}（${fast.date.slice(5)}）${avgHr!=null?`，平均心率 ♥${avgHr}`:''}。点圆点看那天详情。</div>
     <div class="chart dual" id="ch-dual">
       <div class="tipbox" id="tip-dual"></div>
-      <svg viewBox="0 0 ${W} ${H}" height="${H}">${grid}${bars}${dots}${xl}${ylL}${ylR}</svg>
+      <svg viewBox="0 0 ${W} ${H}" height="${H}">
+        <defs><linearGradient id="pgrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--gold)" stop-opacity=".30"/>
+          <stop offset="1" stop-color="var(--gold)" stop-opacity="0"/>
+        </linearGradient></defs>
+        ${grid}
+        <polygon points="${area}" fill="url(#pgrad)"/>
+        <polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="2.2"
+          stroke-linejoin="round" stroke-linecap="round"/>
+        ${fastMark}${dots}${xl}${yl}
+      </svg>
     </div>
-    <div class="legend ro" style="margin-top:10px;grid-template-columns:1fr 1fr">
-      <span><i style="background:var(--run)"></i><b>配速（左轴，越高越快）</b></span>
-      <span><i style="background:var(--heart);border-radius:99px"></i><b>平均心率（右轴 bpm）</b></span>
-    </div>
-    ${selBody}
+    ${dualPickHTML(on?d.rs.find(r=>r.date===on):null,d)}
   </div>`;
+}
+/* 选中明细：心率在这里给，还带"比平均高/低几跳"，言之有物 */
+function dualPickHTML(sel,d){
+  if(!sel) return `<div class="pick" data-pick-dual="1" style="opacity:.72">
+      <div class="pk-s">点任意圆点，看那天的配速、心率和它在这批里的位置</div></div>`;
+  const sp=d.sp[d.rs.indexOf(sel)];
+  const ratio=Math.round(sp/d.best*100);
+  const hrs=d.rs.map(r=>r.平均心率).filter(Boolean);
+  const avgHr=hrs.length?Math.round(hrs.reduce((a,b)=>a+b,0)/hrs.length):null;
+  const hrDiff=(sel.平均心率&&avgHr!=null)?Math.round(sel.平均心率-avgHr):null;
+  const fast=ratio<=100;
+  return `<div class="pick" data-pick-dual="1">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.距离} km · ${sel.配速显示}/km · ${Math.round(sel.时长)} 分钟
+        ${sel.平均心率?`· ♥${sel.平均心率}（最高 ${sel.最高心率}）${hrDiff!=null?`，比平均${hrDiff>0?'高':'低'} ${Math.abs(hrDiff)} 跳`:''}`:''}
+        ${fast?'<span style="color:var(--gold);font-weight:600"> · 是这批里最快的一次</span>'
+              :`<span style="color:var(--gold)"> · 比最快那次慢 ${ratio-100}%</span>`}</div>
+      <div class="pk-x" onclick="pickAt('dual','${sel.date}')">×</div></div>`;
 }
 function dualTip(ds,x,y){
   const r=D.recent.find(v=>v.date===ds); if(!r) return;
@@ -1418,29 +1452,18 @@ function paintDualChart(){
   const on=ST.pick.dual;
   Array.prototype.forEach.call(box.querySelectorAll('[data-dual]'), el=>{
     const sel=el.dataset.dual===on;
-    if(el.tagName==='rect'){
-      el.setAttribute('fill', sel?'var(--gold)':'var(--run)');
-      el.setAttribute('opacity', on&&!sel?.34:1);
-    }else{
-      el.setAttribute('r', sel?5.5:4);
-      el.setAttribute('opacity', on&&!sel?.3:1);
-    }
+    el.setAttribute('r', sel?6:4.2);
+    el.setAttribute('fill', sel?'var(--gold)':'var(--card)');
+    el.setAttribute('opacity', on&&!sel?.4:1);
   });
   const card=box.closest('.gsec'); if(!card) return;
   const old=card.querySelector('[data-pick-dual]');
   const d=runSeries(14);
   const sel=on?d.rs.find(r=>r.date===on):null;
   const tmp=document.createElement('div');
-  if(sel){
-    const i=d.rs.indexOf(sel), sp=d.sp[i], ratio=Math.round(sp/d.best*100);
-    tmp.innerHTML=`<div class="pick" data-pick-dual="1">
-      <div class="pk-t">${sel.date.slice(5)}</div>
-      <div class="pk-s">${sel.距离} km · ${sel.配速显示}/km · ♥${sel.平均心率}（最高 ${sel.最高心率}）· ${Math.round(sel.时长)} 分钟
-        ${ratio<100?`<span style="color:var(--gold)">比最快慢 ${ratio-100}%</span>`:'<span style="color:var(--gold)">是这批里最快的一次</span>'}</div>
-      <div class="pk-x" onclick="pickAt('dual','${sel.date}')">×</div></div>`;
-  }
+  tmp.innerHTML=dualPickHTML(sel,d);
   const nb=tmp.firstElementChild;
-  if(old) old.replaceWith(nb||old.remove());
+  if(old) nb?old.replaceWith(nb):old.remove();
   else if(nb) card.appendChild(nb);
 }
 
@@ -2535,7 +2558,7 @@ const V={'#/':viewHome,'#/overview':viewOvr,'#/calendar':viewCal,'#/records':vie
 let CUR=location.hash||'#/';
 
 function paint(){
-  ST.pick=ST.pick||{}; ST.legendOff=ST.legendOff||{}; ST.hmode=ST.hmode||'chart';
+  ST.pick=ST.pick||{}; ST.focus=ST.focus===undefined?null:ST.focus; ST.hmode=ST.hmode||'chart';
   const h=location.hash||'#/';
   if(h!=='#/calendar') ST.caly=0;   // 离开日历页就退出年视图，回来默认显示月历
   const app=document.getElementById('app');
