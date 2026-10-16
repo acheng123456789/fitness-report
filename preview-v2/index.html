@@ -223,6 +223,113 @@ body.dk .abox .do{background:rgba(255,255,255,.04)}
 .segbar button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(20,23,28,.09)}
 body.dk .segbar button.on{background:var(--card);box-shadow:0 1px 0 var(--hl) inset,0 2px 8px rgba(0,0,0,.35)}
 
+/* ══════════════════════════════════════════════════════════
+   v3 图表系统 —— 四个图，统一「点一下联动、再点取消」的交互
+   核心约定：所有图表的选中态存在 ST 里（pick），重渲染后还在，
+   这样点柱子→下面明细变→再点别处才切换，不会闪回。
+   ══════════════════════════════════════════════════════════ */
+
+/* 图表通用容器 */
+.chart{margin-top:14px;position:relative;-webkit-user-select:none;user-select:none}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart svg *{-webkit-tap-highlight-color:transparent}
+
+/* 可点元素的通用反馈：默认实心，hover/按下变虚线描边 */
+.hit{cursor:pointer;transition:opacity .16s}
+.hit:active{opacity:.55}
+.dim{opacity:.26}
+
+/* ① 月度堆叠柱 */
+.mbar{display:flex;align-items:flex-end;gap:7px;height:132px}
+.mbar .mg{flex:1;display:flex;flex-direction:column;height:100%;min-width:0}
+.mbar .mstack{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1.5px;
+  border-radius:5px5px 2px 2px;overflow:hidden;position:relative}
+.mbar .mstack i{display:block;width:100%;transition:height .55s cubic-bezier(.2,.8,.2,1);min-height:2px}
+.mbar .mlab{font-size:9px;color:var(--ink3);text-align:center;margin-top:6px;letter-spacing:-.2px}
+.mbar .mg.on .mlab{color:var(--gold);font-weight:700}
+.mbar .mg.on .mstack{box-shadow:0 0 0 1.6px var(--gold),0 0 0 4px color-mix(in srgb,var(--gold) 18%,transparent)}
+/* 顶部总时长标注：只在选中月显示，避免永远占位 */
+.mbar .mtop{height:15px;font-size:9.5px;font-weight:700;color:var(--gold);text-align:center;
+  font-family:ui-monospace,Menlo,monospace}
+
+/* 图例：点它可以只看某一类。四列网格（7 项 = 两行），紧凑到不抢主体的视觉重量。 */
+.legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:11px;
+  font-size:9.5px;color:var(--ink2)}
+.legend span{display:flex;align-items:center;gap:4px;padding:4px 5px;border-radius:7px;
+  border:1px solid var(--line2);transition:opacity .16s,border-color .16s,background .16s;
+  min-width:0;cursor:pointer}
+.legend span i{width:7px;height:7px;border-radius:2px;flex:none;display:block}
+.legend span b{font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legend span.off{opacity:.3;text-decoration:line-through}
+.legend span:active{background:var(--emb);border-color:var(--line)}
+.legend.ro{pointer-events:none}
+
+/* 联动明细条 */
+.pick{display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 13px;border-radius:12px;
+  background:var(--emb);border:1px solid var(--line2);transition:opacity .2s}
+body.dk .pick{background:rgba(255,255,255,.045)}
+.pick .pk-t{font-size:12.5px;font-weight:600;flex:none}
+.pick .pk-s{font-size:10.5px;color:var(--ink3);flex:1;min-width:0;line-height:1.45}
+.pick .pk-x{flex:none;font-size:17px;color:var(--ink3);width:24px;height:24px;display:flex;
+  align-items:center;justify-content:center;border-radius:50%;background:var(--line2);font-size:13px}
+
+/* ② 训练热力图
+   ⚠️ 别用 aspect-ratio:1 —— 7 列平分 330pt 宽，每格会到 50px，
+   6 周就313px 高、整张卡 496px，占掉两屏多。改成固定 30px 方格才紧凑。 */
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:12px}
+.heat .hc{height:30px;border-radius:4px;background:var(--line2);position:relative;
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink3);
+  transition:transform .14s,box-shadow .14s}
+.heat .hc.l1{background:color-mix(in srgb,var(--gold) 22%,transparent)}
+.heat .hc.l2{background:color-mix(in srgb,var(--gold) 45%,transparent);color:var(--ink)}
+.heat .hc.l3{background:color-mix(in srgb,var(--gold) 70%,transparent);color:#fff;font-weight:700}
+.heat .hc.l4{background:var(--gold);color:#171102;font-weight:700}
+body.dk .heat .hc.l3,body.dk .heat .hc.l4{color:#171102}
+.heat .hc.tdy{box-shadow:0 0 0 1.6px var(--run) inset}
+.heat .hc.on{transform:scale(1.16);box-shadow:0 0 0 2px var(--ink) inset,0 2px 8px rgba(0,0,0,.25);z-index:2}
+.heat .hc:active{transform:scale(.9)}
+.heatwk{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:6px}
+.heatwk div{text-align:center;font-size:8px;color:var(--ink3)}
+.heatmo{display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:7px}
+
+/* ③ 配速—心率双轴 */
+.dual{position:relative}
+.dual .tipbox{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .15s;line-height:1.55}
+.dual .tipbox.on{opacity:1}
+.dual .tipbox b{font-size:12px;font-weight:700}
+.dgrid{stroke:var(--grid);stroke-width:1}
+.daxl{font-size:8px;fill:var(--ink3);font-family:ui-monospace,Menlo,monospace}
+.dbar{transition:opacity .16s}
+.ddot{transition:r .16s,opacity .16s;cursor:pointer}
+
+/* ④ 体重双线 */
+.wl2 .tipbox{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .15s;line-height:1.55}
+.wl2 .tipbox.on{opacity:1}
+.wdot{transition:r .16s,opacity .16s;cursor:pointer}
+.wline{fill:none;stroke-linejoin:round;stroke-linecap:round}
+
+/* 图表里的小按钮（展开/收起） */
+.minibtn{flex:none;border:1px solid var(--line);background:var(--emb);color:var(--ink2);
+  font-family:inherit;font-size:10.5px;font-weight:600;padding:6px 11px;border-radius:99px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s,background .2s}
+.minibtn:active{transform:scale(.94)}
+.minibtn.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.dk .minibtn.on{color:#171102}
+
+/* 图表卡片的统一外壳 —— 没有大标题，靠小标题分层 */
+.gsec{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--sh);padding:14px 15px 15px}
+body.dk .gsec{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
+.gsec .gt{font-size:14.5px;font-weight:700;letter-spacing:-.2px}
+.gsec .gd{font-size:10.5px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.gsec .gr{display:flex;align-items:baseline;gap:7px;margin-top:11px}
+.gsec .gr b{font-size:22px;font-weight:700;letter-spacing:-.6px;font-family:ui-monospace,Menlo,monospace}
+.gsec .gr span{font-size:10.5px;color:var(--ink3)}
+
 /* 类型分布条（首页主卡内） */
 .mixbar{display:flex;height:9px;border-radius:5px;overflow:hidden;gap:2px}
 .mixbar i{display:block;height:100%;border-radius:2px}
@@ -578,7 +685,7 @@ function nowMonthLabel(){const d=new Date();return d.getFullYear()+' · '+String
 const MQ=matchMedia('(prefers-color-scheme: dark)');
 let THMODE=localStorage.getItem('thm')||'auto';
 const wantDark=()=>THMODE==='auto'?MQ.matches:THMODE==='d';
-let ST={theme:wantDark(), ym:nowYM()};
+let ST={theme:wantDark(), ym:nowYM(), pick:{}, legendOff:{}, hmode:'chart'};
 
 /* 当月汇总：当月没数据就退回数据里最新的那个月（别让页面读到 undefined） */
 function curOv(){
@@ -659,11 +766,44 @@ function monthsBack(n){
 /* 单月时长（分钟）→ 小时，一位小数 */
 function hrsOf(min){return Math.round(min/6)/10}
 
-/* 类型配色：与全站语义一致（跑=蓝、力量=紫、其余按稳定散列取灰金系） */
-const MIXC={'跑步':'var(--run)','骑行':'var(--run)','力量训练':'var(--lift)','核心训练':'var(--lift)',
-  '徒步':'var(--green)','步行':'var(--green)','爬楼梯':'var(--green)','游泳':'var(--run)',
-  '乒乓球':'var(--warn)','健身游戏':'var(--warn)'};
-function mixColor(n){return MIXC[n]||'var(--ink3)'}
+/* 类型配色 —— 必须两两可区分（原来骑行和跑步都用 var(--run) 蓝，图例里分不出来）。
+   有氧系用蓝系渐变、力量系用紫系、其余用绿/橙/金，逐个分色。 */
+function mixColor(n){const p=pal();return p[n]||'#8A8578'}
+/* 同色系里按占比排序，深浅拉开（骑行占多时更蓝、占少时更浅） */
+function mixPalette(){
+  const ms=stackMonths(MONTHS_N);
+  const tot={}; ms.forEach(m=>m.types.forEach(t=>tot[t.名称]=(tot[t.名称]||0)+t.时长));
+  const grp={}, p={};
+  Object.keys(tot).forEach(n=>{
+    const base=navigator_hue(n);
+    (grp[base]=grp[base]||[]).push([n,tot[n]]);
+  });
+  Object.keys(grp).forEach(b=>{
+    const arr=grp[b].sort((a,c)=>c[1]-a[1]);
+    const n=arr.length;
+    arr.forEach((x,i)=>{
+      const t=n===1?1:i/(n-1);
+      p[x[0]]=shade(baseOf(b),t);
+    });
+  });
+  return p;
+}
+const BASE={blue:[34,99,196],purple:[107,51,214],green:[15,122,82],orange:[180,98,44],gold:[144,112,47]};
+function navigator_hue(n){
+  if(/跑|骑|游|椭圆/.test(n)) return 'blue';
+  if(/力量|核心|健身/.test(n)) return 'purple';
+  if(/徒|步|爬/.test(n)) return 'green';
+  if(/乒乓/.test(n)) return 'orange';
+  return 'gold';
+}
+function baseOf(b){return BASE[b]||BASE.gold}
+function shade(rgb,t){
+  /* t=0 → 最深（该项占比最大），t=1 → 最浅 */
+  const k=1-t*0.52;
+  return `rgb(${Math.round(rgb[0]*k)},${Math.round(rgb[1]*k)},${Math.round(rgb[2]*k)})`;
+}
+let __PAL=null;
+function pal(){ return __PAL || (__PAL=mixPalette()) }
 
 /* 配速条形宽度：越快越宽，在这批里自己归一；最慢保底 30% 以免压成一个点 */
 function paceBar(p,bestSec,worstSec){
@@ -749,13 +889,129 @@ function trendBars(){
     })};
 }
 
-/* ── 首页：看板（不是目录） ──
+/* ═══════════ v3 图表：数据准备 ═══════════ */
+
+/* 近 n 个月的类型分段（堆叠柱用）。
+   ⚠️ 10 月只过了半个月，跟整月柱放一起会显得"暴跌"—— 柱子上标"至今"，
+   并且在图例下写明，避免误读。 */
+function stackMonths(n){
+  return Object.keys(D.overview).sort().slice(-n).map(k=>{
+    const o=D.overview[k];
+    const ts=(o.types||[]).slice().sort((a,b)=>b.时长-a.时长);
+    return {ym:k, 总时长:o.总时长, 次数:o.次数, 天数:o.天数, types:ts,
+      距离:o.总距离, 消耗:o.总消耗};
+  });
+}
+/* 当月是否已过完 —— 没过完要标"至今" */
+function isCurrentMonth(ym){
+  const now=new Date();
+  return ym===now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+}
+
+/* 近 n 周 × 7 天热力图。weeks 从早到晚返回，每周 7 格（周一→周日）。 */
+function heatWeeks(n){
+  const now=new Date(), dow=(now.getDay()+6)%7;
+  const mon=new Date(now); mon.setDate(now.getDate()-dow);
+  const start=new Date(mon); start.setDate(mon.getDate()-(n-1)*7);
+  const byday=bydayOf(nowYM());
+  /* bydayOf 只扫当月 —— 周跨月时上个月那几天会漏，这里补全月 */
+  const all={}; D.recent.forEach(r=>{all[r.date]=(all[r.date]||0)+r.时长});
+  const weeks=[];
+  for(let w=0;w<n;w++){
+    const cells=[];
+    for(let d=0;d<7;d++){
+      const x=new Date(start); x.setDate(start.getDate()+w*7+d);
+      const ds=ymd(x);
+      const m=all[ds]||0;
+      const fut=x>now;
+      cells.push({ds, min:m, wd:d, fut, today:ds===ymd(now)});
+    }
+    weeks.push(cells);
+  }
+  /* 强度分级：按当月最大单日时长 */
+  const mx=Math.max(...Object.values(all),1);
+  weeks.forEach(w=>w.forEach(c=>{
+    c.lv=c.min<=0?0:c.min<mx*0.25?1:c.min<mx*0.5?2:c.min<mx*0.8?3:4;
+  }));
+  return {weeks, start, mx};
+}
+
+/* 跑步序列（双轴图用）—— 距离太短的不进（2km 那次配速不可比） */
+function runSeries(n){
+  const rs=D.recent.filter(r=>r.类型==='跑步'&&hasPace(r)&&(r.距离||0)>=4)
+    .slice(0,n);
+  if(!rs.length) return null;
+  const sp=rs.map(r=>secOf(r.配速显示));
+  const hr=rs.filter(r=>r.平均心率).map(r=>r.平均心率);
+  return {rs, sp,
+    best:Math.min(...sp), worst:Math.max(...sp),
+    hrMin:hr.length?Math.min(...hr):0, hrMax:hr.length?Math.max(...hr):0};
+}
+
+/* 体重 + 体脂双线 */
+function weightSeries(){
+  const b=D.body.slice().sort((x,y)=>x.date<y.date?-1:1);
+  if(b.length<2) return null;
+  const cur=b[b.length-1], y=cur.date.slice(0,4);
+  /* 只画今年 —— 2025 年那两次和今年不是一条连续曲线，混在一起会误导 */
+  const thisYear=b.filter(r=>r.date.slice(0,4)===y);
+  const use=thisYear.length>=3?thisYear:b;
+  return {b:use, 全:b,
+    wMin:Math.min(...use.map(r=>r.weight_jin))-1, wMax:Math.max(...use.map(r=>r.weight_jin))+1,
+    fMin:Math.min(...use.map(r=>r.bf_pct))-.6, fMax:Math.max(...use.map(r=>r.bf_pct))+.6,
+    年份:y};
+}
+
+/* ═══════════ v3 图表：交互（统一的点选状态机） ═══════════
+   ST.pick={图表名:选中项}，点已选中的 = 取消选中。
+   不用变量重渲染整页（会闪、丢滚动位置），只更新受影响的 DOM 节点。 */
+function pickAt(chart,key,sel){
+  const cur=ST.pick[chart];
+  if(cur===key){ ST.pick[chart]=null; }else{ ST.pick[chart]=key; }
+  paintCharts(chart);
+}
+function picked(chart){return ST.pick[chart]}
+
+/* 只刷新某个图表区域，避免整页重绘 */
+function paintCharts(chart){
+  if(chart==='month') paintMonthChart();
+  else if(chart==='heat') paintHeatChart();
+  else if(chart==='dual') paintDualChart();
+  else if(chart==='weight') paintWeightChart();
+}
+
+/* 选中项高亮 + 降透明度其它项：一次把所有相关 class 刷一遍 */
+function applySel(scope, selAttr, hitSel, dimSel){
+  const box=document.getElementById(scope);
+  if(!box) return;
+  Array.prototype.forEach.call(box.querySelectorAll(hitSel), el=>{
+    const on=el.dataset[selAttr]===String(ST.pick[chartOf(scope)]);
+    el.classList.toggle(dimSel, !!ST.pick[chartOf(scope)] && !on);
+  });
+}
+function chartOf(scope){return scope}
+
+/* 提示气泡：跟随点/柱显示，HTML 字符串 */
+function showTip(tipId,html,x,y){
+  const t=document.getElementById(tipId);
+  if(!t) return;
+  t.innerHTML=html; t.classList.add('on');
+  const box=document.getElementById(tipId).parentNode.getBoundingClientRect();
+  const w=t.offsetWidth||150;
+  let left=Math.max(0,Math.min(box.width-w, x-w/2));
+  t.style.left=left+'px';
+  t.style.top=Math.max(0,y)+'px';
+}
+function hideTip(tipId){const t=document.getElementById(tipId); if(t)t.classList.remove('on')}
+
+/* ═══════════ v3 首页：看板（不是目录） ═══════════
    排序逻辑：① 本月练了多少 + 趋势  ② 体重离目标多远  ③ 跑步能力  ④ 身体信号
    没有「去看看」入口宫格 —— 去哪儿由底栏和卡片里的行负责。 */
 function viewHome(){
   const o=curOv(), last=D.recent[0], mom=momCompare(), w=weightProg(), ab=runAbility(), sig=bodySignals();
   const tb=trendBars();
   const now=new Date();
+  const mode=ST.hmode||'chart';      /* chart=图表优先（默认） / num=数字优先 */
 
   /* ① 训练量主卡：一个大数字说清本月 */
   const bars=tb.bars.map(x=>`<div class="tb${x.on?' on':''}">
@@ -767,6 +1023,15 @@ function viewHome(){
      挪到柱状图下面当说明文字，颜色也改中性。 */
   const dTag=mom?`<span style="font-size:11px;color:var(--ink3);margin-top:9px;display:block">
       这个月过了 ${mom.passed} 天，${mom.pct>=0?'比':'比'}上月同期${mom.pct>=0?'多':'少'} ${Math.abs(mom.pct)}%（上月整月 ${hrsOf(mom.上月整月)} 小时）</span>`:'';
+
+  /* 模式切换条 */
+  const switcher=`<div class="segbar" style="margin-bottom:4px">
+      <button class="${mode==='chart'?'on':''}" onclick="setHMode('chart')">图表</button>
+      <button class="${mode==='num'?'on':''}" onclick="setHMode('num')">数字</button>
+    </div>`;
+
+  /* 数字模式才显示的紧凑月趋势 */
+  const miniTrend=mode==='num'?`<div class="trend">${bars}</div>${dTag}`:'';
 
   /* ② 体重进度 */
   const wCard=w?`<div class="card block tap" onclick="navigate('#/body')">
@@ -816,25 +1081,32 @@ function viewHome(){
     s:`${now.getMonth()+1} 月已练 ${o.天数} 天 · ${o.次数} 次 · 最近一次 ${last.date.slice(5)} ${last.类型}`},
     'Health Dashboard')+
   `<div class="wrap">
-    <div class="sec" style="margin-top:16px"><div class="card hero">
-      <div class="hlabel">本月训练时长</div>
-      <div class="hbig">${hrsOf(o.总时长)}<u>小时</u></div>
-      <div class="hsub">${o.次数} 次 · ${o.天数} 天 · 平均每次 ${Math.round(o.总时长/Math.max(o.次数,1))} 分钟</div>
-      <div class="trend">${bars}</div>
-      ${dTag}
-      <div class="mini">练了什么</div>
-      <div class="mixbar">${(o.types||[]).map(t=>`<i style="flex:${t.时长};background:${mixColor(t.名称)}"></i>`).join('')}</div>
-      <div class="mixlg">${(o.types||[]).map(t=>`<span><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′</span>`).join('')}</div>
-      <div class="cap" style="margin-top:10px">柱子是每月总时长，金色是当月 · 点下方「记录」看每次明细</div>
-    </div></div>
+    <div class="sec" style="margin-top:14px">
+      ${switcher}
+      <div class="card hero">
+        <div class="hlabel">本月训练时长</div>
+        <div class="hbig">${hrsOf(o.总时长)}<u>小时</u></div>
+        <div class="hsub">${o.次数} 次 · ${o.天数} 天 · 平均每次 ${Math.round(o.总时长/Math.max(o.次数,1))} 分钟</div>
+        ${miniTrend}
+        ${mode==='chart'?`<div class="mini">本月练了什么</div>
+        <div class="mixbar">${(o.types||[]).map(t=>`<i style="flex:${t.时长};background:${mixColor(t.名称)}"></i>`).join('')}</div>
+        <div class="mixlg">${(o.types||[]).map(t=>`<span><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′</span>`).join('')}</div>`:''}
+      </div>
+    </div>
 
-    ${wCard?`<div class="sec"><div class="shead"><span class="tt">体重与目标</span></div>${wCard}</div>`:''}
-    ${rCard?`<div class="sec"><div class="shead"><span class="tt">跑步能力</span></div>${rCard}</div>`:''}
-
-    <div class="sec"><div class="shead"><span class="tt">本周</span></div>
-      <div class="card block">${weekStripInner()}</div></div>
-
+    ${mode==='chart'?`
+    ${monthChartHTML()}
+    ${heatHTML()}
+    ${dualHTML()}
+    ${weightChartHTML()}
     ${sigBlock}
+    ${wCard?`<div class="sec"><div class="shead"><span class="tt">体重与目标</span></div>${wCard}</div>`:''}
+    ${rCard?`<div class="sec"><div class="shead"><span class="tt">跑步明细</span></div>${rCard}</div>`:''}
+    `:`<div class="sec"><div class="shead"><span class="tt">本周</span></div>
+      <div class="card block">${weekStripInner()}</div></div>
+    ${sigBlock}
+    ${wCard?`<div class="sec"><div class="shead"><span class="tt">体重与目标</span></div>${wCard}</div>`:''}
+    ${rCard?`<div class="sec"><div class="shead"><span class="tt">跑步明细</span></div>${rCard}</div>`:''}`}
 
     <div class="sec">
       <div class="rows">
@@ -845,6 +1117,417 @@ function viewHome(){
         <span style="color:var(--gold)">← 手指从屏幕左边缘往右滑，任何页面都直接回首页</span></div>
     </div>
   </div>`;
+}
+
+/* ═══════════ v3 图表：① 月度堆叠柱 ═══════════ */
+const MONTHS_N=8;
+function monthChartHTML(){
+  const ms=stackMonths(MONTHS_N);
+  ST.__ms=ms;
+  /* 顺序与总数缓存起来，供 paint* 重画时复用，别每次重算 */
+  const allTypes=[]; ms.forEach(m=>m.types.forEach(t=>{if(allTypes.indexOf(t.名称)<0)allTypes.push(t.名称)}));
+  const byTot={}; allTypes.forEach(n=>byTot[n]=0);
+  ms.forEach(m=>m.types.forEach(t=>byTot[t.名称]+=t.时长));
+  ST.__order=allTypes.slice().sort((a,b)=>byTot[b]-byTot[a]);
+  const mx=Math.max(...ms.map(m=>m.总时长),1);
+  const off=ST.legendOff||{};
+  const on=ST.pick.month;
+
+  const bars=ms.map(m=>{
+    const h=Math.max(8,(m.总时长/mx)*100);
+    const segs=m.types.map(t=>{
+      if(off[t.名称]) return '';
+      const sh=(t.时长/m.总时长)*h;      /* 每段按占当月总时长的比例 */
+      return `<i style="height:${sh.toFixed(2)}%;background:${mixColor(t.名称)}"></i>`;
+    }).join('');
+    return `<div class="mg${on===m.ym?' on':''}" data-month="${m.ym}" onclick="pickAt('month','${m.ym}')">
+      <div class="mtop">${on===m.ym?hrsOf(m.总时长):''}</div>
+      <div class="mstack" style="height:${h}%">${segs}</div>
+      <div class="mlab">${+m.ym.slice(5)}月${isCurrentMonth(m.ym)?'*':''}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="gsec">
+    <div class="gt">每个月练了什么</div>
+    <div class="gd">柱子里每一段是一种运动。点柱子看当月明细，点图例可隐藏某一类。</div>
+    <div class="mbar chart" id="ch-month">${bars}</div>
+    <div class="legend" style="margin-top:13px">${legendHTML()}</div>
+    ${pickBodyHTML()}
+  </div>`;
+}
+function paintMonthChart(){
+  const card=document.querySelector('#app .gsec .mg')&&document.querySelector('#app .gsec .mg').closest('.gsec');
+  if(!card) return;
+  const on=ST.pick.month;
+  /* 图例：先在原位置刷 off 类，再按需重建（顺序可能变） */
+  const lg=card.querySelector('.legend[data-live]');
+  if(lg){
+    lg.innerHTML=legendHTML();
+    lg.setAttribute('data-live','1');
+  }
+  Array.prototype.forEach.call(card.querySelectorAll('.mg'), el=>{
+    el.classList.toggle('on', el.dataset.month===on);
+    el.classList.toggle('dim', !!on && el.dataset.month!==on);
+    const top=el.querySelector('.mtop'), m=ST.__ms.find(x=>x.ym===el.dataset.month);
+    if(top) top.textContent=(el.dataset.month===on&&m)?hrsOf(m.总时长):'';
+  });
+  /* 明细条：整体替换 */
+  const old=card.querySelector('.pick[data-pick]');
+  const tmp=document.createElement('div');
+  tmp.innerHTML=pickBodyHTML();
+  const nb=tmp.firstElementChild;
+  if(nb) nb.setAttribute('data-pick','1');
+  if(old) old.replaceWith(nb);
+  else card.appendChild(nb);
+}
+function legendHTML(){
+  const order=ST.__order||[], off=ST.legendOff||{};
+  return order.map(n=>`<span class="${off[n]?'off':''}" onclick="tglLegend('${esc(n)}')">
+      <i style="background:${mixColor(n)}"></i><b>${esc(n)}</b></span>`).join('');
+}
+function pickBodyHTML(){
+  const on=ST.pick.month;
+  const sel=on?ST.__ms.find(m=>m.ym===on):null;
+  if(!sel) return `<div class="pick" data-pick="1" style="opacity:.72">
+      <div class="pk-s">点任意一根柱子看那个月的构成 · 点图例可只看某一类</div></div>`;
+  const tot=sel.总时长, off=ST.legendOff||{};
+  return `<div class="pick" data-pick="1">
+      <div class="pk-t">${+sel.ym.slice(5)} 月</div>
+      <div class="pk-s">${sel.次数} 次 · ${sel.天数} 天 · ${hrsOf(tot)} 小时 · ${sel.距离.toFixed(1)} km · ${sel.消耗} kcal
+        ${isCurrentMonth(sel.ym)?'（至今）':''}</div>
+      <div class="pk-x" onclick="pickAt('month','${sel.ym}')">×</div>
+    </div>
+    <div class="legend" data-live="1" style="margin-top:10px">${sel.types.filter(t=>!off[t.名称]).map(t=>
+      `<span style="pointer-events:none"><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′ · ${Math.round(t.时长/tot*100)}%</span>`).join('')}</div>`;
+}
+/* 图例开关：只重画这张图这张卡，不整页重绘（否则滚动位置会丢） */
+function tglLegend(n){
+  ST.legendOff=ST.legendOff||{};
+  ST.legendOff[n]=!ST.legendOff[n];
+  const anchor=document.querySelector('#app .mg');
+  if(!anchor) return;
+  const card=anchor.closest('.gsec');
+  const scrollY=window.scrollY;
+  card.innerHTML=monthChartHTML();
+  const on=ST.pick.month;
+  card.querySelectorAll('.mg').forEach(el=>{
+    el.classList.toggle('on', el.dataset.month===on);
+    el.classList.toggle('dim', !!on && el.dataset.month!==on);
+  });
+  window.scrollTo(0,scrollY);
+}
+
+/* ② 训练热力图 —— 12 周× 7 格在375pt 宽屏上大约 330px 高，占一整屏太多。
+   改成「按列（周）竖向堆叠、每列是 7 天」仍然太高，所以这里用**上下两段**：
+   近 6 周 + 更早 6 周，中间可折叠。默认只显示近 6 周（约 165px）。 */
+const HEAT_WEEKS=12;
+function heatHTML(){
+  const h=heatWeeks(HEAT_WEEKS);
+  const on=ST.pick.heat;
+  const expanded=!!ST.heatAll;
+  const visible=expanded?h.weeks:h.weeks.slice(HEAT_WEEKS/2);
+  const off=HEAT_WEEKS-visible.length;
+
+  const grid=visible.map((wk,wi)=>wk.map(c=>{
+    const txt=c.lv?Math.round(c.min):'';
+    const cls=['hc','l'+c.lv,c.today?'tdy':'',on===c.ds?'on':'',c.fut?'fut':''].filter(Boolean).join(' ');
+    return `<div class="${cls}" data-ds="${c.ds}" ${c.fut?'':`onclick="pickAt('heat','${c.ds}')"`}
+      >${txt}</div>`;
+  }).join('')).join('');
+
+  /* 月份标签：只在某个月第一格出现的列下标一次 */
+  let lastM=-1;
+  const moLabels=visible.map(wk=>{
+    const m=+wk[0].ds.slice(5,7);
+    const show=m!==lastM; lastM=m;
+    return `<span style="visibility:${show?'visible':'hidden'}">${m}月</span>`;
+  });
+
+  const all=h.weeks.flat(), act=all.filter(c=>c.min>0);
+  const totalMin=all.reduce((a,c)=>a+c.min,0);
+
+  const sel=on?all.find(c=>c.ds===on):null;
+  const selBody=sel?heatPickHTML(sel):'';
+
+  return `<div class="gsec">
+    <div class="gt">训练节奏</div>
+    <div class="gd">一格一天，颜色越深练得越多，今天是蓝框那格。点任意格子看那天练了什么。</div>
+    <div class="chart" id="ch-heat">
+      <div class="heatwk">${WD.map(d=>`<div>${d[1]}</div>`).join('')}</div>
+      <div class="heat">${grid}</div>
+      <div class="heatmo">${moLabels.join('')}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:11px">
+      <div style="flex:1;font-size:11.5px;color:var(--ink2)">
+        ${expanded?`近 ${HEAT_WEEKS} 周`:`近 ${HEAT_WEEKS/2} 周`} ·
+        <b style="color:var(--ink);font-weight:600">${act.length}</b> 天有训练 · 周均 <b style="color:var(--ink);font-weight:600">${Math.round(totalMin/(expanded?HEAT_WEEKS:HEAT_WEEKS/2)/6)/10}</b> 小时
+      </div>
+      <button class="minibtn" onclick="toggleHeat()">${expanded?'收起':'看更早 6 周'}</button>
+    </div>
+    ${selBody}
+  </div>`;
+}
+function heatPickHTML(c){
+  const list=D.recent.filter(r=>r.date===c.ds);
+  return `<div class="pick" style="flex-direction:column;align-items:stretch;gap:9px" data-pick-heat="1">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="pk-t">${c.ds.slice(5)} 周${WD[(new Date(c.ds).getDay()+6)%7]}</div>
+        <div class="pk-s">${Math.round(c.min)} 分钟</div>
+        <div class="pk-x" onclick="pickAt('heat','${c.ds}')">×</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map(r=>
+        `<span style="font-size:10.5px;padding:3px 8px;border-radius:99px;background:var(--card);
+           border:1px solid var(--line2)">${(TY[r.类型]||['·'])[0]} ${esc(r.类型)} ${Math.round(r.时长)}′${r.距离?' · '+r.距离+'km':''}</span>`).join('')}</div>
+      <div style="font-size:10.5px;color:var(--ink3)">在「记录」里能看当天完整明细</div>
+    </div>`;
+}
+function toggleHeat(){
+  const y=window.scrollY;
+  ST.heatAll=!ST.heatAll;
+  route();
+  window.scrollTo(0,y);
+}
+function paintHeatChart(){
+  const box=document.getElementById('ch-heat'); if(!box) return;
+  const on=ST.pick.heat;
+  Array.prototype.forEach.call(box.querySelectorAll('.hc'), el=>{
+    el.classList.toggle('on', el.dataset.ds===on);
+  });
+  const card=box.closest('.gsec'); if(!card) return;
+  const old=card.querySelector('[data-pick-heat]');
+  const h=heatWeeks(HEAT_WEEKS);
+  const sel=on?h.weeks.flat().find(c=>c.ds===on):null;
+  const tmp=document.createElement('div');
+  if(sel) tmp.innerHTML=heatPickHTML(sel);
+  const nb=tmp.firstElementChild;
+  if(old) nb?old.replaceWith(nb):old.remove();
+  else if(nb) card.appendChild(nb);
+}
+
+/* ═══════════ v3 图表：③ 配速 — 心率 双轴 ═══════════
+   左轴＝配速（秒，越短越高），右轴＝平均心率。
+   柱＝配速（越快越高），点＝心率。两个轴各自归一，各自标注单位。 */
+function dualHTML(){
+  const d=runSeries(14);
+  if(!d) return '';
+  const W=330,H=140,padL=30,padR=30,padT=12,padB=26;
+  const iw=W-padL-padR, ih=H-padT-padB;
+  const n=d.rs.length;
+  const step=iw/n, bw=Math.min(22,step*0.52);
+  /* 配速轴：best→worst 映射到满高 */
+  const spR=(d.worst-d.best)||1;
+  const ySp=sp=>padT+ih-((sp-d.best)/spR)*ih;
+  const hrR=(d.hrMax-d.hrMin)||1;
+  const yHr=hr=>padT+ih-((hr-d.hrMin)/hrR)*ih;
+  const cx=i=>padL+step*i+step/2;
+  const on=ST.pick.dual;
+
+  const grid=[0,.5,1].map(t=>{
+    const y=padT+ih*t*0+ih*t;
+    return `<line class="dgrid" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>`;
+  }).join('');
+
+  const bars=d.rs.map((r,i)=>{
+    const y=ySp(d.sp[i]), h=padT+ih-y;
+    const sel=on===r.date;
+    return `<rect class="dbar hit" data-dual="${r.date}" data-cx="${cx(i)}" data-cy="${y}"
+      x="${(cx(i)-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${Math.max(2,h).toFixed(1)}"
+      rx="3" fill="${sel?'var(--gold)':'var(--run)'}" opacity="${on&&!sel?.34:1}"
+      onpointerenter="dualTip('${r.date}',${cx(i)},${(y-6).toFixed(0)})"
+      onpointerdown="dualTap('${r.date}')"/>`;
+  }).join('');
+
+  const dots=d.rs.filter(r=>r.平均心率).map(r=>{
+    const i=d.rs.indexOf(r), sel=on===r.date;
+    return `<circle class="ddot" data-dual="${r.date}" data-cx="${cx(i)}" data-cy="${(yHr(r.平均心率)-10).toFixed(0)}"
+      cx="${cx(i).toFixed(1)}" cy="${yHr(r.平均心率).toFixed(1)}" r="${sel?5.5:4}"
+      fill="var(--heart)" opacity="${on&&!sel?.3:1}" stroke="var(--card)" stroke-width="1.4"
+      onpointerenter="dualTip('${r.date}',${cx(i)},${(yHr(r.平均心率)-16).toFixed(0)})"
+      onpointerdown="dualTap('${r.date}')"/>`;
+  }).join('');
+
+  /* ⚠️ (n-1)/2 可能带 .5（n=14 → 6.5），d.rs[6.5] 是 undefined，
+     一取 .date 就抛 "Cannot read properties of undefined"。必须 Math.floor。 */
+  const xl=[0,Math.floor((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>{
+    const r=d.rs[i];
+    return `<text class="daxl" x="${cx(i).toFixed(1)}" y="${H-9}" text-anchor="middle">${r.date.slice(5)}</text>`;
+  }).join('');
+
+  const ylL=[0,1].map(t=>{
+    const sp=Math.round(d.best+spR*t);
+    return `<text class="daxl" x="${padL-5}" y="${(padT+ih-ih*t).toFixed(0)}" text-anchor="end"
+      dominant-baseline="central">${Math.floor(sp/60)}'${String(sp%60).padStart(2,'0')}"</text>`;
+  }).join('');
+  const ylR=[0,1].map(t=>{
+    const hr=Math.round(d.hrMin+hrR*t);
+    return `<text class="daxl" x="${W-padR+5}" y="${(padT+ih-ih*t).toFixed(0)}" text-anchor="middle"
+      dominant-baseline="central">${hr}</text>`;
+  }).join('');
+
+  const sel=on?d.rs.find(r=>r.date===on):null;
+  const selBody=sel?(()=>{
+    const sp=d.sp[d.rs.indexOf(sel)];
+    const ratio=Math.round(sp/(d.best)*100);
+    return `<div class="pick">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.距离} km · ${sel.配速显示}/km · ♥${sel.平均心率}（最高 ${sel.最高心率}）· ${Math.round(sel.时长)} 分钟
+        ${ratio<100?`<span style="color:var(--gold)">比最快慢 ${ratio-100}%</span>`:'<span style="color:var(--gold)">是这批里最快的一次</span>'}</div>
+      <div class="pk-x" onclick="pickAt('dual','${sel.date}')">×</div></div>`;
+  })():'';
+
+  return `<div class="gsec">
+    <div class="gt">跑步：配速与心率</div>
+    <div class="gd">柱子＝配速（左轴，越高越快），红点＝平均心率（右轴，越高越累）。点柱子或红点看那天详情。</div>
+    <div class="chart dual" id="ch-dual">
+      <div class="tipbox" id="tip-dual"></div>
+      <svg viewBox="0 0 ${W} ${H}" height="${H}">${grid}${bars}${dots}${xl}${ylL}${ylR}</svg>
+    </div>
+    <div class="legend ro" style="margin-top:10px;grid-template-columns:1fr 1fr">
+      <span><i style="background:var(--run)"></i><b>配速（左轴，越高越快）</b></span>
+      <span><i style="background:var(--heart);border-radius:99px"></i><b>平均心率（右轴 bpm）</b></span>
+    </div>
+    ${selBody}
+  </div>`;
+}
+function dualTip(ds,x,y){
+  const r=D.recent.find(v=>v.date===ds); if(!r) return;
+  showTip('tip-dual',`<b>${ds.slice(5)}</b> ${esc(r.类型)} ${r.距离||''}km<br>
+    配速 ${r.配速显示||'—'} · ♥${r.平均心率||'—'} · ${Math.round(r.时长)}分钟 · ${r.消耗}kcal`, x, y);
+}
+function dualTap(ds){ hideTip('tip-dual'); pickAt('dual',ds) }
+function paintDualChart(){
+  const box=document.getElementById('ch-dual'); if(!box) return;
+  const on=ST.pick.dual;
+  Array.prototype.forEach.call(box.querySelectorAll('[data-dual]'), el=>{
+    const sel=el.dataset.dual===on;
+    if(el.tagName==='rect'){
+      el.setAttribute('fill', sel?'var(--gold)':'var(--run)');
+      el.setAttribute('opacity', on&&!sel?.34:1);
+    }else{
+      el.setAttribute('r', sel?5.5:4);
+      el.setAttribute('opacity', on&&!sel?.3:1);
+    }
+  });
+  const card=box.closest('.gsec'); if(!card) return;
+  const old=card.querySelector('[data-pick-dual]');
+  const d=runSeries(14);
+  const sel=on?d.rs.find(r=>r.date===on):null;
+  const tmp=document.createElement('div');
+  if(sel){
+    const i=d.rs.indexOf(sel), sp=d.sp[i], ratio=Math.round(sp/d.best*100);
+    tmp.innerHTML=`<div class="pick" data-pick-dual="1">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.距离} km · ${sel.配速显示}/km · ♥${sel.平均心率}（最高 ${sel.最高心率}）· ${Math.round(sel.时长)} 分钟
+        ${ratio<100?`<span style="color:var(--gold)">比最快慢 ${ratio-100}%</span>`:'<span style="color:var(--gold)">是这批里最快的一次</span>'}</div>
+      <div class="pk-x" onclick="pickAt('dual','${sel.date}')">×</div></div>`;
+  }
+  const nb=tmp.firstElementChild;
+  if(old) old.replaceWith(nb||old.remove());
+  else if(nb) card.appendChild(nb);
+}
+
+/* ═══════════ v3 图表：④ 体重 + 体脂 双线 ═══════════ */
+function weightChartHTML(){
+  const d=weightSeries(); if(!d) return '';
+  const W=330,H=150,padL=32,padR=34,padT=12,padB=26;
+  const iw=W-padL-padR, ih=H-padT-padB, n=d.b.length;
+  const step=iw/(n-1);
+  const X=i=>padL+step*i;
+  const wR=(d.wMax-d.wMin)||1, fR=(d.fMax-d.fMin)||1;
+  const Yw=v=>padT+ih-((v-d.wMin)/wR)*ih;
+  const Yf=v=>padT+ih-((v-d.fMin)/fR)*ih;
+  const on=ST.pick.weight;
+
+  const grid=[0,.5,1].map(t=>`<line class="dgrid" x1="${padL}" y1="${(padT+ih*t).toFixed(1)}"
+    x2="${W-padR}" y2="${(padT+ih*t).toFixed(1)}"/>`).join('');
+
+  const pw=d.b.map((r,i)=>`${X(i).toFixed(1)},${Yw(r.weight_jin).toFixed(1)}`).join(' ');
+  const pf=d.b.map((r,i)=>`${X(i).toFixed(1)},${Yf(r.bf_pct).toFixed(1)}`).join(' ');
+
+  const dotsW=d.b.map((r,i)=>{
+    const sel=on===r.date;
+    return `<circle class="wdot" data-wt="${r.date}" data-cx="${X(i).toFixed(1)}"
+      data-cy="${(Yw(r.weight_jin)-14).toFixed(0)}" cx="${X(i).toFixed(1)}" cy="${Yw(r.weight_jin).toFixed(1)}"
+      r="${sel?5.5:4}" fill="var(--gold)" stroke="var(--card)" stroke-width="1.4"
+      opacity="${on&&!sel?.32:1}"
+      onpointerenter="wTip('${r.date}',${X(i).toFixed(0)},${(Yw(r.weight_jin)-22).toFixed(0)})"
+      onpointerdown="wTap('${r.date}')"/>`;
+  }).join('');
+  const dotsF=d.b.map((r,i)=>{
+    const sel=on===r.date;
+    return `<circle class="wdot" data-wt="${r.date}" data-cx="${X(i).toFixed(1)}"
+      data-cy="${(Yf(r.bf_pct)-14).toFixed(0)}" cx="${X(i).toFixed(1)}" cy="${Yf(r.bf_pct).toFixed(1)}"
+      r="${sel?5.5:4}" fill="var(--warn)" stroke="var(--card)" stroke-width="1.4"
+      opacity="${on&&!sel?.32:1}"
+      onpointerenter="wTip('${r.date}',${X(i).toFixed(0)},${(Yf(r.bf_pct)-22).toFixed(0)})"
+      onpointerdown="wTap('${r.date}')"/>`;
+  }).join('');
+
+  /* x 轴标签按点数稀疏化：<=6 个全标，否则标首、中、尾。
+     （11 次称重标 11 个会挤成一团，之前只标了 3 个又显得信息太少。） */
+  const marks=n<=6?Array.from({length:n},(_,i)=>i)
+    :[0,Math.round((n-1)/3),Math.round(2*(n-1)/3),n-1].filter((v,i,a)=>a.indexOf(v)===i);
+  const xl=marks.map(i=>
+    `<text class="daxl" x="${X(i).toFixed(1)}" y="${H-9}" text-anchor="middle">${d.b[i].date.slice(2)}</text>`).join('');
+
+  const ylL=[0,1].map(t=>`<text class="daxl" x="${padL-5}" y="${(padT+ih-ih*t).toFixed(0)}"
+    text-anchor="end" dominant-baseline="central">${Math.round(d.wMin+wR*t)}</text>`).join('');
+  const ylR=[0,1].map(t=>`<text class="daxl" x="${W-padR+5}" y="${(padT+ih-ih*t).toFixed(0)}"
+    text-anchor="middle" dominant-baseline="central">${(d.fMin+fR*t).toFixed(1)}</text>`).join('');
+
+  const cur=d.b[n-1], first=d.b[0];
+  const 净变化=(cur.weight_jin-first.weight_jin).toFixed(1);
+  const sel=on?d.b.find(r=>r.date===on):null;
+
+  return `<div class="gsec">
+    <div class="gt">体重与体脂（${d.年份}）</div>
+    <div class="gd">金线＝体重（斤，左轴），橙虚线＝体脂率（%，右轴）。点任一点看当次全部读数。</div>
+    <div class="chart dual wl2" id="ch-weight">
+      <div class="tipbox" id="tip-weight"></div>
+      <svg viewBox="0 0 ${W} ${H}" height="${H}">
+        ${grid}
+        <polyline class="wline" points="${pf}" stroke="var(--warn)" stroke-width="1.8"
+          stroke-dasharray="4 3" opacity=".9"/>
+        <polyline class="wline" points="${pw}" stroke="var(--gold)" stroke-width="2.4"/>
+        ${dotsF}${dotsW}${xl}${ylL}${ylR}
+      </svg>
+    </div>
+    <div class="legend ro" style="margin-top:10px;grid-template-columns:1fr 1fr auto">
+      <span><i style="background:var(--gold)"></i><b>体重（斤）</b></span>
+      <span><i style="background:var(--warn)"></i><b>体脂率（%）</b></span>
+      <span style="border:0;justify-content:flex-end;color:${Number(净变化)<=0?'var(--green)':'var(--heart)'};font-weight:700">
+        今年${Number(净变化)<=0?'减了':'增了'} ${Math.abs(净变化)} 斤</span>
+    </div>
+    ${sel?`<div class="pick">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.weight_jin} 斤 · 体脂 ${sel.bf_pct}% · 去脂 ${sel.lean_jin} 斤 · 内脏脂肪 ${sel.visceral} 级 · 健康分 ${sel.health}</div>
+      <div class="pk-x" onclick="pickAt('weight','${sel.date}')">×</div></div>`:''}
+  </div>`;
+}
+function wTip(ds,x,y){
+  const r=D.body.find(v=>v.date===ds); if(!r) return;
+  showTip('tip-weight',`<b>${ds}</b> 称重<br>${r.weight_jin} 斤 · 体脂 ${r.bf_pct}% · 内脏 ${r.visceral} 级`, x, y);
+}
+function wTap(ds){ hideTip('tip-weight'); pickAt('weight',ds) }
+function paintWeightChart(){
+  const box=document.getElementById('ch-weight'); if(!box) return;
+  const on=ST.pick.weight;
+  Array.prototype.forEach.call(box.querySelectorAll('[data-wt]'), el=>{
+    const sel=el.dataset.wt===on;
+    el.setAttribute('r', sel?5.5:4);
+    el.setAttribute('opacity', on&&!sel?.32:1);
+  });
+  const card=box.closest('.gsec'); if(!card) return;
+  const old=card.querySelector('[data-pick-wt]');
+  const sel=on?D.body.find(r=>r.date===on):null;
+  const tmp=document.createElement('div');
+  if(sel) tmp.innerHTML=`<div class="pick" data-pick-wt="1">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.weight_jin} 斤 · 体脂 ${sel.bf_pct}% · 去脂 ${sel.lean_jin} 斤 · 内脏脂肪 ${sel.visceral} 级 · 健康分 ${sel.health}</div>
+      <div class="pk-x" onclick="pickAt('weight','${sel.date}')">×</div></div>`;
+  const nb=tmp.firstElementChild;
+  if(old) old.replaceWith(nb||old.remove());
+  else if(nb) card.appendChild(nb);
 }
 
 /* 周节奏条的内层（供首页「本周」卡复用；weekStrip 是封面用的带标题版本） */
@@ -1834,6 +2517,7 @@ const V={'#/':viewHome,'#/overview':viewOvr,'#/calendar':viewCal,'#/records':vie
 let CUR=location.hash||'#/';
 
 function paint(){
+  ST.pick=ST.pick||{}; ST.legendOff=ST.legendOff||{}; ST.hmode=ST.hmode||'chart';
   const h=location.hash||'#/';
   if(h!=='#/calendar') ST.caly=0;   // 离开日历页就退出年视图，回来默认显示月历
   const app=document.getElementById('app');
@@ -1846,6 +2530,14 @@ function paint(){
 }
 /* 重渲染（hash 没变也要重画时用，比如日历翻月） */
 function route(){CUR=location.hash||'#/';paint()}
+/* 首页两种模式：图表优先 / 数字优先。切换时重画整页，
+   但要记住滚动位置 —— 否则用户滑到一半点一下就跳回顶部。 */
+function setHMode(m){
+  if(ST.hmode===m) return;
+  const y=window.scrollY;
+  ST.hmode=m; route();
+  window.scrollTo(0,y);
+}
 
 function navigate(t){
   if(t===CUR) return;
