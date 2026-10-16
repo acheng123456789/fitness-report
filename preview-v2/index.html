@@ -239,18 +239,23 @@ body.dk .segbar button.on{background:var(--card);box-shadow:0 1px 0 var(--hl) in
 .hit:active{opacity:.55}
 .dim{opacity:.26}
 
-/* ① 月度堆叠柱 */
+/* ① 月度堆叠柱
+   ⚠️ 踩过的坑：.mstack 不能写 flex:1 —— flex:1 即 flex-basis:0，
+   内联 style="height:X%" 在 flex 列容器里会被完全忽略，柱子容器永远撑满整列高，
+   选中态的 box-shadow 就变成一根全高的金框（柱子很短、框很高，非常丑）。
+   正确做法：外层 .mzone 用 flex:1 吃掉剩余空间并给出确定高度，
+   .mstack 不设 flex，让 height:% 相对 .mzone 生效，金框才能紧贴柱子。 */
 .mbar{display:flex;align-items:flex-end;gap:7px;height:132px}
 .mbar .mg{flex:1;display:flex;flex-direction:column;height:100%;min-width:0}
-.mbar .mstack{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1.5px;
-  border-radius:5px5px 2px 2px;overflow:hidden;position:relative}
+.mbar .mtop{height:15px;flex:none;font-size:9.5px;font-weight:700;color:var(--gold);text-align:center;
+  font-family:ui-monospace,Menlo,monospace}
+.mbar .mzone{flex:1;display:flex;flex-direction:column;justify-content:flex-end;min-height:0}
+.mbar .mstack{display:flex;flex-direction:column;justify-content:flex-end;gap:1.5px;
+  border-radius:5px 5px 2px 2px;overflow:hidden;position:relative}
 .mbar .mstack i{display:block;width:100%;transition:height .55s cubic-bezier(.2,.8,.2,1);min-height:2px}
-.mbar .mlab{font-size:9px;color:var(--ink3);text-align:center;margin-top:6px;letter-spacing:-.2px}
+.mbar .mlab{font-size:9px;color:var(--ink3);text-align:center;margin-top:6px;flex:none;letter-spacing:-.2px}
 .mbar .mg.on .mlab{color:var(--gold);font-weight:700}
 .mbar .mg.on .mstack{box-shadow:0 0 0 1.6px var(--gold),0 0 0 4px color-mix(in srgb,var(--gold) 18%,transparent)}
-/* 顶部总时长标注：只在选中月显示，避免永远占位 */
-.mbar .mtop{height:15px;font-size:9.5px;font-weight:700;color:var(--gold);text-align:center;
-  font-family:ui-monospace,Menlo,monospace}
 
 /* 图例：点它可以只看某一类。四列网格（7 项 = 两行），紧凑到不抢主体的视觉重量。 */
 .legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:11px;
@@ -1129,20 +1134,26 @@ function monthChartHTML(){
   const byTot={}; allTypes.forEach(n=>byTot[n]=0);
   ms.forEach(m=>m.types.forEach(t=>byTot[t.名称]+=t.时长));
   ST.__order=allTypes.slice().sort((a,b)=>byTot[b]-byTot[a]);
-  const mx=Math.max(...ms.map(m=>m.总时长),1);
   const off=ST.legendOff||{};
   const on=ST.pick.month;
+  /* 图例关掉某类后，柱子要按「可见时长」重新归一化 —— 否则 9 月隐藏骑行后
+     柱子还是全高、里面只剩一小段彩色（空心柱），图例就失去了"只看某一类"的意义。
+     visMin=0（该类全被关掉）时柱子整根消失，也不再给选中态。 */
+  const visMin=m=>m.types.filter(t=>!off[t.名称]).reduce((a,t)=>a+t.时长,0);
+  const mx=Math.max(...ms.map(visMin),1);
 
   const bars=ms.map(m=>{
-    const h=Math.max(8,(m.总时长/mx)*100);
+    const vm=visMin(m);
+    const h=vm>0?Math.max(8,(vm/mx)*100):0;
     const segs=m.types.map(t=>{
       if(off[t.名称]) return '';
-      const sh=(t.时长/m.总时长)*h;      /* 每段按占当月总时长的比例 */
+      const sh=vm>0?(t.时长/vm)*100:0;   /* 每段占「可见总时长」的比例 */
       return `<i style="height:${sh.toFixed(2)}%;background:${mixColor(t.名称)}"></i>`;
     }).join('');
-    return `<div class="mg${on===m.ym?' on':''}" data-month="${m.ym}" onclick="pickAt('month','${m.ym}')">
-      <div class="mtop">${on===m.ym?hrsOf(m.总时长):''}</div>
-      <div class="mstack" style="height:${h}%">${segs}</div>
+    const isOn=on===m.ym&&vm>0;
+    return `<div class="mg${isOn?' on':''}" data-month="${m.ym}" onclick="pickAt('month','${m.ym}')">
+      <div class="mtop">${isOn?hrsOf(vm):''}</div>
+      <div class="mzone"><div class="mstack" style="height:${h}%">${segs}</div></div>
       <div class="mlab">${+m.ym.slice(5)}月${isCurrentMonth(m.ym)?'*':''}</div>
     </div>`;
   }).join('');
@@ -1166,10 +1177,13 @@ function paintMonthChart(){
     lg.setAttribute('data-live','1');
   }
   Array.prototype.forEach.call(card.querySelectorAll('.mg'), el=>{
-    el.classList.toggle('on', el.dataset.month===on);
+    const m=ST.__ms.find(x=>x.ym===el.dataset.month);
+    const off=ST.legendOff||{};
+    const vm=m?m.types.filter(t=>!off[t.名称]).reduce((a,t)=>a+t.时长,0):0;
+    el.classList.toggle('on', el.dataset.month===on&&vm>0);
     el.classList.toggle('dim', !!on && el.dataset.month!==on);
-    const top=el.querySelector('.mtop'), m=ST.__ms.find(x=>x.ym===el.dataset.month);
-    if(top) top.textContent=(el.dataset.month===on&&m)?hrsOf(m.总时长):'';
+    const top=el.querySelector('.mtop');
+    if(top) top.textContent=(el.dataset.month===on&&vm>0)?hrsOf(vm):'';
   });
   /* 明细条：整体替换 */
   const old=card.querySelector('.pick[data-pick]');
@@ -1190,17 +1204,26 @@ function pickBodyHTML(){
   const sel=on?ST.__ms.find(m=>m.ym===on):null;
   if(!sel) return `<div class="pick" data-pick="1" style="opacity:.72">
       <div class="pk-s">点任意一根柱子看那个月的构成 · 点图例可只看某一类</div></div>`;
-  const tot=sel.总时长, off=ST.legendOff||{};
+  const off=ST.legendOff||{};
+  const vt=sel.types.filter(t=>!off[t.名称]).reduce((a,t)=>a+t.时长,0);
+  const tot=vt>0?vt:sel.总时长;
+  const hidN=sel.types.filter(t=>off[t.名称]).length;
   return `<div class="pick" data-pick="1">
       <div class="pk-t">${+sel.ym.slice(5)} 月</div>
       <div class="pk-s">${sel.次数} 次 · ${sel.天数} 天 · ${hrsOf(tot)} 小时 · ${sel.距离.toFixed(1)} km · ${sel.消耗} kcal
-        ${isCurrentMonth(sel.ym)?'（至今）':''}</div>
+        ${isCurrentMonth(sel.ym)?'（至今）':''}${hidN?` · 已隐藏 ${hidN} 类，时长与占比按可见部分算`:''}</div>
       <div class="pk-x" onclick="pickAt('month','${sel.ym}')">×</div>
     </div>
     <div class="legend" data-live="1" style="margin-top:10px">${sel.types.filter(t=>!off[t.名称]).map(t=>
       `<span style="pointer-events:none"><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′ · ${Math.round(t.时长/tot*100)}%</span>`).join('')}</div>`;
 }
-/* 图例开关：只重画这张图这张卡，不整页重绘（否则滚动位置会丢） */
+/* 图例开关：只重画这张图这张卡，不整页重绘（否则滚动位置会丢）
+   ⚠️ 踩过的坑（2026-10-16 阿成录屏反馈）：这里原来是 card.innerHTML=monthChartHTML()，
+   而 monthChartHTML() 返回的是**一整个 .gsec 卡片**，等于把新卡片塞进旧卡片的 innerHTML，
+   卡片套卡片；再点一次图例，closest('.gsec') 找到最内层那张，又套一层 ——
+   点几下首页就层层嵌套、内容重复、可视区被挤爆（他描述"一直重叠、越来越小"）。
+   必须用 outerHTML 整块替换，且替换后不用再手动补 on/dim class
+   （monthChartHTML() 生成时已经按 ST.pick.month 写好了）。 */
 function tglLegend(n){
   ST.legendOff=ST.legendOff||{};
   ST.legendOff[n]=!ST.legendOff[n];
@@ -1208,12 +1231,7 @@ function tglLegend(n){
   if(!anchor) return;
   const card=anchor.closest('.gsec');
   const scrollY=window.scrollY;
-  card.innerHTML=monthChartHTML();
-  const on=ST.pick.month;
-  card.querySelectorAll('.mg').forEach(el=>{
-    el.classList.toggle('on', el.dataset.month===on);
-    el.classList.toggle('dim', !!on && el.dataset.month!==on);
-  });
+  card.outerHTML=monthChartHTML();
   window.scrollTo(0,scrollY);
 }
 
