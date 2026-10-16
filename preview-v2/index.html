@@ -652,6 +652,91 @@ body.dk .quote{background:rgba(255,255,255,.04)}
 #app{animation:fade .3s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .empty-tip{text-align:center;font-size:11.5px;color:var(--ink3);padding:26px 0}
+
+/* ═══════════ 路线轨迹（⌖ tab） ═══════════ */
+/* 顶部三格汇总 */
+.rtstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rtstat .cell{border:1px solid var(--line2);border-radius:10px;padding:10px 8px 9px;background:var(--emb);text-align:center}
+body.dk .rtstat .cell{background:rgba(255,255,255,.03)}
+.rtstat .v{font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+.rtstat .v u{text-decoration:none;font-size:9px;font-weight:500;color:var(--ink2);margin-left:1px}
+.rtstat .lb{font-size:8.5px;color:var(--ink3);letter-spacing:1.2px;margin-top:3px}
+/* 类型筛选 chips */
+.rflt{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 12px}
+.rflt button{border:1px solid var(--line2);background:var(--card);color:var(--ink2);font-size:10.5px;
+  padding:5px 11px;border-radius:99px;cursor:pointer;font-family:inherit;transition:all .18s;-webkit-tap-highlight-color:transparent}
+.rflt button.on{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:600}
+body.dk .rflt button.on{color:#171102}
+.rflt button:active{transform:scale(.95)}
+/* 路线卡 */
+.rtc{display:flex;gap:12px;align-items:center;padding:11px 12px;margin-bottom:10px;cursor:pointer;
+  transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.rtc:active{transform:scale(.98)}
+.rtc .rtmini{flex:none;width:92px;height:68px;border-radius:9px;background:var(--emb);
+  border:1px solid var(--line2);position:relative;overflow:hidden}
+body.dk .rtc .rtmini{background:rgba(255,255,255,.03)}
+.rtc .info{flex:1;min-width:0}
+.rtc .d1{display:flex;align-items:baseline;gap:7px}
+.rtc .d1 b{font-size:13px;font-weight:600;letter-spacing:-.2px;font-family:ui-monospace,Menlo,monospace}
+.rtc .d1 span{font-size:10px;color:var(--ink2)}
+.rtc .d2{font-size:11px;color:var(--ink);margin-top:4px;font-family:ui-monospace,Menlo,monospace}
+.rtc .d3{font-size:9.5px;color:var(--ink3);margin-top:3px}
+.rtmini-sk{position:absolute;inset:0;border-radius:8px;
+  background:linear-gradient(100deg,transparent 30%,var(--line2) 50%,transparent 70%) 0 0/220% 100%;
+  animation:rtsk 1.3s linear infinite}
+@keyframes rtsk{to{background-position:-220% 0}}
+/* 路线详情全屏层 */
+#rtView{position:fixed;inset:0;z-index:100;background:var(--bg);transform:translateY(102%);
+  transition:transform .38s cubic-bezier(.22,.9,.28,1),visibility .38s;overflow-y:auto;overscroll-behavior:contain;
+  visibility:hidden;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+#rtView.on{transform:translateY(0);visibility:visible}
+#rtView .rtbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:11px;
+  padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+#rtView .rtbar .rtx{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);background:var(--card);
+  color:var(--ink2);font-size:13px;cursor:pointer;flex:none;font-family:inherit;transition:transform .15s}
+#rtView .rtbar .rtx:active{transform:scale(.9)}
+#rtView .rtbar .rtt{flex:1;min-width:0;font-size:14px;font-weight:600;letter-spacing:-.2px}
+#rtView .rtbar .rtt span{display:block;font-size:9px;color:var(--ink3);font-weight:400;letter-spacing:1.5px;margin-top:1px}
+/* 详情统计 4×2 */
+.rtgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border-radius:10px;overflow:hidden}
+.rtgrid .cell{background:var(--card);padding:9px 4px 8px;text-align:center}
+.rtgrid .v{font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.2px;font-family:ui-monospace,Menlo,monospace;white-space:nowrap}
+.rtgrid .v u{text-decoration:none;font-size:8.5px;font-weight:500;color:var(--ink2);margin-left:1px}
+.rtgrid .lb{font-size:8px;color:var(--ink3);letter-spacing:1px;margin-top:3px}
+/* 路线大图容器 */
+.rtmap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line2);background:var(--emb)}
+body.dk .rtmap{background:rgba(255,255,255,.02)}
+.rtmap svg{display:block;touch-action:none;cursor:crosshair}
+/* 拖动读数条 */
+.rtread{position:absolute;left:9px;top:9px;background:var(--ink);color:var(--bg);font-size:10px;
+  padding:5px 9px;border-radius:8px;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;
+  opacity:0;transition:opacity .18s;pointer-events:none;letter-spacing:.2px;z-index:3}
+.rtread.on{opacity:1}
+.rtread b{color:var(--gold);font-weight:700}
+body.dk .rtread b{color:#F0D9A0}
+/* 比例尺 */
+.rtscale{position:absolute;right:9px;bottom:8px;font-size:8px;color:var(--ink3);text-align:center;
+  pointer-events:none;font-family:ui-monospace,Menlo,monospace}
+.rtscale i{display:block;height:4px;border-left:1.5px solid var(--ink3);border-right:1.5px solid var(--ink3);border-bottom:1.5px solid var(--ink3);margin-bottom:2px}
+/* 分段表高亮最快一公里 */
+tr.fast td{color:var(--gold);font-weight:700}
+/* 详情页里的环境 chips 复用 pillrow；补一个字段标签 */
+.rtcond{display:flex;gap:6px;flex-wrap:wrap}
+.rtcond span{font-size:10px;padding:4px 9px;border-radius:7px;background:var(--emb);color:var(--ink2);border:1px solid var(--line2)}
+body.dk .rtcond span{background:rgba(255,255,255,.04)}
+/* detailDay 里的「查看路线」按钮 */
+.rtgo{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--gold);
+  border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line2));background:color-mix(in srgb,var(--gold) 7%,var(--card));
+  padding:5px 11px;border-radius:8px;cursor:pointer;font-family:inherit;transition:transform .15s}
+.rtgo:active{transform:scale(.95)}
+/* 轨迹图上的「回放」按钮 */
+.rtplay{position:absolute;right:9px;top:9px;z-index:4;display:inline-flex;align-items:center;gap:4px;
+  font-size:9.5px;font-weight:600;color:var(--ink);background:color-mix(in srgb,var(--card) 84%,transparent);
+  border:1px solid var(--line2);border-radius:99px;padding:4px 10px;cursor:pointer;font-family:inherit;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:transform .15s}
+.rtplay:active{transform:scale(.92)}
 </style>
 </head>
 <body>
@@ -669,18 +754,28 @@ try{var _m=localStorage.getItem('thm')||'auto';
   <a href="#/" data-r="#/"><i>◎</i><span>首页</span></a>
   <a href="#/records" data-r="#/records"><i>≡</i><span>记录</span></a>
   <a href="#/train" data-r="#/train"><i>◆</i><span>训练</span></a>
+  <a href="#/route" data-r="#/route"><i>⌖</i><span>路线</span></a>
   <a href="#/advice" data-r="#/advice"><i>✦</i><span>建议</span></a>
 </nav>
 
 <div id="mask" onclick="closeSheet()"></div>
 <div id="sheet"><div class="grab"></div><div class="sbody" id="sheetBody"></div></div>
 
+<!-- 路线详情全屏层（z 100，盖在明细弹层之上） -->
+<div id="rtView" role="dialog" aria-modal="true">
+  <div class="rtbar">
+    <button class="rtx" onclick="closeRoute()" aria-label="关闭">✕</button>
+    <div class="rtt" id="rtTitle">路线轨迹<span>ROUTE TRACE</span></div>
+  </div>
+  <div id="rtBody"></div>
+</div>
+
 <script>
 const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="b57df7d20c8";
+const APPV="bd9b8910153";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1131,10 +1226,36 @@ function viewHome(){
         <a class="rw" href="#/records" style="text-decoration:none;color:inherit"><div class="tx"><b>全部记录</b><span>按月翻 · 每次运动的明细与手记</span></div><div class="go"></div></a>
         <a class="rw" href="#/calendar" style="text-decoration:none;color:inherit"><div class="tx"><b>训练日历</b><span>点任意一天看当天做了什么</span></div><div class="go"></div></a>
       </div>
+      ${rtHomeCard()}
       <div class="cap" style="text-align:center;padding:12px 0 4px">数据来自 Apple Watch + 手动补录 · 每天 00:05 更新<br>
         <span style="color:var(--gold)">← 手指从屏幕左边缘往右滑，任何页面都直接回首页</span></div>
     </div>
   </div>`;
+}
+/* 首页「路线轨迹」卡：最新一条 + 总数，缩略图等 routes.json 到了再补 */
+function rtHomeCard(){
+  const idx=D.routeIdx;
+  if(!idx||!idx.n) return '';
+  const top=idx.idx[0];
+  return `<div class="sec"><div class="shead"><span class="tt">路线轨迹</span><span class="en2">Routes</span><span class="ln"></span></div>
+    <div class="card block tap" onclick="navigate('#/route')">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">最近一次 · ${top.date.slice(5).replace('-','/')} ${top.time}</div>
+          <div style="font-size:24px;font-weight:700;letter-spacing:-.5px;margin-top:3px;font-family:ui-monospace,Menlo,monospace">${top.dist}<u style="font-size:11px;font-weight:600;color:var(--ink2);text-decoration:none;margin-left:3px">km</u>
+            <span style="font-size:11px;color:var(--ink2);font-family:-apple-system,'PingFang SC',sans-serif;margin-left:7px">${(TY[top.type]||['',''])[0]} ${top.type}</span></div>
+          <div style="font-size:10.5px;color:var(--ink3);margin-top:4px">共 ${idx.n} 条 GPS 轨迹 · 累计 ${idx.totalKm} km · 总爬升 ${idx.totalElev} m</div>
+        </div>
+        <div class="rtmini">${rtHomeMini()}</div>
+      </div>
+      <div class="cap">点开看全部轨迹、每公里配速与心率 ▸</div>
+    </div></div>`;
+}
+function rtHomeMini(){
+  if(!D.routeIdx||!D.routeIdx.idx.length) return '<div class="rtmini-sk"></div>';
+  const top=D.routeIdx.idx[0];
+  const r=RT.data&&RT.data.routes.find(x=>x.id===top.id);
+  return r?rtMiniSVG(r.pts,RT_COL[r.type]||'#8A93A3'):'<div class="rtmini-sk"></div>';
 }
 
 /* ═══════════ v3 图表：① 月度堆叠柱 ═══════════ */
@@ -2190,6 +2311,370 @@ function liftBody(){
 }
 
 /* ── 训练建议 ── */
+/* ═══════════ 路线轨迹（⌖ tab） ═══════════
+   数据管线：iCloud 源文件 → 脚本/build_routes.py → routes.json（折线，懒加载）
+             data.json 的 routeIdx（瘦索引，列表首屏直接用，不用等折线）。
+   速度配色是「蓝慢 → 红快」五档，不跟随深浅色（两组底色都清楚）。 */
+const RT={data:null,loading:false,err:null,cur:null,proj:null,down:false,play:0};
+const RT_COL={'跑步':'#4A8FD4','骑行':'#3FA07A','徒步':'#D9A83C','步行':'#8A93A3'};
+const SPD_STOPS=['#4A8FD4','#3FA07A','#D9A83C','#E07B39','#C8503C'];   /* 慢 → 快 */
+
+function rtLoad(){
+  if(RT.data||RT.loading) return;
+  RT.loading=true;
+  fetch('routes.json?v='+Date.now()).then(r=>r.json()).then(d=>{
+    RT.data=d;RT.loading=false;
+    rtFillHome();
+    if(CUR==='#/route') route();          /* 在路线页触发的加载 → 重画列表补上缩略图 */
+    if(RT.cur) rtOpen(RT.cur);            /* 加载期间点了卡片/明细入口 → 补开详情 */
+  }).catch(e=>{RT.loading=false;RT.err=String(e);route()});
+}
+/* 首页「路线轨迹」卡的缩略图（数据到了再补，不挡首屏） */
+function rtFillHome(){
+  const el=document.getElementById('homeRtMini');
+  if(!el||!RT.data||!D.routeIdx||!D.routeIdx.idx.length) return;
+  const top=D.routeIdx.idx[0];
+  const r=RT.data.routes.find(x=>x.id===top.id);
+  if(r) el.innerHTML=rtMiniSVG(r.pts,RT_COL[r.type]||'#8A93A3');
+}
+
+/* ── 投影：经纬度 → SVG 坐标（等距圆柱近似，1px 代表的米数各处一致） ── */
+function rtProject(pts,w,h,pad){
+  const n=pts.length, lat0=pts.reduce((a,p)=>a+p[1],0)/n;
+  const MY=110540, MX=111320*Math.cos(lat0*Math.PI/180);
+  let mnx=1e18,mxx=-1e18,mny=1e18,mxy=-1e18;
+  for(const p of pts){const x=p[0]*MX,y=p[1]*MY;
+    if(x<mnx)mnx=x;if(x>mxx)mxx=x;if(y<mny)mny=y;if(y>mxy)mxy=y;}
+  const rx=Math.max(mxx-mnx,1), ry=Math.max(mxy-mny,1);
+  const s=Math.min((w-pad*2)/rx,(h-pad*2)/ry);
+  const ox=(w-rx*s)/2, oy=(h-ry*s)/2;
+  const xs=new Array(n),ys=new Array(n),cum=new Array(n);
+  let tot=0;cum[0]=0;
+  for(let i=0;i<n;i++){
+    xs[i]=ox+(pts[i][0]*MX-mnx)*s;
+    ys[i]=h-(oy+(pts[i][1]*MY-mny))*s;
+    if(i){tot+=Math.hypot((pts[i][0]-pts[i-1][0])*MX,(pts[i][1]-pts[i-1][1])*MY);cum[i]=tot;}
+  }
+  return {xs:xs,ys:ys,cum:cum,total:tot||1,s:s};
+}
+function rtLine(xs,ys,stride){
+  let out='';
+  for(let i=0;i<xs.length;i+=stride) out+=(out?' ':'')+xs[i].toFixed(1)+','+ys[i].toFixed(1);
+  const last=xs.length-1;
+  if(last%stride) out+=' '+xs[last].toFixed(1)+','+ys[last].toFixed(1);
+  return out;
+}
+function rtPct(arr,p){const a=arr.slice().sort((x,y)=>x-y);return a[Math.floor((a.length-1)*p)]||0;}
+function rtSpdCol(v,lo,hi){
+  const t=hi>lo?Math.max(0,Math.min(1,(v-lo)/(hi-lo))):.5;
+  return SPD_STOPS[Math.min(4,Math.floor(t*4.999))];
+}
+function rtMiniSVG(pts,col){
+  const p=rtProject(pts,92,68,8);
+  const stride=Math.max(1,Math.ceil(p.xs.length/40));
+  return `<svg viewBox="0 0 92 68" width="92" height="68" aria-hidden="true">
+    <polyline fill="none" stroke="${col}" stroke-opacity=".16" stroke-width="5" stroke-linecap="round"
+      points="${rtLine(p.xs,p.ys,stride)}"/>
+    <polyline fill="none" stroke="${col}" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"
+      points="${rtLine(p.xs,p.ys,stride)}"/>
+    <circle cx="${p.xs[0].toFixed(1)}" cy="${p.ys[0].toFixed(1)}" r="2.8" fill="var(--card)" stroke="${col}" stroke-width="1.7"/>
+  </svg>`;
+}
+
+/* ── 路线列表页 ── */
+function viewRoute(){
+  const idx=D.routeIdx;
+  if(!idx||!idx.n)
+    return head({month:'—',t:'路线轨迹',s:'还没有带路线数据的运动'},'Routes')+
+    `<div class="wrap"><div class="empty-tip">用 Apple Watch 记录的运动会自动带上路线<br>之后这里会出现轨迹图</div></div>`;
+  if(!RT.data&&!RT.loading&&!RT.err) rtLoad();
+  const f=ST.rtf||'all';
+  const all=idx.idx||[];
+  const types={};all.forEach(r=>{types[r.type]=(types[r.type]||0)+1});
+  const order=['跑步','骑行','徒步','步行'].filter(t=>types[t]);
+  const chips=`<button class="${f==='all'?'on':''}" onclick="ST.rtf='all';route()">全部 ${idx.n}</button>`+
+    order.map(t=>`<button class="${f===t?'on':''}" onclick="ST.rtf='${t}';route()">${(TY[t]||['',''])[0]} ${RT_LONG2(t)} ${types[t]}</button>`).join('');
+  const list=f==='all'?all:all.filter(r=>r.type===f);
+  const first=list.length?list[0].date:'—';
+  return head({month:spanLabel(all.map(r=>r.date)),t:'路线轨迹',
+    s:`${idx.n} 条 GPS 轨迹 · 累计 ${idx.totalKm} km · 总爬升 ${idx.totalElev} m`},'Routes')+
+  `<div class="wrap">
+    <div class="sec" style="margin-top:16px">
+      <div class="rtstat">
+        <div class="cell"><div class="v">${idx.n}<u>条</u></div><div class="lb">轨迹总数</div></div>
+        <div class="cell"><div class="v">${idx.totalKm}<u>km</u></div><div class="lb">累计距离</div></div>
+        <div class="cell"><div class="v">${idx.totalElev>=1000?(idx.totalElev/1000).toFixed(1)+'<u>km</u>':idx.totalElev+'<u>m</u>'}</div><div class="lb">累计爬升</div></div>
+      </div>
+    </div>
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">按类型看</span><span class="en2">Filter</span><span class="ln"></span></div>
+      <div class="rflt">${chips}</div>
+      ${RT.err?`<div class="empty-tip">轨迹数据加载失败：${RT.err}<br><button class="rtgo" style="margin-top:10px" onclick="RT.err=null;rtLoad()">重试</button></div>`:''}
+      ${!RT.err&&RT.loading&&!RT.data?`<div class="empty-tip">正在载入轨迹数据…</div>`:''}
+      ${list.length?list.map(r=>rtCardHTML(r)).join('')
+        :`<div class="empty-tip">这个类型还没有轨迹</div>`}
+      <div class="cap" style="text-align:center;padding:10px 0 4px">轨迹来自 Apple Watch 的 GPS 记录 · 点任意一条看完整轨迹<br>
+        最新一条 ${first.slice(5).replace('-','/')}</div>
+    </div>
+  </div>`;
+}
+function RT_LONG2(t){return {'跑步':'户外跑','骑行':'骑行','徒步':'徒步','步行':'步行'}[t]||t;}
+function rtCardHTML(r){
+  const col=RT_COL[r.type]||'#8A93A3';
+  const full=RT.data&&RT.data.routes.find(x=>x.id===r.id);
+  const pace=(['跑步','骑行','步行','徒步'].indexOf(r.type)>=0&&r.dist>0)
+    ?paceTxt(Math.round(r.dur*60/r.dist)):'';
+  return `<div class="card rtc" onclick="openRoute('${r.id}')">
+    <div class="rtmini">${full?rtMiniSVG(full.pts,col):'<div class="rtmini-sk"></div>'}</div>
+    <div class="info">
+      <div class="d1"><b>${r.date.slice(5).replace('-','/')}</b><span>${(TY[r.type]||['',''])[0]} ${r.type}</span></div>
+      <div class="d2">${r.dist} km · ${fmtDur(r.dur)}${pace?' · '+pace+'/km':''}</div>
+      <div class="d3">${r.hrAvg?'♥ '+r.hrAvg+(r.hrMax?'–'+r.hrMax:'')+' bpm':'心率 —'}${r.elevUp?' · 爬升 '+r.elevUp+' m':''}</div>
+    </div><div class="go"></div></div>`;
+}
+
+/* ── 详情 ── */
+function openRoute(id){
+  closeSheet();
+  if(!RT.data){RT.cur=id;rtLoad();return;}
+  rtOpen(id);
+}
+function rtOpen(id){
+  RT.cur=id;
+  const r=RT.data&&RT.data.routes.find(x=>x.id===id);
+  if(!r){toast('这条轨迹的数据缺失');return;}
+  document.getElementById('rtTitle').innerHTML=
+    `${r.date.slice(5).replace('-','/')} · ${(TY[r.type]||['',''])[0]} ${r.type}<span>ROUTE TRACE</span>`;
+  document.getElementById('rtBody').innerHTML=rtDetailHTML(r);
+  const v=document.getElementById('rtView');
+  v.classList.add('on');v.scrollTop=0;
+  rtBindMap(r);
+}
+function closeRoute(){
+  if(RT.play){cancelAnimationFrame(RT.play);RT.play=0;}
+  document.getElementById('rtView').classList.remove('on');
+  RT.cur=null;RT.down=false;
+}
+function rtDetailHTML(r){
+  const paceSec=r.dist>0?r.dur*60/r.dist:0;
+  const isPace=['跑步','徒步','步行'].indexOf(r.type)>=0;
+  const spd=r.dur>0?r.dist/(r.dur/60):0;
+  const cadU=r.type==='骑行'?'rpm':'spm', cadL=r.type==='骑行'?'踏频':'步频';
+  const cells=[
+    [r.dist,'km','距离'],[fmtDur(r.dur),'','时长'],
+    [isPace?paceTxt(Math.round(paceSec)):spd.toFixed(1),isPace?'/km':'km/h',isPace?'配速':'均速'],
+    [r.hrAvg||'—','bpm','均心'],[r.hrMax||'—','bpm','峰心'],
+    [r.elevUp||0,'m','爬升'],[r.kcal||'—','kcal','消耗'],
+    [r.cadence||'—',cadU,cadL]];
+  const conds=[];
+  if(r.temp!=null)conds.push('🌡 '+r.temp+' ℃');
+  if(r.humidity)conds.push('💧 湿度 '+r.humidity+'%');
+  if(r.loc)conds.push('📍 '+esc(r.loc));
+  if(r.effort)conds.push('⚡ 竭力度 '+r.effort+'/10');
+  return `<div class="wrap" style="padding-top:14px">
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">轨迹</span><span class="en2">Trace</span><span class="ln"></span></div>
+      <div class="rtmap">
+        ${rtRouteMap(r)}
+        <div class="rtread" id="rtRead"></div>
+        <button class="rtplay" onclick="rtPlay()">▶ 回放</button>
+      </div>
+      <div class="cap">线条颜色＝当时速度（蓝慢 → 红快）· 在轨迹上拖动可查看任意位置 · 空心圈为每公里刻度</div>
+    </div>
+    <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">数据</span><span class="en2">Stats</span><span class="ln"></span></div>
+      <div class="rtgrid">${cells.map(c=>`<div class="cell"><div class="v">${c[0]}<u>${c[1]}</u></div><div class="lb">${c[2]}</div></div>`).join('')}</div>
+    </div>
+    ${r.elev&&r.elev.length>1?`<div class="sec"><div class="shead"><span class="no">03</span><span class="tt">海拔剖面</span><span class="en2">Elevation</span><span class="ln"></span></div>
+      <div class="card block">${rtElevSVG(r)}
+      <div class="cap">同样可以拖动 · 和上面的轨迹左右对齐</div></div></div>`:''}
+    ${r.hr&&r.hr.length>1?`<div class="sec"><div class="shead"><span class="no">04</span><span class="tt">心率曲线</span><span class="en2">Heart Rate</span><span class="ln"></span></div>
+      <div class="card block">${rtHRSVG(r)}
+      <div class="cap">纵轴 bpm · 横轴为开始运动后的分钟数</div></div></div>`:''}
+    ${r.splits&&r.splits.length?`<div class="sec"><div class="shead"><span class="no">05</span><span class="tt">每公里分段</span><span class="en2">Splits</span><span class="ln"></span></div>
+      <div class="card block"><table>
+        <tr><th>公里</th><th>用时</th><th>配速</th><th>心率</th></tr>
+        ${r.splits.map(q=>`<tr class="${q.pace===Math.min.apply(null,r.splits.map(z=>z.pace))?'fast':''}">
+          <td>${q.km}</td><td>${Math.floor(q.sec/60)}'${String(q.sec%60).padStart(2,'0')}"</td>
+          <td>${paceTxt(q.pace)}</td><td>${q.hr||'—'}</td></tr>`).join('')}
+      </table><div class="cap">金色＝最快的一公里 · 心率取自该公里平均</div></div></div>`:''}
+    ${conds.length?`<div class="sec"><div class="shead"><span class="no">06</span><span class="tt">环境与强度</span><span class="en2">Conditions</span><span class="ln"></span></div>
+      <div class="card block"><div class="rtcond">${conds.map(c=>`<span>${c}</span>`).join('')}</div>
+      <div class="cap">Apple Watch 当场记录 · 竭力度 1（轻松）～ 10（最大）</div></div></div>`:''}
+  </div>`;
+}
+/* 大轨迹图：光晕 + 按速度分段上色 + 起终点 + 公里刻度 + 方向箭头 */
+function rtRouteMap(r){
+  const W=342,H=232,pad=16;
+  const p=rtProject(r.pts,W,H,pad);
+  RT.proj=p;
+  const n=r.pts.length;
+  const sp=r.pts.map(q=>q[2]);
+  const lo=rtPct(sp,.1),hi=rtPct(sp,.9);
+  let segs='';
+  for(let i=1;i<n;i++)
+    segs+=`<line x1="${p.xs[i-1].toFixed(1)}" y1="${p.ys[i-1].toFixed(1)}" x2="${p.xs[i].toFixed(1)}" y2="${p.ys[i].toFixed(1)}" stroke="${rtSpdCol((sp[i-1]+sp[i])/2,lo,hi)}" stroke-width="2.6" stroke-linecap="round"/>`;
+  /* 公里刻度（空心圈 + 数字），点一下把游标拽过去 */
+  const scale=r.dist/(p.total||1);
+  let ticks='',k=1;
+  while(k<=Math.floor(r.dist)){
+    for(let i=1;i<n;i++){
+      if(p.cum[i]*scale>=k){
+        ticks+=`<g style="cursor:pointer" onclick="rtShowAt(${i})">
+          <circle cx="${p.xs[i].toFixed(1)}" cy="${p.ys[i].toFixed(1)}" r="5.4" fill="var(--card)"/>
+          <text x="${p.xs[i].toFixed(1)}" y="${(p.ys[i]-7.5).toFixed(1)}" font-size="7.5" fill="var(--ink3)" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">${k}</text></g>`;
+        break;}
+    }
+    k++;
+  }
+  /* 方向箭头：全程均匀取 5 个，按局部朝向旋转 */
+  let arrows='';
+  for(let f=0.12;f<0.9;f+=0.16){
+    const i=Math.min(n-2,Math.round(f*n)), j=Math.min(n-1,i+2);
+    const ang=Math.atan2(p.ys[j]-p.ys[i],p.xs[j]-p.xs[i])*180/Math.PI;
+    arrows+=`<g transform="translate(${p.xs[i].toFixed(1)},${p.ys[i].toFixed(1)}) rotate(${ang.toFixed(0)})" opacity=".55">
+      <path d="M-2.6,-2.4 L3.4,0 L-2.6,2.4 Z" fill="var(--ink3)"/></g>`;
+  }
+  const x0=p.xs[0].toFixed(1),y0=p.ys[0].toFixed(1),
+        x1=p.xs[n-1].toFixed(1),y1=p.ys[n-1].toFixed(1);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" id="rtSvg" aria-label="运动轨迹图">
+    <g stroke="var(--grid)">${[0.25,0.5,0.75].map(f=>`<line x1="0" y1="${(H*f).toFixed(0)}" x2="${W}" y2="${(H*f).toFixed(0)}"/><line x1="${(W*f).toFixed(0)}" y1="0" x2="${(W*f).toFixed(0)}" y2="${H}"/>`).join('')}</g>
+    <polyline fill="none" stroke="var(--gold)" stroke-opacity=".14" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
+      points="${rtLine(p.xs,p.ys,1)}"/>
+    ${segs}
+    ${arrows}
+    ${ticks}
+    <circle id="rtMkHalo" cx="0" cy="0" r="11" fill="var(--gold)" opacity="0"/>
+    <circle id="rtMk" cx="0" cy="0" r="5" fill="var(--card)" stroke="var(--gold)" stroke-width="2.6" opacity="0"/>
+    <g><circle cx="${x0}" cy="${y0}" r="5.6" fill="#fff" stroke="#0F7A52" stroke-width="2.4"/>
+      <circle cx="${x0}" cy="${y0}" r="1.8" fill="#0F7A52"/>
+      <text x="${x0}" y="${(+y0-8).toFixed(1)}" font-size="8" fill="#0F7A52" text-anchor="middle" font-weight="700">起</text></g>
+    <g><circle cx="${x1}" cy="${y1}" r="5.6" fill="var(--gold)"/>
+      <circle cx="${x1}" cy="${y1}" r="2" fill="var(--card)"/>
+      <text x="${x1}" y="${(+y1-8).toFixed(1)}" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="700">终</text></g>
+  </svg>${rtScaleBar(p)}`;
+}
+function rtScaleBar(p){
+  const mpp=1/p.s;
+  const cands=[50,100,200,500,1000,2000,5000];
+  let best=cands[0];
+  for(const c of cands){if(c/mpp<=90)best=c;else break;}
+  return `<div class="rtscale"><i style="width:${Math.round(best/mpp)}px"></i>${best>=1000?(best/1000)+' km':best+' m'}</div>`;
+}
+function rtElevSVG(r){
+  const e=r.elev,W=342,H=96,pad=12;
+  const mx=e[e.length-1][0]||1;
+  const als=e.map(q=>q[1]),mn=Math.min.apply(null,als),mxa=Math.max.apply(null,als),rg=Math.max(mxa-mn,1);
+  const X=k=>pad+(k/mx)*(W-pad*2),Y=a=>H-pad-((a-mn)/rg)*(H-pad*2);
+  const pts=e.map(q=>X(q[0]).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" id="rtElevSvg" style="touch-action:none;cursor:crosshair">
+    <defs><linearGradient id="rtEg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--gold)" stop-opacity=".30"/><stop offset="1" stop-color="var(--gold)" stop-opacity=".02"/></linearGradient></defs>
+    <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/><line x1="0" y1="${(H/2).toFixed(0)}" x2="${W}" y2="${(H/2).toFixed(0)}"/><line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+    <polygon points="${pad},${H-pad} ${pts} ${(W-pad).toFixed(1)},${H-pad}" fill="url(#rtEg)"/>
+    <polyline fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linejoin="round" points="${pts}"/>
+    <text x="${pad}" y="${H-2}" font-size="7.5" fill="var(--ink3)">0 km</text>
+    <text x="${W}" y="${H-2}" font-size="7.5" fill="var(--ink3)" text-anchor="end">${mx.toFixed(1)} km</text>
+    <text x="${pad}" y="${pad+6}" font-size="7.5" fill="var(--ink3)">最高 ${mxa.toFixed(0)} m · 最低 ${mn.toFixed(0)} m</text>
+  </svg>`;
+}
+function rtHRSVG(r){
+  const h=r.hr,W=342,H=96,pad=12;
+  const mx=h[h.length-1][0]||1;
+  const bs=h.map(q=>q[1]),mn=Math.min.apply(null,bs)-3,mxa=Math.max.apply(null,bs)+3,rg=Math.max(mxa-mn,1);
+  const X=k=>pad+(k/mx)*(W-pad*2),Y=b=>H-pad-((b-mn)/rg)*(H-pad*2);
+  const pts=h.map(q=>X(q[0]).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+    <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/><line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+    <polyline fill="none" stroke="var(--heart)" stroke-width="1.8" stroke-linejoin="round" points="${pts}"/>
+    <text x="${pad}" y="${pad+6}" font-size="7.5" fill="var(--ink3)">峰值 ${Math.max.apply(null,bs)} bpm · 均心 ${r.hrAvg||'—'}</text>
+    <text x="${pad}" y="${H-2}" font-size="7.5" fill="var(--ink3)">0 分</text>
+    <text x="${W}" y="${H-2}" font-size="7.5" fill="var(--ink3)" text-anchor="end">${mx.toFixed(0)} 分</text>
+  </svg>`;
+}
+/* ── 拖动游标：轨迹图与剖面图共用一套逻辑 ── */
+function rtBindMap(r){
+  const svg=document.getElementById('rtSvg');
+  const ev=document.getElementById('rtElevSvg');
+  const mapXY=e=>{
+    const rect=svg.getBoundingClientRect();
+    return {x:(e.clientX-rect.left)/rect.width*342,y:(e.clientY-rect.top)/rect.height*232};
+  };
+  const evXY=e=>{
+    const rect=ev.getBoundingClientRect();
+    const km=(e.clientX-rect.left)/rect.width*(r.dist||1);
+    return {km:km};
+  };
+  if(svg){
+    svg.addEventListener('pointerdown',e=>{RT.down=true;rtScrub(mapXY(e))});
+    svg.addEventListener('pointermove',e=>{if(RT.down||e.pointerType==='mouse')rtScrub(mapXY(e))});
+    ['pointerup','pointerleave','pointercancel'].forEach(t=>svg.addEventListener(t,()=>{RT.down=false}));
+  }
+  if(ev){
+    ev.addEventListener('pointerdown',e=>{RT.down=true;rtScrub(evXY(e))});
+    ev.addEventListener('pointermove',e=>{if(RT.down||e.pointerType==='mouse')rtScrub(evXY(e))});
+    ['pointerup','pointerleave','pointercancel'].forEach(t=>ev.addEventListener(t,()=>{RT.down=false}));
+  }
+}
+/* 输入：轨迹图给 {x,y}（SVG 坐标），剖面图给 {km} */
+function rtScrub(inp){
+  const r=RT.cur&&RT.data?RT.data.routes.find(x=>x.id===RT.cur):null;
+  if(!r||!RT.proj) return;
+  const p=RT.proj,scale=r.dist/(p.total||1);
+  let i=0;
+  if(inp.km!=null){
+    const target=inp.km/scale;
+    if(target<=0){i=0;}
+    else{
+      i=p.cum.length-1;
+      for(let j=1;j<p.cum.length;j++){if(p.cum[j]>=target){i=j;break;}}
+    }
+  }else{
+    let bd=1e18;
+    for(let j=0;j<p.xs.length;j++){const dx=p.xs[j]-inp.x,dy=p.ys[j]-inp.y,d=dx*dx+dy*dy;if(d<bd){bd=d;i=j;}}
+  }
+  rtShowAt(i);
+}
+function rtShowAt(i){
+  const r=RT.cur&&RT.data?RT.data.routes.find(x=>x.id===RT.cur):null;
+  if(!r||!RT.proj) return;
+  const p=RT.proj,scale=r.dist/(p.total||1);
+  const km=p.cum[i]*scale;
+  const tMin=r.dur*km/Math.max(r.dist,.001);
+  const sp=r.pts[i][2];
+  const mm=Math.floor(tMin),ss=Math.round((tMin-mm)*60);
+  const hr=rtHrAt(r,tMin);
+  const spdTxt=r.type==='骑行'?(sp*3.6).toFixed(1)+' km/h':(sp>0.3?paceTxt(Math.round(1000/sp))+'/km':'—');
+  const mk=document.getElementById('rtMk'),hl=document.getElementById('rtMkHalo'),el=document.getElementById('rtRead');
+  if(!mk||!el) return;
+  mk.setAttribute('cx',p.xs[i].toFixed(1));mk.setAttribute('cy',p.ys[i].toFixed(1));mk.setAttribute('opacity','1');
+  hl.setAttribute('cx',p.xs[i].toFixed(1));hl.setAttribute('cy',p.ys[i].toFixed(1));hl.setAttribute('opacity','.16');
+  el.innerHTML=`<b>${km.toFixed(2)}</b> km · ${mm}'${String(Math.min(ss,59)).padStart(2,'0')}" · ${spdTxt}${hr?' · ♥'+hr:''}`;
+  el.classList.add('on');
+}
+function rtHrAt(r,tMin){
+  const h=r.hr;if(!h||h.length<2)return null;
+  if(tMin<=h[0][0])return h[0][1];
+  for(let i=1;i<h.length;i++){
+    if(tMin<=h[i][0]){
+      const t=(tMin-h[i-1][0])/Math.max(h[i][0]-h[i-1][0],.001);
+      return Math.round(h[i-1][1]+(h[i][1]-h[i-1][1])*t);
+    }
+  }
+  return h[h.length-1][1];
+}
+/* 回放：从头到尾走一遍轨迹（约 5 秒），再点一次轨迹图停止 */
+function rtPlay(){
+  const r=RT.cur&&RT.data?RT.data.routes.find(x=>x.id===RT.cur):null;
+  if(!r||!RT.proj)return;
+  if(RT.play){cancelAnimationFrame(RT.play);RT.play=0;return;}
+  const n=r.pts.length,t0=performance.now(),DUR=5000;
+  const step=()=>{
+    const t=(performance.now()-t0)/DUR;
+    if(t>=1){rtShowAt(n-1);RT.play=0;return;}
+    rtShowAt(Math.round(t*(n-1)));
+    RT.play=requestAnimationFrame(step);
+  };
+  RT.play=requestAnimationFrame(step);
+}
+
 function viewAdvice(){
   const b=D.body[0], hrMax=D.profile['最大心率']||198;
   const wkg=b.weight_jin/2, h=D.profile['身高cm']/100;
@@ -2511,10 +2996,14 @@ function detailDay(ds,kind){
         <i style="display:block;height:100%;width:${(r.时长/maxT*100).toFixed(0)}%;background:var(--${(TY[r.类型]||['','run'])[1]});border-radius:5px"></i></span>
       <span style="text-align:right;color:var(--ink3);font-family:ui-monospace,Menlo,monospace">${Math.round(r.时长)} 分</span></div>`).join('');
   if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'明细':'训练明细'}</div>`+
-   list.map(r=>`<div class="srow2" style="margin-top:6px">
+   list.map(r=>{
+     const rtId=(D.routeIdx&&D.routeIdx.idx||[]).find(x=>x.date===ds&&x.time===r.time&&x.type===r.类型);
+     return `<div class="srow2" style="margin-top:6px">
       <b>${(TY[r.类型]||['·'])[0]} ${r.类型}</b>
       <span>${r.time} · ${Math.round(r.时长)}分${r.距离?' · '+r.距离+'km':''}${hasPace(r)?' · '+r.配速显示:''}</span></div>
-     <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>`).join('');
+     <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>
+     ${rtId?`<div style="margin:0 0 10px"><button class="rtgo" onclick="openRoute('${rtId.id}')">⌖ 查看路线轨迹</button></div>`:''}`;
+   }).join('');
   if(st){
     html+=`<div class="sh2">力量动作 · ${esc(st.title||'')}（${st.items.length} 个）</div>
       <div>${st.items.map((it,i)=>`<div class="ex">
@@ -2554,7 +3043,7 @@ function toast(t){
    这样不管在站里点了多少层，从屏幕左侧往右滑（系统的返回手势）
    都一步落到首页，而不是一层层往回退。 */
 const V={'#/':viewHome,'#/overview':viewOvr,'#/calendar':viewCal,'#/records':viewRec,
-  '#/train':viewTrain,'#/body':viewBody,'#/advice':viewAdvice};
+  '#/train':viewTrain,'#/route':viewRoute,'#/body':viewBody,'#/advice':viewAdvice};
 let CUR=location.hash||'#/';
 
 function paint(){
