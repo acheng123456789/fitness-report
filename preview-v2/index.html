@@ -737,6 +737,60 @@ body.dk .rtcond span{background:rgba(255,255,255,.04)}
   border:1px solid var(--line2);border-radius:99px;padding:4px 10px;cursor:pointer;font-family:inherit;
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:transform .15s}
 .rtplay:active{transform:scale(.92)}
+
+/* ═══ 身体指标（hm）—— 2026-10-18 接入每日健康指标 ═══
+   风格对齐既有看板：金/蓝/紫/绿取自同一组 token，卡片用 .card + .gsec 同一套外壳。 */
+
+/* 首页「今日身体」卡：三格大数字 + 活动行 + 迷你趋势 */
+.hmgrid{display:grid;gap:0;margin-top:12px}
+.hmgrid .hc{flex:1;min-width:0;padding:0 12px;border-left:1px solid var(--line2)}
+.hmgrid .hc:first-child{border-left:0;padding-left:0}
+.hmgrid .hl{font-size:10px;color:var(--ink3);letter-spacing:.3px;display:flex;align-items:center;gap:4px}
+.hmgrid .hv{font-size:25px;font-weight:700;letter-spacing:-.8px;margin-top:4px;line-height:1;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.hmgrid .hv u{text-decoration:none;font-size:10px;font-weight:600;color:var(--ink2);margin-left:3px;
+  font-family:-apple-system,'PingFang SC',sans-serif}
+.hmgrid .hd{font-size:9.5px;color:var(--ink3);margin-top:5px;line-height:1.35}
+.hmgrid .hd b{font-weight:600}
+.hmgrid .hd .up{color:var(--green)}
+.hmgrid .hd .dn{color:var(--warn)}
+.hmgrid .hd .eq{color:var(--ink3)}
+/* 活动四项（步数/锻炼/站立/爬楼） */
+.hmact{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px}
+.hmact.hmday{grid-template-columns:repeat(3,1fr)}
+.hmact.hmday .ac b{font-size:14px}
+.hmact .ac{background:var(--emb);border:1px solid var(--line2);border-radius:9px;padding:8px 6px 7px;text-align:center}
+body.dk .hmact .ac{background:rgba(255,255,255,.04)}
+.hmact .ac i{font-style:normal;font-size:11px;line-height:1;display:block;color:var(--ink2)}
+.hmact .ac b{display:block;font-size:15px;font-weight:700;letter-spacing:-.3px;margin-top:5px;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.hmact .ac span{display:block;font-size:9px;color:var(--ink3);margin-top:3px}
+/* 迷你趋势（14 天线）*/
+.hmspark{margin-top:13px}
+.hmchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.hmchips button{border:1px solid var(--line);background:var(--emb);color:var(--ink2);font-family:inherit;
+  font-size:10px;font-weight:600;padding:4px 10px;border-radius:99px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:transform .12s,background .2s}
+.hmchips button:active{transform:scale(.94)}
+.hmchips button.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.dk .hmchips button.on{color:#171102}
+/* 图表提示框（复用 .dual .tipbox 的样式约定） */
+.hmtip{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .15s;line-height:1.55}
+.hmtip.on{opacity:1}
+.hmtip b{font-size:12px;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+.hmchart{position:relative}
+.hmchart svg{display:block;width:100%;height:auto}
+.hmdot{cursor:pointer;transition:r .16s,opacity .16s}
+.hmdot:hover{filter:brightness(1.15)}
+/* 指标说明弹层里的统计行 */
+.hmstat{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.hmstat div{background:var(--emb);border:1px solid var(--line2);border-radius:9px;padding:7px 4px 6px;text-align:center}
+body.dk .hmstat div{background:rgba(255,255,255,.04)}
+.hmstat span{display:block;font-size:9px;color:var(--ink3)}
+.hmstat b{display:block;font-size:13px;font-weight:700;margin-top:3px;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -775,7 +829,7 @@ const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="bd9b8910153";
+const APPV="b13f222d9cc";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1206,6 +1260,8 @@ function viewHome(){
         <div class="mixlg">${(o.types||[]).map(t=>`<span><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′</span>`).join('')}</div>`:''}
       </div>
     </div>
+
+    ${hmHomeCard()}
 
     ${mode==='chart'?`
     ${monthChartHTML()}
@@ -1712,6 +1768,332 @@ function weekStripInner(){
     <div class="wk">${cells}</div>`;
 }
 function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+/* ═══════════ 身体指标 hm（2026-10-18 接入，数据见 脚本/import_metrics.py）═══════════
+   两条来源合并：Apple Health 全量导出（2025-01-01~2026-09-19）+ 手机「健康自动导出」
+   App 的每日指标（2025-01~04 / 2026-01 / 2026-10）。**睡眠数据按阿成要求未纳入**。
+   手表没戴 / 没导出的日子没有数据 —— 图表按真实日期定位，缺口自然留空，不插值不补零。 */
+const HM_METRICS={
+  rhr  :{name:'静息心率',unit:'bpm',dec:0,better:'low', icon:'♥',
+         note:'静息心率越低，通常说明恢复越好、心脏负担越小'},
+  hrv  :{name:'HRV',    unit:'ms', dec:0,better:'high',icon:'∿',
+         note:'HRV（心率变异性）越高，通常说明自主神经恢复越好'},
+  spo2 :{name:'血氧',   unit:'%',  dec:0,better:'high',icon:'◍',
+         note:'血氧日常都在 95% 上下，突然掉下去才值得注意'},
+  rr   :{name:'呼吸率', unit:'次/分',dec:1,better:'low',icon:'≈',
+         note:'静息呼吸率升高有时和疲劳、恢复不足有关'},
+  vo2  :{name:'VO₂Max', unit:'',   dec:1,better:'high',icon:'⤴',
+         note:'最大摄氧量，有氧体能的硬指标；只在户外走/跑后更新，所以稀疏'},
+  steps:{name:'步数',   unit:'步', dec:0,better:'high',icon:'👟',comma:1,
+         note:'全天累计步数（手表逐分钟记录求和）'},
+  kcal :{name:'活动千卡',unit:'kcal',dec:0,better:'high',icon:'🔥',comma:1,
+         note:'动态千卡（不含基础代谢），全天活动累计'},
+};
+function hmDays(){return (D.hm&&D.hm.days)||[]}
+function hmByDate(){
+  if(hmByDate._src===D.hm) return hmByDate._m;
+  const m={}; hmDays().forEach(r=>{m[r.d]=r});
+  hmByDate._src=D.hm; hmByDate._m=m; return m;
+}
+/* 最近 nDays 自然日内的有值点（升序）；nDays=0/不传 = 全部 */
+function hmSeries(key,nDays){
+  const out=[]; if(!hmDays().length) return out;
+  const cut=nDays?ymd(new Date(Date.now()-nDays*864e5)):'0000-00-00';
+  for(const r of hmDays()){ if(r[key]!=null&&r.d>=cut) out.push({d:r.d,v:r[key]}); }
+  return out;
+}
+function hmAvg(a){return a.reduce((s,p)=>s+p.v,0)/a.length}
+/* 以每个点为中心 ±half 个自然日的均值（跨缺口不硬桥接） */
+function hmRoll(arr,half){
+  return arr.map(p=>{
+    const c=new Date(p.d).getTime(), lo=c-half*864e5, hi=c+half*864e5;
+    let s=0,n=0;
+    for(const q of arr){const t=new Date(q.d).getTime(); if(t>=lo&&t<=hi){s+=q.v;n++;}}
+    return n?s/n:null;
+  });
+}
+/* 最近 days 天均值 vs 前一个有数据的同长度窗口（缺口味自动往前找，最多回看 90 天）；
+   样本不足返回 null。winLast=对照窗内最后一个有数据的日期（文案里跟它比）。 */
+function hmDelta(arr,days){
+  if(arr.length<4) return null;
+  const now=Date.now();
+  const cut=ymd(new Date(now-days*864e5));
+  const a=arr.filter(p=>p.d>=cut);
+  if(a.length<2) return null;
+  const hard=ymd(new Date(now-90*864e5));
+  for(let back=days;back<=90;back+=days){
+    const hi=ymd(new Date(now-back*864e5));
+    const lo=ymd(new Date(now-(back+days)*864e5));
+    if(lo<hard) break;
+    const b=arr.filter(p=>p.d>=lo&&p.d<hi);
+    if(b.length>=2) return {now:hmAvg(a),prev:hmAvg(b),n:a.length,winLast:b[b.length-1].d};
+  }
+  return null;
+}
+function hmFmt(k,v){
+  if(v==null) return '—';
+  const m=HM_METRICS[k];
+  const d=m?m.dec:0;
+  return m&&m.comma?fmtNum(v):(d?v.toFixed(d):String(Math.round(v)));
+}
+/* 把序列按「>7 天没数据」的缺口切成段 —— 折线不硬跨缺口，不然 9/19→10/11 会被
+   画成一条连续下降的线，把"没数据"读成"在变差"（阿成对口径很敏感）。 */
+function hmSegs(arr){
+  const segs=[];let cur=[];
+  for(let i=0;i<arr.length;i++){
+    if(cur.length&&(new Date(arr[i].d)-new Date(arr[i-1].d))/864e5>7){segs.push(cur);cur=[];}
+    cur.push(arr[i]);
+  }
+  if(cur.length)segs.push(cur);
+  return segs;
+}
+/* 通用 SVG 折线图：x=真实日期（有缺口留空），y 值域自适应；可选 ±roll 日均线 */
+function hmLineSVG(series,o){
+  o=o||{};
+  const W=342,H=o.h||124,PL=o.pl||34,PR=10,PT=12,PB=20;
+  const n=series.length;
+  if(n<2) return `<div class="cap">${o.empty||'这段时间数据不足（手表没戴的日子没有记录）'}</div>`;
+  const vs=series.map(p=>p.v);
+  let lo=Math.min(...vs),hi=Math.max(...vs);
+  if(o.min!=null)lo=Math.min(lo,o.min);
+  if(o.max!=null)hi=Math.max(hi,o.max);
+  if(hi===lo){hi+=1;lo-=1;}
+  const pad=(hi-lo)*.12; lo-=pad; hi+=pad;
+  const t0=new Date(series[0].d).getTime(),t1=new Date(series[n-1].d).getTime();
+  const x=d=>PL+(t1===t0?(W-PL-PR)/2:(new Date(d).getTime()-t0)/(t1-t0)*(W-PL-PR));
+  const y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);
+  const col=o.color||'var(--gold)';
+  const segs=hmSegs(series);
+  const roll=o.roll?hmRoll(series,o.roll):null;
+  const line=segs.map(s=>`<polyline points="${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')}"
+    fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`).join('');
+  const area=segs.map(s=>`<polygon points="${PL},${y(lo).toFixed(1)} ${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')} ${x(s[s.length-1].d).toFixed(1)},${y(lo).toFixed(1)}"
+    fill="${col}" fill-opacity=".09"/>`).join('');
+  let rollLine='';
+  if(roll){
+    const rsegs=[];let cur=[];
+    series.forEach((p,i)=>{ if(roll[i]!=null){cur.push(i);} else if(cur.length){rsegs.push(cur);cur=[];} });
+    if(cur.length)rsegs.push(cur);
+    rollLine=rsegs.map(is=>`<polyline points="${is.map(i=>`${x(series[i].d).toFixed(1)},${y(roll[i]).toFixed(1)}`).join(' ')}"
+      fill="none" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 2.5" opacity=".65"/>`).join('');
+  }
+  const yv=[hi,(hi+lo)/2,lo];
+  const grid=yv.map(v=>`<line x1="${PL}" y1="${y(v).toFixed(1)}" x2="${W-PR}" y2="${y(v).toFixed(1)}" class="dgrid"/>
+    <text x="${PL-5}" y="${(y(v)+2.6).toFixed(1)}" class="daxl" text-anchor="end">${o.yfmt?o.yfmt(v):(Math.round(v*10)/10)}</text>`).join('');
+  const dots=series.map((p,i)=>`<circle cx="${x(p.d).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="2.3"
+    fill="${col}" class="hmdot" onclick="hmTip('${o.tip||'hm'}','${p.d}',${p.v},${roll&&roll[i]!=null?roll[i].toFixed(1):'null'},'${o.label||''}','${o.unit||''}')"/>`).join('');
+  const xl=`<text x="${PL}" y="${H-6}" class="daxl">${series[0].d.slice(5).replace('-','/')}</text>
+    <text x="${W-PR}" y="${H-6}" class="daxl" text-anchor="end">${series[n-1].d.slice(5).replace('-','/')}</text>`;
+  return `<div class="hmchart"><div class="hmtip" id="tip-${o.tip||'hm'}"></div>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+      ${grid}${area}${line}${rollLine}${dots}${xl}
+    </svg></div>`;
+}
+function hmTip(id,d,v,roll,label,unit){
+  const t=document.getElementById('tip-'+id); if(!t)return;
+  const m=HM_METRICS[Object.keys(HM_METRICS).find(k=>HM_METRICS[k].name===label)]||null;
+  const dec=m?m.dec:0;
+  t.innerHTML=`${d.slice(5).replace('-',' 月 ')} 日 · ${label||''} <b>${dec?v.toFixed(dec):Math.round(v)}</b>${unit?' '+unit:''}`+
+    (roll!=='null'?`<br><span style="color:var(--ink3)">附近日均 ${roll}${unit?' '+unit:''}</span>`:'');
+  t.classList.add('on');
+}
+/* ── 首页「今日身体」卡 ── */
+function hmHomeCard(){
+  const days=hmDays(); if(!days.length) return '';
+  const last=days[days.length-1];
+  /* 三格大数字：静息心率 / HRV / 血氧，各自取最近 30 天内有值的一天 */
+  const cells=['rhr','hrv','spo2'].map(k=>{
+    const m=HM_METRICS[k], arr=hmSeries(k,30);
+    if(!arr.length) return '';
+    const p=arr[arr.length-1], d7=hmDelta(arr,7);
+    let dh='<div class="hd">近 7 天样本不足</div>';
+    if(d7){
+      const diff=d7.now-d7.prev, same=Math.abs(diff)<(m.dec?0.05:0.5);
+      const better=m.better==='low'?diff<0:diff>0;
+      /* 对照窗就是紧邻的前 7 天 → 不用说日期；跨了缺口找回来的 → 把对比日期摆出来，
+         不然"跟 9 月中旬比"会被读成"跟上周比"（阿成对口径很敏感） */
+      const near=ymd(new Date(Date.now()-8*864e5));
+      const vs=`近 7 天 ${hmFmt(k,d7.now)}${same?' · <b class="eq">基本持平</b>':
+        ` · <b class="${better?'up':'dn'}">${diff>0?'↑':'↓'}${Math.abs(diff).toFixed(m.dec)}</b>`}`;
+      const from=d7.winLast<near?` <span style="opacity:.8">较 ${d7.winLast.slice(5).replace('-','/')} 周</span>`:'';
+      dh=`<div class="hd">${vs}${from}</div>`;
+    }
+    return `<div class="hc"><div class="hl">${m.icon} ${m.name}</div>
+      <div class="hv">${hmFmt(k,p.v)}<u>${m.unit}</u></div>${dh}</div>`;
+  }).filter(Boolean).join('');
+  /* 活动四项：取最近一个有步数的日子（通常就是同一天） */
+  let act=null;
+  for(let i=days.length-1;i>=0;i--){ if(days[i].steps!=null){act=days[i];break;} }
+  const actHtml=act?`<div class="hmact">
+      ${[['👟','步数',fmtNum(act.steps),'步'],['🔥','锻炼',act.exmin!=null?act.exmin:'—','分钟'],
+         ['🧍','站立',act.stand!=null?act.stand:'—','小时'],['🪜','爬楼',act.flights!=null?act.flights:'—','层']]
+        .map(a=>`<div class="ac"><i>${a[0]}</i><b>${a[2]}</b><span>${a[3]}</span></div>`).join('')}
+    </div>`:'';
+  const spark=hmSparkHTML();
+  const gap=hmGapNote();
+  return `<div class="sec"><div class="shead"><span class="tt">今日身体</span><span class="en2">Body</span><span class="ln"></span></div>
+    <div class="card block tap" onclick="hmSheet()">
+      <div style="display:flex;align-items:baseline;justify-content:space-between">
+        <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">最近一次记录 · ${last.d.slice(5).replace('-','/')}</div>
+        <div style="font-size:9.5px;color:var(--gold);font-weight:600">更多指标 ▸</div></div>
+      <div class="hmgrid" style="grid-template-columns:repeat(${cells.split('<div class="hc">').length-1||1},1fr)">${cells}</div>
+      ${actHtml}
+      ${spark}
+      <div class="cap">点开看任意指标 · 30/90 天趋势与对比${gap?' · '+gap:''}</div>
+    </div></div>`;
+}
+/* 首页卡里的 14 天迷你趋势（可切 静息心率/HRV/血氧） */
+function hmSparkHTML(){
+  const k=ST.hmKey||'rhr', m=HM_METRICS[k];
+  const chips=['rhr','hrv','spo2'].map(c=>`<button class="${c===k?'on':''}"
+     onclick="event.stopPropagation();ST.hmKey='${c}';hmSparkRepaint()">${HM_METRICS[c].name}</button>`).join('');
+  const arr=hmSeries(k,14);
+  let body;
+  if(arr.length<2){ body='<div class="cap">近两周数据不足</div>'; }
+  else{
+    const W=342,H=46,PL=4,PR=4,PT=8,PB=8;
+    const vs=arr.map(p=>p.v); let lo=Math.min(...vs),hi=Math.max(...vs);
+    if(hi===lo){hi+=1;lo-=1;}
+    const t0=new Date(arr[0].d).getTime(),t1=new Date(arr[arr.length-1].d).getTime();
+    const x=d=>PL+(new Date(d).getTime()-t0)/((t1-t0)||1)*(W-PL-PR);
+    const y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);
+    const lines=hmSegs(arr).map(s=>`<polyline points="${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')}"
+      fill="none" stroke="var(--gold)" stroke-width="1.7" stroke-linejoin="round"/>`).join('');
+    const lastP=arr[arr.length-1];
+    body=`<div class="hmchart"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+        ${hmSegs(arr).map(s=>`<polygon points="${PL},${H-PB} ${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')} ${x(s[s.length-1].d).toFixed(1)},${H-PB}" fill="var(--gold)" fill-opacity=".10"/>`).join('')}
+        ${lines}
+        ${arr.map(p=>`<circle cx="${x(p.d).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="1.9" fill="var(--gold)"/>`).join('')}
+        <text x="${W-2}" y="${y(lastP.v)-4}" class="daxl" text-anchor="end" style="fill:var(--gold);font-weight:700">${hmFmt(k,lastP.v)}</text>
+      </svg></div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:2px">
+        <span>${arr[0].d.slice(5).replace('-','/')}</span><span>${m.name}</span>
+        <span>${arr[arr.length-1].d.slice(5).replace('-','/')}</span></div>`;
+  }
+  return `<div class="hmspark"><div class="hmchips">${chips}</div>${body}</div>`;
+}
+function hmSparkRepaint(){
+  const el=document.querySelector('.hmspark'); if(!el)return;
+  el.outerHTML=hmSparkHTML();
+}
+/* ── 指标浏览弹层（首页卡点开）── */
+function hmSheet(){
+  ST.hmM=ST.hmM||'rhr'; ST.hmR=ST.hmR||90;
+  const k=ST.hmM,m=HM_METRICS[k];
+  const R=ST.hmR, arr=hmSeries(k,R==='all'?0:R);
+  const mchips=Object.keys(HM_METRICS).map(c=>`<button class="${c===k?'on':''}"
+     onclick="ST.hmM='${c}';hmSheet()">${HM_METRICS[c].name}</button>`).join('');
+  const rchips=[30,90,'all'].map(r=>`<button class="${String(r)===String(R)?'on':''}"
+     onclick="ST.hmR=${r==='all'?"'all'":r};hmSheet()">${r==='all'?'全部':r+' 天'}</button>`).join('');
+  const roll=arr.length>10?3:0;
+  const chart=hmLineSVG(arr,{roll,tip:'sheet',label:m.name,unit:m.unit,h:132});
+  const st=arr.length?{avg:hmAvg(arr),min:Math.min(...arr.map(p=>p.v)),max:Math.max(...arr.map(p=>p.v))}:null;
+  const d30=hmDelta(hmSeries(k,0),30);
+  let concl='';
+  if(d30){
+    const diff=d30.now-d30.prev, better=m.better==='low'?diff<0:diff>0;
+    concl=`最近 30 天平均 ${hmFmt(k,d30.now)}${m.unit?' '+m.unit:''}，比再前 30 天${diff>0?'高':'低'} ${Math.abs(diff).toFixed(m.dec)}${m.unit?' '+m.unit:''} —— ${m.note}。`;
+  } else if(st){ concl=`这段时间平均 ${hmFmt(k,st.avg)}${m.unit?' '+m.unit:''}。${m.note}。`; }
+  openSheet(`<h3>身体指标 · ${m.name}</h3>
+    <div class="hmchips" style="margin-top:10px">${mchips}</div>
+    <div class="hmchips">${rchips}</div>
+    ${chart}
+    ${st?`<div class="hmstat">
+      <div><span>平均</span><b>${hmFmt(k,st.avg)}</b></div>
+      <div><span>最高</span><b>${hmFmt(k,st.max)}</b></div>
+      <div><span>最低</span><b>${hmFmt(k,st.min)}</b></div>
+      <div><span>有数据</span><b>${arr.length} 天</b></div></div>`:''}
+    ${concl?`<div class="sst" style="margin-top:11px">${concl}</div>`:''}
+    <div class="cap">虚线为附近 7 日均值 · 手表没戴的日子没有数据，图上留空不插值${hmGapNote(true)?'<br>'+hmGapNote(true):''}</div>`);
+}
+/* 数据覆盖说明（缺口 >10 天才提，鸡毛缺口不说） */
+function hmGapNote(full){
+  const days=hmDays(); if(days.length<2) return '';
+  let worst=0,wa='',wb='';
+  for(let i=1;i<days.length;i++){
+    const g=(new Date(days[i].d)-new Date(days[i-1].d))/864e5;
+    if(g>worst){worst=g;wa=days[i-1].d;wb=days[i].d;}
+  }
+  if(worst<=10) return '';
+  const fmt=d=>d.slice(5).replace('-','/');
+  return full?`最长缺口 ${Math.round(worst)} 天（${fmt(wa)} → ${fmt(wb)}），期间没有身体数据`
+    :`最长缺口 ${Math.round(worst)} 天`;
+}
+/* ── 记录页 detailDay：当天身体数据 ── */
+function hmDayBlock(ds){
+  const row=hmByDate()[ds]; if(!row) return '';
+  const items=[];
+  const push=(l,v,u)=>{if(v!=null)items.push([l,typeof v==='number'&&v>=1000?fmtNum(v):v,u||''])};
+  push('步数',row.steps,'步'); push('活动千卡',row.kcal,'kcal');
+  push('步行+跑步',row.dist,'km'); push('站立',row.stand,'小时');
+  push('锻炼',row.exmin,'分钟'); push('爬楼',row.flights,'层');
+  push('日照',row.dl,'分钟'); push('静息心率',row.rhr,'bpm');
+  push('HRV',row.hrv,'ms'); push('血氧',row.spo2,'%');
+  push('呼吸率',row.rr,'次/分'); push('VO₂Max',row.vo2,'');
+  if(!items.length) return '';
+  return `<div class="sh2">当天身体数据</div>
+    <div class="hmact hmday">${items.map(a=>`<div class="ac"><b>${a[1]}${a[2]?`<u style="text-decoration:none;font-size:9px;font-weight:600;color:var(--ink2);margin-left:2px">${a[2]}</u>`:''}</b><span>${a[0]}</span></div>`).join('')}</div>
+    <div class="cap">来自 Apple Watch 当天记录 · 手表没戴的项目没有数据</div>`;
+}
+/* 对照窗的口径说法：紧邻的前一窗 → "再前 N 天"；跨缺口找回的 → 把日期摆出来 */
+function hmWinLabel(d,days){
+  const near=ymd(new Date(Date.now()-(days+1)*864e5));
+  return d.winLast>=near?'再前 '+days+' 天':d.winLast.slice(5).replace('-','/')+' 前 '+days+' 天';
+}
+/* ── 建议页：恢复趋势 ── */
+function hmTrendSec(){
+  if(!hmDays().length) return '';
+  const rhr=hmSeries('rhr',90), hrv=hmSeries('hrv',90), vo2=hmSeries('vo2',90);
+  const dR=hmDelta(hmSeries('rhr',0),30), dH=hmDelta(hmSeries('hrv',0),30);
+  const ks=hmDays(); const cov=`${ks[0].d.slice(2).replace('-','/')} ~ ${ks[ks.length-1].d.slice(2).replace('-','/')} 共 ${ks.length} 天`;
+  /* VO2Max 卡：最新值 + 区间首末变化 */
+  let vo2Card='';
+  if(vo2.length){
+    const f=vo2[0],l=vo2[vo2.length-1],chg=(l.v-f.v);
+    vo2Card=`<div class="card block">
+      <div class="srow2"><b>最近一次 VO₂Max</b><span>${l.v.toFixed(1)} · ${l.d.slice(5).replace('-','/')}</span></div>
+      <div class="srow2"><b>近 90 天测量</b><span>${vo2.length} 次（只在户外走/跑后更新）</span></div>
+      <div class="srow2"><b>区间变化</b><span>${f.v.toFixed(1)}（${f.d.slice(5).replace('-','/')}）→ ${l.v.toFixed(1)}，
+        <b style="color:${chg>=0?'var(--green)':'var(--warn)'}">${chg>=0?'+':''}${chg.toFixed(1)}</b></span></div>
+      <div class="cap">最大摄氧量是有氧体能的硬指标；按你近 90 天的记录在${chg>=0?'上升':'下降'}。</div></div>`;
+  }
+  /* 自动建议：两个指标都够才下结论，只有一个就说一个 */
+  let adv='';
+  if(dR&&dH){
+    const rImp=dR.now<dR.prev, hImp=dH.now>dH.prev;
+    const rTxt=`最近 30 天静息心率平均 ${dR.now.toFixed(1)} bpm（${hmWinLabel(dR,30)} ${dR.prev.toFixed(1)}）`;
+    const hTxt=`HRV 平均 ${dH.now.toFixed(1)} ms（${hmWinLabel(dH,30)} ${dH.prev.toFixed(1)}）`;
+    if(rImp&&hImp) adv=['a3','p2','恢复正在变好',
+      `${rTxt}，${hTxt} —— 一个往下、一个往上，都是恢复能力改善的方向。`,
+      ['这个趋势下可以适度加一点量，但每周增幅别超 10%','加量优先加在轻松跑（Z2），别先加强度','继续保证睡眠，恢复是练出来的也是睡出来的']];
+    else if(!rImp&&!hImp) adv=['a1','p2','恢复压力在变大，注意减压',
+      `${rTxt}，${hTxt}。两个指标同向走差，通常是疲劳在累积。`,
+      ['接下来 3~5 天把强度课停一停，只留轻松活动','每晚多睡 30~60 分钟，比加练一次值钱','如果伴随"抬手没劲"或持续疲惫，先停练两天看看']];
+    else adv=['a2','p3','恢复指标一升一降，先观望',
+      `${rTxt}，${hTxt}，方向不一致。单日波动受喝水、酒精、熬夜、生病影响很大，别凭一两天下结论。`,
+      ['连续看 7 天再判断趋势','训练量维持现状，不加不减','把每天的静息心率记在同一时间看，可比性更高']];
+  } else if(dR) adv=['a2','p3','静息心率趋势',
+    `最近 30 天平均 ${dR.now.toFixed(1)} bpm，${hmWinLabel(dR,30)} ${dR.prev.toFixed(1)}。${dR.now<dR.prev?'往下走是恢复改善的信号。':'往上走要注意是不是疲劳或没睡够。'}`,
+    ['连续记录 7 天以上再看趋势，单日意义不大']];
+  const advCard=adv?`<div class="abox ${adv[0]}">
+      <div class="ah"><span class="pri ${adv[1]}">${adv[1].toUpperCase()}</span><b>${adv[2]}</b></div>
+      <div class="why">${adv[3]}</div>
+      <div class="do"><div class="dt">怎么做</div>${adv[4].map(x=>`<li>${x}</li>`).join('')}</div></div>`:'';
+  return `<div class="sec"><div class="shead"><span class="tt">恢复趋势</span><span class="en2">Recovery</span><span class="ln"></span></div>
+    <div class="card block">
+      <div style="font-size:11.5px;color:var(--ink2);line-height:1.65">
+        静息心率和 HRV 是恢复的两个硬指标：<b style="color:var(--gold)">静息心率越低越好，HRV 越高越好</b>。
+        下面两条线是近 90 天的真实记录，虚线是附近 7 日均值。</div>
+      <div style="margin-top:12px">${hmLineSVG(rhr,{roll:3,tip:'rhr',label:'静息心率',unit:'bpm',h:126,color:'var(--heart)'})}</div>
+      <div style="margin-top:14px">${hmLineSVG(hrv,{roll:3,tip:'hrv',label:'HRV',unit:'ms',h:126,color:'var(--lift)'})}</div>
+      <div class="cap">${dR?`静息心率：最近 30 天平均 ${dR.now.toFixed(1)} bpm，${hmWinLabel(dR,30)} ${dR.prev.toFixed(1)}。`:''}
+        ${dH?`HRV：最近 30 天平均 ${dH.now.toFixed(1)} ms，${hmWinLabel(dH,30)} ${dH.prev.toFixed(1)}。`:''}</div>
+    </div>
+    ${vo2Card?`<div class="sec" style="margin-top:14px"><div class="card block">${vo2Card}</div></div>`:''}
+    ${advCard?`<div style="margin-top:14px">${advCard}</div>`:''}
+    <div class="cap" style="margin-top:12px">数据覆盖 ${cov}：2025-01 ~ 2026-09 来自 Apple Health 全量导出，2026-10 来自手机每日自动导出。
+      手表没戴 / 没导出的日子没有数据，图上留空。睡眠数据按你的要求未纳入。</div></div>`;
+}
 
 /* ── 速览 ── */
 function viewOvr(){
@@ -2786,6 +3168,8 @@ function viewAdvice(){
          '连续两天出现"抬手没劲"就停练，别硬撑'])}
     </div>
 
+    ${hmTrendSec()}
+
     <div class="empty-tip">以上建议基于你的实测数据 · 肩部不适请遵医嘱</div>
   </div>`;
 }
@@ -2972,6 +3356,19 @@ function detailDay(ds,kind){
   const maxT=Math.max(...list.map(r=>r.时长),1);
   const KIND={run:'跑步',lift:'器械'};
   if(!list.length&&!st){
+    /* 没训练不等于没数据 —— 手表可能记了身体指标（静息心率/HRV/步数…），
+       这种日子打开就看到身体数据，别甩一句"没有记录"（2026-10-18） */
+    const hb=hmDayBlock(ds);
+    if(hb){
+      openSheet(`<div style="display:flex;gap:12px;align-items:center">
+        <div class="calbox"><div class="tear"></div><div class="m">${+ds.slice(5,7)} 月</div>
+          <div class="d">${ds.slice(8)}</div><div class="w">${wd}</div></div>
+        <div style="flex:1;min-width:0">
+          <h3 style="margin:0">${ds.slice(0,4)} 年 ${+ds.slice(5,7)} 月 ${+ds.slice(8)} 日</h3>
+          <div class="sst">这天没有训练记录</div></div></div>
+        ${hb}`);
+      return;
+    }
     openSheet(`<h3>${ds.slice(5).replace('-',' 月 ')} 日</h3>
       <div class="sst">这天没有${KIND[kind]||''}记录</div>`);return;
   }
@@ -3004,6 +3401,7 @@ function detailDay(ds,kind){
      <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>
      ${rtId?`<div style="margin:0 0 10px"><button class="rtgo" onclick="openRoute('${rtId.id}')">⌖ 查看路线轨迹</button></div>`:''}`;
    }).join('');
+  html+=hmDayBlock(ds);
   if(st){
     html+=`<div class="sh2">力量动作 · ${esc(st.title||'')}（${st.items.length} 个）</div>
       <div>${st.items.map((it,i)=>`<div class="ex">
