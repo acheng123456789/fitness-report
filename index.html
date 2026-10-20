@@ -483,7 +483,7 @@ const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="b34585b709e";
+const APPV="bf9c8e55961";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1226,7 +1226,7 @@ function liftBody(){
             <div style="font-size:12.5px;font-weight:600">${esc(s.title||'力量训练')}</div>
             <div style="font-size:10px;color:var(--ink3);margin-top:3px">${s.items.length} 个动作 · ${setsOf(s)} 组 · ${Object.keys(s.items.reduce((a,i)=>{a[i.部位||'其他']=1;return a},{})).join('·')}</div>
           </div></div>
-        ${s.items.map(i=>photoBanner(i)).join('')}
+        ${sessionPhoto(s)}
         <div class="chips">${s.items.map(i=>`<span class="chip">${esc(i.name)} ${i.kg?i.kg+'kg':'徒手'}</span>`).join('')}</div>
       </div></div>`).join('')}</div>`;
 }
@@ -1568,6 +1568,12 @@ function photoBanner(it){
   const nm=it.photoName||it.name||'';
   return `<div class="phw" onclick="event.stopPropagation();openPhoto('${ps[0]}','${esc(it.name||'')}','${esc(nm)}')">
     <img src="${ps[0]}" loading="lazy" alt="${esc(nm)}"><div class="nm">${esc(nm)}</div></div>`;
+}
+/* 会话卡（列表）里只放第一张横幅，免得一次训练挂了 5 张图把列表撑爆；
+   每个动作自己的照片在点进当天明细(detailDay)里看 */
+function sessionPhoto(s){
+  const it=(s&&s.items||[]).find(i=>i&&i.photos&&i.photos.length);
+  return it?photoBanner(it):'';
 }
 function openPhoto(src,title,sub){
   const pv=document.getElementById('pv');
