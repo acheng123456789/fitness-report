@@ -1,0 +1,3547 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>我的运动报告</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="我的运动报告">
+<meta name="application-name" content="我的运动报告">
+<meta name="theme-color" content="#EFEEEA">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="shortcut icon" href="favicon.png">
+<style>
+:root{
+  --bg:#EFEEEA; --bg2:#E6E4DE; --card:#FFFFFF; --emb:#FAF9F6;
+  --line:rgba(23,26,32,.11); --line2:rgba(23,26,32,.06);
+  /* --ink3 原来是 #7A8290，在浅色底上对比度只有 3.5:1（小字要 4.5:1 才够清）。
+     调到 #656E7C 后是 4.7:1，视觉上几乎看不出差别，但说明文字清楚多了。 */
+  --ink:#101318; --ink2:#4E5766; --ink3:#656E7C;
+  --gold:#90702F; --run:#2263C4; --lift:#6B33D6; --green:#0F7A52; --warn:#B4622C;
+  /* --heart：心率♥专用色。跟 --warn 的橙分开，红色更像"心跳"，也一眼能和蓝色配速区分开。 */
+  --heart:#C6364F;
+  --grid:rgba(23,26,32,.07); --hl:rgba(255,255,255,.9); --bar:rgba(250,249,246,.92);
+  --tear:#DED9CA; --tearHi:#EBE7DB;
+  --sh:0 1px 2px rgba(20,23,28,.04),0 6px 18px rgba(20,23,28,.05);
+}
+body.dk{
+  --bg:#0A0C10; --bg2:#0E1218; --card:#141822; --emb:#10141C;
+  --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.05);
+  --ink:#F0F2F5; --ink2:#A3ACB9; --ink3:#7C8593;
+  --gold:#D2B571; --run:#68A4FF; --lift:#AF92F7; --green:#4BD6A0; --warn:#E9AC66;
+  --heart:#FF7B8C;
+  --grid:rgba(255,255,255,.06); --hl:rgba(255,255,255,.07); --bar:rgba(16,20,28,.92);
+  --tear:rgba(255,255,255,.16); --tearHi:rgba(255,255,255,.28);
+  --sh:0 1px 0 var(--hl) inset,0 8px 26px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif;
+  font-feature-settings:"tnum";-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(78px + env(safe-area-inset-bottom));transition:background .3s,color .3s}
+.wrap{max-width:430px;margin:0 auto;padding:0 16px}
+
+/* 封面 */
+.cover{background:linear-gradient(165deg,var(--bg2),var(--bg) 62%);
+  padding:calc(22px + env(safe-area-inset-top)) 20px 0;position:relative;overflow:hidden}
+.cover:after{content:"";position:absolute;right:-46px;top:-34px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,169,106,.18),transparent 70%);pointer-events:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
+.brand{font-size:10px;letter-spacing:2.6px;color:var(--gold);font-weight:700;cursor:pointer}
+.sw{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--card);
+  -webkit-tap-highlight-color:transparent}
+.sw button{border:0;background:transparent;color:var(--ink3);font-size:11px;padding:6px 11px;cursor:pointer;
+  font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .2s}
+.sw button:not(.on):active{color:var(--ink)}
+.sw button.on{background:var(--gold);color:#fff;font-weight:600}
+.dk .sw button.on{color:#171102}
+.month{font-size:13px;font-weight:400;letter-spacing:6px;color:var(--gold);margin:20px 0 3px}
+.title{font-size:28px;font-weight:600;letter-spacing:-.5px}
+.en{font-size:9.5px;letter-spacing:2.2px;color:var(--ink3);margin-top:7px;text-transform:uppercase}
+.sub{font-size:11px;color:var(--ink3);margin-top:5px}
+.rline{height:1px;background:linear-gradient(90deg,var(--gold),transparent 78%);margin-top:16px}
+/* 首页数据来源小标 */
+.srcpill{display:inline-block;margin-top:11px;font-size:9.5px;letter-spacing:.8px;color:var(--gold);
+  border:1px solid var(--gold);border-radius:99px;padding:3px 10px;background:var(--card);
+  box-shadow:0 1px 0 var(--hl) inset}
+/* 建议页优先级标签 */
+.pri{font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:5px;color:#fff}
+.pri.p1{background:#C0392B}.pri.p2{background:var(--warn)}.pri.p3{background:var(--ink3)}
+.advcard{border-left:3px solid var(--gold)}
+.advcard.a1{border-left-color:#C0392B}.advcard.a2{border-left-color:var(--warn)}
+/* 封面：细斜纹肌理 + 本周节奏条 */
+.cover:before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(118deg,rgba(120,120,120,.045) 0 1px,transparent 1px 10px)}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px;position:relative;z-index:2}
+.wk .wl{font-size:8.5px;color:var(--ink3);text-align:center;margin-bottom:4px;letter-spacing:.3px}
+.wk .wd2{height:24px;border-radius:6px;background:var(--emb);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink3);
+  box-shadow:0 1px 0 var(--hl) inset}
+.wk .wd2.on{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
+.dk .wk .wd2.on{color:#171102}
+.wk .wd2.today{box-shadow:0 0 0 1.4px var(--gold) inset}
+.wkt{display:flex;align-items:center;justify-content:space-between;margin-top:14px;position:relative;z-index:2}
+.wkt span{font-size:9px;letter-spacing:1.4px;color:var(--ink3)}
+.wkt em{font-style:normal;font-size:9.5px;color:var(--gold);font-weight:600}
+/* 台历：顶部撕痕 + 装订环 */
+.teartop{height:8px;margin:-14px -14px 12px;position:relative;overflow:hidden}
+.teartop:before{content:"";position:absolute;left:0;right:0;top:0;height:8px;
+  background:linear-gradient(180deg,rgba(0,0,0,.13),transparent);
+  -webkit-mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 6px);
+  mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 6px)}
+.bind{display:flex;justify-content:center;gap:26px;margin:-6px 0 8px}
+.bind i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--gold);
+  background:var(--bg2);box-shadow:0 1px 2px rgba(0,0,0,.22)}
+/* 无氧：个人最佳榜 */
+.pr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2)}
+.pr:last-child{border:0}
+.pr .rk{flex:none;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;background:var(--emb);color:var(--ink3);border:1px solid var(--line2)}
+.pr.top .rk{background:var(--gold);color:#fff;border-color:var(--gold)}
+.dk .pr.top .rk{color:#171102}
+.pr .mid{flex:1;min-width:0}
+.pr .mid b{font-size:12.5px;font-weight:600}
+.pr .mid .meta{font-size:9.5px;color:var(--ink3);margin-top:3px}
+.pr .vv{flex:none;text-align:right}
+.pr .vv b{font-size:15px;font-weight:600;font-family:ui-monospace,Menlo,monospace}
+.pr .vv b u{text-decoration:none;font-size:10px;color:var(--ink2);font-family:-apple-system,"PingFang SC",sans-serif}
+.pr .vv span{display:block;font-size:9px;color:var(--ink3);margin-top:2px;font-family:ui-monospace,Menlo,monospace}
+/* 建议页 */
+.abox{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);
+  padding:14px;margin-bottom:10px;border-left:3px solid var(--gold)}
+body.dk .abox{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
+.abox.a1{border-left-color:#C0392B}.abox.a2{border-left-color:var(--warn)}.abox.a3{border-left-color:var(--ink3)}
+.abox .ah{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.abox .ah b{font-size:13px;font-weight:600;letter-spacing:.2px}
+.abox .why{font-size:11px;line-height:1.65;color:var(--ink2);margin-top:2px}
+.abox .do{margin-top:9px;background:var(--emb);border-radius:8px;padding:9px 11px}
+body.dk .abox .do{background:rgba(255,255,255,.04)}
+.abox .do .dt{font-size:9px;font-weight:700;letter-spacing:1.4px;color:var(--gold);margin-bottom:5px}
+.abox .do li{list-style:none;font-size:11.5px;line-height:1.65;color:var(--ink);padding:2px 0 2px 13px;position:relative}
+.abox .do li:before{content:"";position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.hrzone{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:10px 0 6px}
+.hrzone i{display:block;height:100%}
+.hrlg{display:flex;gap:10px;flex-wrap:wrap;font-size:9px;color:var(--ink2)}
+.hrlg span i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+/* ═══ v2：去报告化 ═══
+   ① 隐藏区块序号 01/02/03 和英文小标题 —— 这是"读报告"最大的来源
+   ② 标题放大、留白收紧，数字成为视觉主体 */
+.shead .no,.shead .en2{display:none}
+.shead{margin-bottom:12px}
+.shead .tt{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.sec{margin-top:28px}
+
+/* 精简页头：不再有巨大的月份字距 + 英文副标题 + 金色装饰圆 */
+.cover{padding-top:calc(16px + env(safe-area-inset-top))}
+.cover:after{display:none}
+.cover:before{background:repeating-linear-gradient(118deg,rgba(120,120,120,.03) 0 1px,transparent 1px 12px)}
+.month{font-size:11px;letter-spacing:1.2px;margin:14px 0 2px;font-weight:600}
+.title{font-size:24px;font-weight:700;letter-spacing:-.6px}
+.en{display:none}
+.sub{font-size:11.5px;color:var(--ink3);margin-top:6px;line-height:1.5}
+.rline{background:var(--line);margin-top:14px}
+
+/* 首页看板 —— 唯一没有编号、没有卡套的大数字区 */
+.hero{padding:20px 18px 18px}
+.hero .hlabel{font-size:11px;color:var(--ink3);letter-spacing:.6px}
+.hero .hbig{font-size:52px;font-weight:700;letter-spacing:-2.4px;line-height:1;margin-top:6px;
+  display:flex;align-items:baseline;gap:7px}
+.hero .hbig u{text-decoration:none;font-size:17px;font-weight:600;color:var(--ink2);letter-spacing:0}
+.hero .hsub{font-size:11.5px;color:var(--ink3);margin-top:9px;line-height:1.5}
+/* 环比：涨绿跌红（中国用户习惯之外？——训练量涨是好事，用金色；下降用红）*/
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:600;
+  padding:3px 8px;border-radius:99px;margin-left:6px;vertical-align:middle;letter-spacing:0}
+.delta.up{background:rgba(200,169,106,.16);color:var(--gold)}
+.delta.dn{background:rgba(196,54,79,.13);color:var(--heart)}
+
+/* 近 6 个月训练量柱状趋势 */
+.trend{display:flex;align-items:flex-end;gap:8px;height:104px;margin-top:18px;padding-top:6px;
+  border-top:1px solid var(--line2)}
+.trend .tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.trend .tb i{display:block;width:100%;border-radius:5px 5px 2px 2px;background:var(--line);
+  min-height:4px;transition:height .5s cubic-bezier(.2,.8,.2,1)}
+.trend .tb.on i{background:var(--gold)}
+.trend .tb em{font-style:normal;font-size:9.5px;color:var(--ink3);letter-spacing:0}
+.trend .tb.on em{color:var(--gold);font-weight:600}
+.trend .tb b{font-style:normal;font-size:9.5px;color:var(--ink3);font-weight:600;letter-spacing:0}
+.trend .tb.on b{color:var(--ink)}
+
+/* 目标进度条（体重） */
+.prog{height:8px;border-radius:5px;background:var(--line2);overflow:hidden;margin-top:12px;position:relative}
+.prog i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--gold),var(--warn))}
+.prog u{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink2);border-radius:1px;
+  text-decoration:none}
+.ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-top:8px}
+
+/* 信号卡（身体提醒）：左侧一条色带，不用图标 */
+.sig{display:flex;gap:12px;padding:14px 15px;border-radius:14px;background:var(--card);
+  border:1px solid var(--line);box-shadow:var(--sh);align-items:flex-start}
+.sig .bar{flex:none;width:3px;align-self:stretch;border-radius:2px;background:var(--warn);min-height:34px}
+.sig.crit .bar{background:#C0392B}
+.sig .bd{flex:1;min-width:0}
+.sig .bd b{font-size:14.5px;font-weight:600;display:block}
+.sig .bd p{font-size:11.5px;color:var(--ink2);margin-top:5px;line-height:1.6}
+.sig .bd .mt{font-size:10.5px;color:var(--ink3);margin-top:6px}
+
+/* 行列表：替代"点卡片进二级页"的大入口卡 */
+.rows{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.rows .rw{display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line2);
+  transition:background .15s;position:relative}
+.rows .rw:last-child{border-bottom:0}
+.rows .rw:active{background:var(--emb)}
+.rows .rw .tx{flex:1;min-width:0}
+.rows .rw .tx b{font-size:14px;font-weight:600;display:block}
+.rows .rw .tx span{font-size:10.5px;color:var(--ink3);margin-top:2px;display:block}
+.rows .rw .vv{font-size:14px;font-weight:600;color:var(--gold);font-family:ui-monospace,Menlo,monospace;flex:none}
+.rows .rw .go{flex:none;width:7px;height:7px;border-top:1.5px solid var(--ink3);border-right:1.5px solid var(--ink3);
+  transform:rotate(45deg);opacity:.5}
+
+/* 首页快捷入口：从"6 张大卡"改成"一个紧凑的两列小图标行" */
+.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qgrid a{display:block;text-decoration:none;color:inherit;text-align:center;padding:11px 2px;
+  border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.qgrid a:active{background:var(--emb);transform:scale(.96)}
+.qgrid .qi{font-size:16px;line-height:1;margin-bottom:6px}
+.qgrid .qs{font-size:10px;color:var(--ink2);letter-spacing:.2px}
+
+/* 段内小标题（替代 .shead 的定位：区块内再分组时用） */
+.mini{font-size:11px;color:var(--ink3);letter-spacing:.4px;margin:16px 0 8px;display:flex;
+  align-items:center;gap:7px}
+.mini:after{content:"";flex:1;height:1px;background:var(--line2)}
+
+/* 记录页顶部的 日历/列表 切换（底栏已无日历 tab，日历在这里） */
+.segbar{display:flex;background:var(--line2);border-radius:10px;padding:3px;gap:3px}
+.segbar button{flex:1;border:0;background:transparent;font-family:inherit;font-size:12.5px;
+  font-weight:600;color:var(--ink3);padding:8px 0;border-radius:8px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:background .18s,color .18s}
+.segbar button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(20,23,28,.09)}
+body.dk .segbar button.on{background:var(--card);box-shadow:0 1px 0 var(--hl) inset,0 2px 8px rgba(0,0,0,.35)}
+
+/* ══════════════════════════════════════════════════════════
+   v3 图表系统 —— 四个图，统一「点一下联动、再点取消」的交互
+   核心约定：所有图表的选中态存在 ST 里（pick），重渲染后还在，
+   这样点柱子→下面明细变→再点别处才切换，不会闪回。
+   ══════════════════════════════════════════════════════════ */
+
+/* 图表通用容器 */
+.chart{margin-top:14px;position:relative;-webkit-user-select:none;user-select:none}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart svg *{-webkit-tap-highlight-color:transparent}
+
+/* 可点元素的通用反馈：默认实心，hover/按下变虚线描边 */
+.hit{cursor:pointer;transition:opacity .16s}
+.hit:active{opacity:.55}
+.dim{opacity:.26}
+
+/* ① 月度堆叠柱
+   ⚠️ 踩过的坑：.mstack 不能写 flex:1 —— flex:1 即 flex-basis:0，
+   内联 style="height:X%" 在 flex 列容器里会被完全忽略，柱子容器永远撑满整列高，
+   选中态的 box-shadow 就变成一根全高的金框（柱子很短、框很高，非常丑）。
+   正确做法：外层 .mzone 用 flex:1 吃掉剩余空间并给出确定高度，
+   .mstack 不设 flex，让 height:% 相对 .mzone 生效，金框才能紧贴柱子。 */
+.mbar{display:flex;align-items:flex-end;gap:7px;height:132px}
+.mbar .mg{flex:1;display:flex;flex-direction:column;height:100%;min-width:0}
+.mbar .mtop{height:15px;flex:none;font-size:9.5px;font-weight:700;color:var(--gold);text-align:center;
+  font-family:ui-monospace,Menlo,monospace}
+.mbar .mzone{flex:1;display:flex;flex-direction:column;justify-content:flex-end;min-height:0}
+.mbar .mstack{display:flex;flex-direction:column;justify-content:flex-end;gap:1.5px;
+  border-radius:5px 5px 2px 2px;overflow:hidden;position:relative}
+.mbar .mstack i{display:block;width:100%;transition:height .55s cubic-bezier(.2,.8,.2,1);min-height:2px}
+.mbar .mlab{font-size:9px;color:var(--ink3);text-align:center;margin-top:6px;flex:none;letter-spacing:-.2px}
+.mbar .mg.on .mlab{color:var(--gold);font-weight:700}
+.mbar .mg.on .mstack{box-shadow:0 0 0 1.6px var(--gold),0 0 0 4px color-mix(in srgb,var(--gold) 18%,transparent)}
+
+/* 图例：点它可以只看某一类。四列网格（7 项 = 两行），紧凑到不抢主体的视觉重量。 */
+.legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:11px;
+  font-size:9.5px;color:var(--ink2)}
+.legend span{display:flex;align-items:center;gap:4px;padding:4px 5px;border-radius:7px;
+  border:1px solid var(--line2);transition:opacity .16s,border-color .16s,background .16s;
+  min-width:0;cursor:pointer}
+.legend span i{width:7px;height:7px;border-radius:2px;flex:none;display:block}
+.legend span b{font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legend span.off{opacity:.3;text-decoration:line-through}
+.legend span:active{background:var(--emb);border-color:var(--line)}
+/* 聚焦态：点中的那类描金边，其余变灰但仍可点（点了就切换过去） */
+.legend span.on{border-color:var(--gold);color:var(--ink);
+  background:color-mix(in srgb,var(--gold) 13%,transparent);font-weight:600}
+.legend span.dim{opacity:.42}
+.legend .allchip{border-color:var(--gold);color:var(--gold);font-weight:700}
+.legend.ro{pointer-events:none}
+
+/* 联动明细条 */
+.pick{display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 13px;border-radius:12px;
+  background:var(--emb);border:1px solid var(--line2);transition:opacity .2s}
+body.dk .pick{background:rgba(255,255,255,.045)}
+.pick .pk-t{font-size:12.5px;font-weight:600;flex:none}
+.pick .pk-s{font-size:10.5px;color:var(--ink3);flex:1;min-width:0;line-height:1.45}
+.pick .pk-x{flex:none;font-size:17px;color:var(--ink3);width:24px;height:24px;display:flex;
+  align-items:center;justify-content:center;border-radius:50%;background:var(--line2);font-size:13px}
+
+/* ② 训练热力图
+   ⚠️ 别用 aspect-ratio:1 —— 7 列平分 330pt 宽，每格会到 50px，
+   6 周就313px 高、整张卡 496px，占掉两屏多。改成固定 30px 方格才紧凑。 */
+/* ② 训练热力图（真日历版：一周一行，一格一天，格内上行日期、下行分钟数）
+   阿成 2026-10-16 反馈原版"一堆色块方框看不懂、不知道对应哪天、底部七八九十月标签对不上"，
+   所以：每格自带日期数字，跨月处显示"月/日"，底部月份标签行删掉。 */
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.heat .hc{height:38px;border-radius:6px;background:var(--emb);border:1px solid var(--line2);
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;color:var(--ink3);cursor:pointer;
+  transition:transform .14s,box-shadow .14s,background .16s}
+.heat .hc .d{font-size:8.5px;line-height:1;font-style:normal;opacity:.8}
+.heat .hc .m{font-size:10.5px;line-height:1;font-weight:700;text-decoration:none;
+  font-family:ui-monospace,Menlo,monospace}
+.heat .hc.l1{background:color-mix(in srgb,var(--gold) 20%,var(--emb));color:var(--ink2)}
+.heat .hc.l2{background:color-mix(in srgb,var(--gold) 40%,var(--emb));color:var(--ink)}
+.heat .hc.l3{background:color-mix(in srgb,var(--gold) 68%,var(--emb));color:#fff}
+.heat .hc.l4{background:var(--gold);color:#171102}
+body.dk .heat .hc.l3,body.dk .heat .hc.l4{color:#171102}
+.heat .hc.fut{opacity:.35;pointer-events:none}
+.heat .hc.tdy{border-color:var(--run);box-shadow:0 0 0 1.6px var(--run) inset}
+.heat .hc.on{transform:scale(1.1);box-shadow:0 0 0 2px var(--ink) inset,0 2px 8px rgba(0,0,0,.25);z-index:2}
+.heat .hc:active{transform:scale(.92)}
+.heatwk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px}
+.heatwk div{text-align:center;font-size:8.5px;color:var(--ink3)}
+
+/* ③ 跑步配速折线（v4 单轴，v3 双轴已砍） */
+.dual{position:relative}
+.dual .tipbox{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .15s;line-height:1.55}
+.dual .tipbox.on{opacity:1}
+.dual .tipbox b{font-size:12px;font-weight:700}
+.dgrid{stroke:var(--grid);stroke-width:1}
+.daxl{font-size:8px;fill:var(--ink3);font-family:ui-monospace,Menlo,monospace}
+.dfast{font-size:8.5px;fill:var(--gold);font-weight:700}
+.ddot{transition:r .16s,opacity .16s;cursor:pointer}
+.ddot:hover{filter:brightness(1.1)}
+
+/* ④ 体重双线 */
+.wl2 .tipbox{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .15s;line-height:1.55}
+.wl2 .tipbox.on{opacity:1}
+.wdot{transition:r .16s,opacity .16s;cursor:pointer}
+.wline{fill:none;stroke-linejoin:round;stroke-linecap:round}
+
+/* 图表里的小按钮（展开/收起） */
+.minibtn{flex:none;border:1px solid var(--line);background:var(--emb);color:var(--ink2);
+  font-family:inherit;font-size:10.5px;font-weight:600;padding:6px 11px;border-radius:99px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s,background .2s}
+.minibtn:active{transform:scale(.94)}
+.minibtn.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.dk .minibtn.on{color:#171102}
+
+/* 图表卡片的统一外壳 —— 没有大标题，靠小标题分层 */
+.gsec{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--sh);padding:14px 15px 15px}
+body.dk .gsec{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
+.gsec .gt{font-size:14.5px;font-weight:700;letter-spacing:-.2px}
+.gsec .gd{font-size:10.5px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.gsec .gr{display:flex;align-items:baseline;gap:7px;margin-top:11px}
+.gsec .gr b{font-size:22px;font-weight:700;letter-spacing:-.6px;font-family:ui-monospace,Menlo,monospace}
+.gsec .gr span{font-size:10.5px;color:var(--ink3)}
+
+/* 类型分布条（首页主卡内） */
+.mixbar{display:flex;height:9px;border-radius:5px;overflow:hidden;gap:2px}
+.mixbar i{display:block;height:100%;border-radius:2px}
+.mixlg{display:flex;flex-wrap:wrap;gap:12px;margin-top:9px;font-size:10.5px;color:var(--ink2)}
+.mixlg span{display:flex;align-items:center;gap:5px}
+.mixlg i{width:8px;height:8px;border-radius:2px;display:block;flex:none}
+
+/* strip 原样式（封面用） */
+.strip{display:flex;border-top:1px solid var(--line);margin-top:16px}
+.strip div{flex:1;padding:12px 0 13px;text-align:center;border-right:1px solid var(--line2)}
+.strip div:last-child{border:0}
+.strip b{display:block;font-size:19px;font-weight:600;letter-spacing:-.3px}
+.strip b u{text-decoration:none;font-size:10px;font-weight:500;color:var(--ink2);margin-left:1px}
+.strip span{display:block;font-size:9.5px;color:var(--ink3);margin-top:3px;letter-spacing:.5px}
+
+/* 通用 */
+.sec{margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:9px;margin-bottom:10px}
+.shead .no{font-size:9.5px;font-weight:700;color:var(--gold);letter-spacing:1.4px;border:1px solid var(--gold);border-radius:3px;padding:2px 4px}
+.shead .tt{font-size:13.5px;font-weight:600;letter-spacing:.6px}
+.shead .en2{font-size:9px;letter-spacing:1.6px;color:var(--ink3);text-transform:uppercase}
+.shead .ln{flex:1;height:1px;background:var(--line)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh)}
+body.dk .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
+.block{padding:14px}
+
+/* 「05 心率与配速对照」一行一条。
+   ⚠️ 右列必须用**固定宽度**（84px）而不是 auto：每行是各自独立的 grid 容器，
+   用 auto 时行与行宽度不同，左侧条形会左右错位。配速位数可能从 5 字符
+   （6'28"）变到 6 字符（10'02"），所以配速格给 42px 并右对齐 + 等宽数字。 */
+.prow{display:grid;grid-template-columns:42px 1fr 84px;gap:9px;align-items:center;
+  padding:5px 0;font-size:10px;border-radius:7px}
+.prow.tap:active{background:var(--line2)}
+.pdate{color:var(--ink3);font-family:ui-monospace,Menlo,monospace;
+  font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.ptrack{height:8px;background:var(--line2);border-radius:4px;overflow:hidden}
+.ptrack i{display:block;height:100%;border-radius:4px;background:var(--run)}
+.ptrack i.fast{background:var(--gold)}
+.pval{display:flex;align-items:center;justify-content:space-between;gap:6px;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.ppace{width:42px;text-align:right;color:var(--ink);font-weight:600}
+.phr{width:36px;display:flex;align-items:center;justify-content:flex-end;gap:3px;
+  color:var(--heart);font-weight:600}
+.phr svg{width:10px;height:10px;flex:none;display:block;fill:currentColor}
+.cap{font-size:10px;color:var(--ink3);margin-top:9px;line-height:1.5}
+
+/* 可点卡片：按下反馈（箭头必须显式加 .arr，否则会压住右侧的数值） */
+.tap{transition:transform .12s ease,background .2s;cursor:pointer;position:relative}
+.tap:active{transform:scale(.978)}
+.tap.arr:after{content:"";position:absolute;right:12px;top:50%;width:6px;height:6px;
+  border-top:1.5px solid var(--ink3);border-right:1.5px solid var(--ink3);
+  transform:translateY(-50%) rotate(45deg);opacity:.55}
+.pressed{background:var(--emb)}
+
+/* 入口卡 */
+.entry{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ent{padding:15px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--sh);position:relative;overflow:hidden}
+body.dk .ent{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
+.ent .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:9px}
+.ent b{font-size:13.5px;font-weight:600;display:block}
+.ent span{font-size:10px;color:var(--ink3);margin-top:3px;display:block;line-height:1.4}
+
+/* KPI */
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.kpi{padding:13px 14px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:var(--sh)}
+body.dk .kpi{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012)),var(--card)}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold)}
+.kpi .lb{font-size:10px;color:var(--ink3);letter-spacing:1px;margin-bottom:5px}
+.kpi .v{font-size:26px;font-weight:600;letter-spacing:-.7px;line-height:1.05;display:flex;align-items:baseline;gap:3px}
+.kpi .v u{text-decoration:none;font-size:11.5px;font-weight:500;color:var(--ink2)}
+.kpi .e{font-size:10px;color:var(--ink3);margin-top:4px}
+.kpi .mb{height:3px;background:var(--line2);border-radius:2px;margin-top:9px;overflow:hidden}
+.kpi .mb i{display:block;height:100%;background:var(--gold);border-radius:2px}
+
+/* 日历 */
+.ch7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px}
+.ch7 span{text-align:center;font-size:9.5px;color:var(--ink3)}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cd{aspect-ratio:1/1.1;border-radius:9px;background:var(--emb);border:1px solid var(--line2);
+  display:flex;flex-direction:column;align-items:center;padding-top:5px;gap:2px;overflow:hidden;
+  transition:transform .12s,background .2s;cursor:pointer}
+.cd:active{transform:scale(.92)}
+.cd.empty{background:transparent;border-color:transparent;cursor:default}
+.cd .cdn{font-size:10.5px;color:var(--ink2);font-weight:500}
+.cd.hit{border-color:var(--line)}
+.cd.hit .cdn{color:var(--ink);font-weight:600}
+.cd.now{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.cd.now .cdn{color:var(--gold);font-weight:700}
+.cd.sel{background:var(--gold)}
+.pl{font-size:7.5px;padding:1px 3px;border-radius:3px;font-weight:700;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;line-height:1.45}
+.pl.run{background:color-mix(in srgb,var(--run) 16%,transparent);color:var(--run)}
+.pl.lift{background:color-mix(in srgb,var(--lift) 16%,transparent);color:var(--lift)}
+.pl.ride{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+.pl.walk{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mnav b{font-size:15px;font-weight:600;letter-spacing:.5px}
+/* 台历撕页式日期牌：缩小的尺寸 + 顶部"上一页被撕剩的残边"（不规则手撕锯齿） */
+.calbox{width:38px;flex:none;border-radius:8px;overflow:hidden;border:1px solid var(--line);
+  background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.13),0 1px 0 var(--hl) inset;position:relative}
+.calbox .tear{height:7px;position:relative;
+  background:linear-gradient(180deg,var(--tearHi),var(--tear) 70%);
+  clip-path:polygon(0 0,100% 0,100% 42%,96.2% 82%,92.8% 38%,89% 100%,85.4% 52%,81.8% 30%,78.4% 92%,
+    74.6% 42%,71% 100%,67.4% 36%,63.8% 78%,60.2% 28%,56.6% 96%,53% 48%,49.4% 26%,45.8% 86%,
+    42.2% 40%,38.6% 100%,35% 34%,31.4% 72%,27.8% 30%,24.2% 92%,20.6% 44%,17% 100%,13.4% 36%,
+    9.8% 78%,6.2% 28%,2.6% 88%,0 40%)}
+.calbox .m{background:var(--gold);color:#fff;font-size:7px;letter-spacing:1px;text-align:center;padding:2px 0 2px;font-weight:700;
+  box-shadow:inset 0 2px 3px -1px rgba(0,0,0,.30)}
+.dk .calbox .m{color:#171102}
+.calbox .d{font-size:15px;font-weight:600;text-align:center;letter-spacing:-.5px;line-height:1.15;padding-top:1px}
+.calbox .w{font-size:6.5px;color:var(--ink3);text-align:center;padding:0 0 3px;letter-spacing:.3px}
+/* 胶囊按钮：要有立体感（内高光 + 投影），两种主题都清晰 */
+.btn{font-size:11px;padding:6px 13px;border-radius:99px;font-weight:600;white-space:nowrap;
+  border:1px solid var(--gold);color:var(--gold);background:var(--card);
+  box-shadow:0 1px 0 var(--hl) inset,0 2px 7px rgba(0,0,0,.12);
+  transition:transform .12s,box-shadow .2s;font-family:inherit}
+.btn:active{transform:scale(.93)}
+.btn.off{border-color:var(--line);color:var(--ink3);background:transparent;box-shadow:none}
+.seg{display:flex;background:var(--emb);border:1px solid var(--line);border-radius:10px;padding:2px;margin-bottom:12px}
+body.dk .seg{background:rgba(255,255,255,.04)}
+.seg button{flex:1;border:0;background:transparent;font-size:12px;padding:7px 0;border-radius:8px;
+  color:var(--ink2);font-family:inherit;transition:background .2s}
+
+/* 年份胶囊行（记录页/跑步明细的年月导航） */
+.ychips{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+
+/* 三列图例行（部位分布 / 构成占比）：点在最左、名字居中、数值最右 —— 三列各自一条竖轴。
+   原来用 .srow2(space-between) 时，中间那格会被两侧挤着跑，看起来整排往右斜。 */
+.lgr{display:grid;grid-template-columns:1fr 62px 1fr;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--line2);font-size:11.5px}
+.lgr:last-child{border-bottom:0}
+.lgr>.dot{margin:0;justify-self:start;align-self:center}
+.lgr>b{text-align:center;font-weight:600}
+.lgr>.vv{justify-self:end;text-align:right;color:var(--ink2);white-space:nowrap;
+  font-family:ui-monospace,Menlo,monospace}
+
+/* 一周计划：星期固定窄列 + 内容左对齐（原来 space-between 把内容顶到右边悬空） */
+.wkrow{display:grid;grid-template-columns:46px 1fr;column-gap:12px;align-items:center;
+  padding:11px 0;border-bottom:1px solid var(--line2)}
+.wkrow .dw{text-align:center;color:var(--gold);font-weight:600;font-size:11.5px;letter-spacing:.6px}
+.wkrow .wc b{font-size:12.5px;font-weight:600;color:var(--ink)}
+.wkrow .ws{font-size:10px;color:var(--ink3);margin-top:3px;line-height:1.5}
+
+/* 记录页"选年月"：细线表格，不用任何装饰件（跟全站 .srow2 / .grow2 的细线语言一致）。
+   ⚠️ 历史：做过"钉子+长斜绳"和"挂环+金色装订杆+吊环"，阿成两次都说太花哨，已全部拆掉。
+      只保留"点月份翻一页"这一个动作感（@keyframes cflip），其它视觉一律素着来。 */
+.yhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  padding-bottom:11px;border-bottom:1px solid var(--line)}
+.yhead b{font-size:15px;font-weight:600;letter-spacing:.4px}
+.yhead span{font-size:10px;color:var(--ink3)}
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line2)}
+.mrow:last-child{border-bottom:0}
+.mcell2{padding:11px 0 10px;text-align:center;transition:transform .12s,background .2s;border-radius:9px}
+.mcell2:active{transform:scale(.94)}
+.mcell2 b{display:block;font-size:13px;font-weight:600;color:var(--ink);
+  font-family:ui-monospace,Menlo,monospace;letter-spacing:-.3px}
+.mcell2 span{display:block;font-size:9px;color:var(--ink3);margin-top:3px;letter-spacing:.3px}
+.mcell2.off b{color:var(--ink3);opacity:.4}
+.mcell2.off span{opacity:.45}
+.mcell2.on{background:color-mix(in srgb,var(--gold) 13%,transparent)}
+.mcell2.on b,.mcell2.on span{color:var(--gold)}
+/* 点月份 = 日历页从上边落下来贴平 */
+@keyframes cflip{
+  0%{transform:perspective(760px) rotateX(58deg);opacity:.35}
+  60%{transform:perspective(760px) rotateX(-3.5deg);opacity:1}
+  100%{transform:perspective(760px) rotateX(0)}
+}
+.mcardflip{transform-origin:top center;animation:cflip .56s cubic-bezier(.22,.9,.26,1) both}
+
+/* 器械构成行（05）：统一行高与对齐 */
+.grow2{display:grid;grid-template-columns:60px 1fr 52px;gap:9px;align-items:center;padding:5px 0;font-size:10.5px}
+.grow2 .bar{height:9px;background:var(--line2);border-radius:5px;overflow:hidden;display:block}
+.grow2 .bar i{display:block;height:100%;background:var(--lift);border-radius:5px}
+.grow2 .num{text-align:right;color:var(--ink3);font-family:ui-monospace,Menlo,monospace;white-space:nowrap}
+.seg button.on{background:var(--gold);color:#fff;font-weight:600}
+.dk .seg button.on{color:#171102}
+/* 迷你图例 / 图注 */
+.mini{display:flex;gap:14px;flex-wrap:wrap;font-size:9.5px;color:var(--ink2);margin-top:8px}
+.mini i{width:7px;height:7px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:0}
+/* 记录卡日期徽章 */
+.rc .dt{text-align:center;width:46px;flex:none}
+.rc .dt b{display:block;font-size:20px;font-weight:600;letter-spacing:-.5px;line-height:1.05;color:var(--ink)}
+.rc .dt span{display:block;font-size:8.5px;color:var(--ink3);margin-top:3px;letter-spacing:.3px}
+/* 动作明细（sheet 内） */
+.ex{display:flex;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line2)}
+.ex:last-child{border:0}
+.ex .no{flex:none;width:20px;height:20px;border-radius:6px;background:color-mix(in srgb,var(--gold) 16%,transparent);
+  color:var(--gold);font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:1px}
+.ex .mid{flex:1;min-width:0}
+.ex .mid b{font-size:12.5px;font-weight:600}
+.ex .meta{font-size:9.5px;color:var(--ink3);margin-top:3px}
+.ex .note{font-size:9.5px;color:var(--ink2);margin-top:4px;line-height:1.5;background:var(--emb);
+  border-radius:6px;padding:5px 8px}
+body.dk .ex .note{background:rgba(255,255,255,.04)}
+.ex .val{flex:none;text-align:right}
+.ex .val b{display:block;font-size:14px;font-weight:600;color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+.ex .val span{display:block;font-size:9.5px;color:var(--ink2);margin-top:2px;font-family:ui-monospace,Menlo,monospace}
+/* sheet 分节标题 */
+.sh2{font-size:10px;font-weight:700;letter-spacing:1.6px;color:var(--ink3);text-transform:uppercase;
+  margin:16px 0 4px;display:flex;align-items:center;gap:8px}
+.sh2:after{content:"";flex:1;height:1px;background:var(--line2)}
+.mnav .arw{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;
+  color:var(--ink2);font-size:12px;transition:transform .12s}
+.mnav .arw:active{transform:scale(.9)}
+.mnav .arw.off{opacity:.3}
+/* ── 日历年视图（12 宫格）：点日历顶部的「X 年 X 月」进来 ── */
+.ytit b{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ytit b:active{opacity:.55}
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:2px}
+.mc{border-radius:12px;background:var(--emb);border:1px solid var(--line2);
+  padding:13px 6px 11px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.mc:active{transform:scale(.94)}
+.mc b{font-size:14.5px;font-weight:600;letter-spacing:.5px;color:var(--ink)}
+.mc span{font-size:9.5px;color:var(--ink3);line-height:1.4}
+/* 月度/年度汇总卡的小 KPI 格（2×2） */
+.mst{border:1px solid var(--line2);border-radius:10px;padding:9px 11px 8px;background:var(--emb)}
+.mst .v{font-size:14.5px;font-weight:600;color:var(--ink);letter-spacing:-.2px;white-space:nowrap}
+.mst .v u{text-decoration:none;font-size:9.5px;font-weight:500;color:var(--ink2);margin-left:1px}
+.mst .lb{font-size:8.5px;color:var(--ink3);letter-spacing:1.5px;margin-top:3px}
+.mc.hit{background:color-mix(in srgb,var(--gold) 9%,var(--emb));
+  border-color:color-mix(in srgb,var(--gold) 38%,var(--line2))}
+.mc.hit span{color:var(--gold);font-weight:700}
+.mc.now{border:1.5px solid var(--gold)}
+.mc.now b{color:var(--gold)}
+.mc.fut{opacity:.38;cursor:default}
+.mc.fut:active{transform:none}
+
+/* 记录列表 */
+.rc{margin-bottom:10px;overflow:hidden}
+.rc .hd{display:flex;align-items:center;gap:10px;padding:13px 14px}
+.rc .dt{text-align:center;width:48px;flex:none}
+.rc .dt b{font-size:19px;font-weight:600;letter-spacing:-.5px;display:block;line-height:1}
+.rc .dt span{font-size:8.5px;color:var(--ink3);white-space:nowrap;display:block;margin-top:2px}
+.rc .info{flex:1;min-width:0}
+.rc .info .tp{font-size:12px;font-weight:600}
+.rc .info .meta{font-size:10px;color:var(--ink3);margin-top:3px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.chip{font-size:9px;padding:2px 6px;border-radius:5px;background:var(--emb);color:var(--ink2);border:1px solid var(--line2)}
+body.dk .chip{background:rgba(255,255,255,.04)}
+.fail{display:flex;gap:2px;align-items:center;margin-top:6px}
+.fail i{width:12px;height:4px;border-radius:2px;background:var(--line2)}
+.fail i.on{background:var(--warn)}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse}
+th{font-size:9px;color:var(--ink3);font-weight:700;letter-spacing:.9px;text-align:right;padding:0 6px 8px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td{font-size:11.5px;padding:9px 6px;border-bottom:1px solid var(--line2);text-align:right;font-family:ui-monospace,Menlo,monospace}
+td:first-child{font-family:-apple-system,"PingFang SC",sans-serif;color:var(--ink2)}
+tr:last-child td{border:0}
+.dot{display:inline-block;width:6px;height:6px;border-radius:2px;margin-right:4px;vertical-align:1px}
+
+/* 底部 tab */
+#tab{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;
+  background:var(--bar);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+#tab a{flex:1;text-align:center;padding:8px 0 7px;color:var(--ink3);text-decoration:none;
+  transition:color .2s,transform .12s}
+#tab a:active{transform:scale(.92)}
+#tab a i{display:block;font-size:16px;line-height:1.3;font-style:normal}
+#tab a span{font-size:9.5px;letter-spacing:.3px}
+#tab a.on{color:var(--gold)}
+#tab a.on i{transform:translateY(-1px)}
+
+/* sheet 弹层 */
+#mask{position:fixed;inset:0;background:rgba(0,0,0,.42);opacity:0;pointer-events:none;
+  transition:opacity .28s;z-index:80}
+#mask.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:90;transform:translateY(102%);
+  transition:transform .34s cubic-bezier(.22,.9,.28,1);max-height:80vh;overflow:auto;
+  background:var(--card);border-radius:18px 18px 0 0;border-top:1px solid var(--line);
+  box-shadow:0 -8px 40px rgba(0,0,0,.28);padding:0 0 calc(20px + env(safe-area-inset-bottom))}
+#sheet.on{transform:translateY(0)}
+#sheet .grab{width:38px;height:4px;border-radius:3px;background:var(--line);margin:9px auto 4px}
+#sheet .sbody{padding:6px 18px 8px}
+#sheet h3{font-size:16px;font-weight:600;letter-spacing:-.2px}
+#sheet .sst{font-size:10.5px;color:var(--ink3);margin-top:3px}
+.srow2{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line2);font-size:12px}
+.srow2:last-child{border:0}
+.srow2 b{font-weight:600}
+.srow2 span{color:var(--ink2)}
+.pillrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pillrow span{font-size:10px;padding:4px 9px;border-radius:7px;background:var(--emb);color:var(--ink2)}
+body.dk .pillrow span{background:rgba(255,255,255,.05)}
+.quote{font-size:12px;line-height:1.65;color:var(--ink2);background:var(--emb);border-left:2px solid var(--gold);
+  padding:10px 12px;border-radius:8px;margin-top:10px}
+body.dk .quote{background:rgba(255,255,255,.04)}
+.adv{font-size:11.5px;line-height:1.7;color:var(--ink2);margin-top:8px;padding-left:2px}
+.adv li{list-style:none;padding:2px 0 2px 14px;position:relative}
+.adv li:before{content:"";position:absolute;left:2px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.tag{border:1px solid var(--gold);color:var(--gold);font-size:9px;padding:1px 5px;border-radius:4px;margin-right:5px;font-weight:600}
+
+/* 图表 hover 气泡 */
+.tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;
+  background:var(--ink);color:var(--bg);font-size:10px;padding:4px 8px;border-radius:7px;white-space:nowrap;z-index:20}
+.tip.on{opacity:1}
+.chartbox{position:relative}
+.barhit{cursor:pointer;transition:opacity .15s}
+.barhit:active{opacity:.75}
+
+/* 页面切换动画 */
+#app{animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.empty-tip{text-align:center;font-size:11.5px;color:var(--ink3);padding:26px 0}
+
+/* ═══════════ 路线轨迹（⌖ tab） ═══════════ */
+/* 顶部三格汇总 */
+.rtstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rtstat .cell{border:1px solid var(--line2);border-radius:10px;padding:10px 8px 9px;background:var(--emb);text-align:center}
+body.dk .rtstat .cell{background:rgba(255,255,255,.03)}
+.rtstat .v{font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+.rtstat .v u{text-decoration:none;font-size:9px;font-weight:500;color:var(--ink2);margin-left:1px}
+.rtstat .lb{font-size:8.5px;color:var(--ink3);letter-spacing:1.2px;margin-top:3px}
+/* 类型筛选 chips */
+.rflt{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 12px}
+.rflt button{border:1px solid var(--line2);background:var(--card);color:var(--ink2);font-size:10.5px;
+  padding:5px 11px;border-radius:99px;cursor:pointer;font-family:inherit;transition:all .18s;-webkit-tap-highlight-color:transparent}
+.rflt button.on{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:600}
+body.dk .rflt button.on{color:#171102}
+.rflt button:active{transform:scale(.95)}
+/* 路线卡 */
+.rtc{display:flex;gap:12px;align-items:center;padding:11px 12px;margin-bottom:10px;cursor:pointer;
+  transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.rtc:active{transform:scale(.98)}
+.rtc .rtmini{flex:none;width:92px;height:68px;border-radius:9px;background:var(--emb);
+  border:1px solid var(--line2);position:relative;overflow:hidden}
+body.dk .rtc .rtmini{background:rgba(255,255,255,.03)}
+.rtc .info{flex:1;min-width:0}
+.rtc .d1{display:flex;align-items:baseline;gap:7px}
+.rtc .d1 b{font-size:13px;font-weight:600;letter-spacing:-.2px;font-family:ui-monospace,Menlo,monospace}
+.rtc .d1 span{font-size:10px;color:var(--ink2)}
+.rtc .d2{font-size:11px;color:var(--ink);margin-top:4px;font-family:ui-monospace,Menlo,monospace}
+.rtc .d3{font-size:9.5px;color:var(--ink3);margin-top:3px}
+.rtmini-sk{position:absolute;inset:0;border-radius:8px;
+  background:linear-gradient(100deg,transparent 30%,var(--line2) 50%,transparent 70%) 0 0/220% 100%;
+  animation:rtsk 1.3s linear infinite}
+@keyframes rtsk{to{background-position:-220% 0}}
+/* 路线详情全屏层 */
+#rtView{position:fixed;inset:0;z-index:100;background:var(--bg);transform:translateY(102%);
+  transition:transform .38s cubic-bezier(.22,.9,.28,1),visibility .38s;overflow-y:auto;overscroll-behavior:contain;
+  visibility:hidden;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+#rtView.on{transform:translateY(0);visibility:visible}
+#rtView .rtbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:11px;
+  padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+#rtView .rtbar .rtx{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);background:var(--card);
+  color:var(--ink2);font-size:13px;cursor:pointer;flex:none;font-family:inherit;transition:transform .15s}
+#rtView .rtbar .rtx:active{transform:scale(.9)}
+#rtView .rtbar .rtt{flex:1;min-width:0;font-size:14px;font-weight:600;letter-spacing:-.2px}
+#rtView .rtbar .rtt span{display:block;font-size:9px;color:var(--ink3);font-weight:400;letter-spacing:1.5px;margin-top:1px}
+/* 详情统计 4×2 */
+.rtgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border-radius:10px;overflow:hidden}
+.rtgrid .cell{background:var(--card);padding:9px 4px 8px;text-align:center}
+.rtgrid .v{font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.2px;font-family:ui-monospace,Menlo,monospace;white-space:nowrap}
+.rtgrid .v u{text-decoration:none;font-size:8.5px;font-weight:500;color:var(--ink2);margin-left:1px}
+.rtgrid .lb{font-size:8px;color:var(--ink3);letter-spacing:1px;margin-top:3px}
+/* 路线大图容器 */
+.rtmap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line2);background:var(--emb)}
+body.dk .rtmap{background:rgba(255,255,255,.02)}
+.rtmap svg{display:block;touch-action:none;cursor:crosshair}
+/* 拖动读数条 */
+.rtread{position:absolute;left:9px;top:9px;background:var(--ink);color:var(--bg);font-size:10px;
+  padding:5px 9px;border-radius:8px;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;
+  opacity:0;transition:opacity .18s;pointer-events:none;letter-spacing:.2px;z-index:3}
+.rtread.on{opacity:1}
+.rtread b{color:var(--gold);font-weight:700}
+body.dk .rtread b{color:#F0D9A0}
+/* 比例尺 */
+.rtscale{position:absolute;right:9px;bottom:8px;font-size:8px;color:var(--ink3);text-align:center;
+  pointer-events:none;font-family:ui-monospace,Menlo,monospace}
+.rtscale i{display:block;height:4px;border-left:1.5px solid var(--ink3);border-right:1.5px solid var(--ink3);border-bottom:1.5px solid var(--ink3);margin-bottom:2px}
+/* 分段表高亮最快一公里 */
+tr.fast td{color:var(--gold);font-weight:700}
+/* 详情页里的环境 chips 复用 pillrow；补一个字段标签 */
+.rtcond{display:flex;gap:6px;flex-wrap:wrap}
+.rtcond span{font-size:10px;padding:4px 9px;border-radius:7px;background:var(--emb);color:var(--ink2);border:1px solid var(--line2)}
+body.dk .rtcond span{background:rgba(255,255,255,.04)}
+/* detailDay 里的「查看路线」按钮 */
+.rtgo{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--gold);
+  border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line2));background:color-mix(in srgb,var(--gold) 7%,var(--card));
+  padding:5px 11px;border-radius:8px;cursor:pointer;font-family:inherit;transition:transform .15s}
+.rtgo:active{transform:scale(.95)}
+/* 轨迹图上的「回放」按钮 */
+.rtplay{position:absolute;right:9px;top:9px;z-index:4;display:inline-flex;align-items:center;gap:4px;
+  font-size:9.5px;font-weight:600;color:var(--ink);background:color-mix(in srgb,var(--card) 84%,transparent);
+  border:1px solid var(--line2);border-radius:99px;padding:4px 10px;cursor:pointer;font-family:inherit;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:transform .15s}
+.rtplay:active{transform:scale(.92)}
+
+/* ═══ 身体指标（hm）—— 2026-10-18 接入每日健康指标 ═══
+   风格对齐既有看板：金/蓝/紫/绿取自同一组 token，卡片用 .card + .gsec 同一套外壳。 */
+
+/* 首页「今日身体」卡：三格大数字 + 活动行 + 迷你趋势 */
+.hmgrid{display:grid;gap:0;margin-top:12px}
+.hmgrid .hc{flex:1;min-width:0;padding:0 12px;border-left:1px solid var(--line2)}
+.hmgrid .hc:first-child{border-left:0;padding-left:0}
+.hmgrid .hl{font-size:10px;color:var(--ink3);letter-spacing:.3px;display:flex;align-items:center;gap:4px}
+.hmgrid .hv{font-size:25px;font-weight:700;letter-spacing:-.8px;margin-top:4px;line-height:1;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.hmgrid .hv u{text-decoration:none;font-size:10px;font-weight:600;color:var(--ink2);margin-left:3px;
+  font-family:-apple-system,'PingFang SC',sans-serif}
+.hmgrid .hd{font-size:9.5px;color:var(--ink3);margin-top:5px;line-height:1.35}
+.hmgrid .hd b{font-weight:600}
+.hmgrid .hd .up{color:var(--green)}
+.hmgrid .hd .dn{color:var(--warn)}
+.hmgrid .hd .eq{color:var(--ink3)}
+/* 活动四项（步数/锻炼/站立/爬楼） */
+.hmact{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px}
+.hmact.hmday{grid-template-columns:repeat(3,1fr)}
+.hmact.hmday .ac b{font-size:14px}
+.hmact .ac{background:var(--emb);border:1px solid var(--line2);border-radius:9px;padding:8px 6px 7px;text-align:center}
+body.dk .hmact .ac{background:rgba(255,255,255,.04)}
+.hmact .ac i{font-style:normal;font-size:11px;line-height:1;display:block;color:var(--ink2)}
+.hmact .ac b{display:block;font-size:15px;font-weight:700;letter-spacing:-.3px;margin-top:5px;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.hmact .ac span{display:block;font-size:9px;color:var(--ink3);margin-top:3px}
+/* 迷你趋势（14 天线）*/
+.hmspark{margin-top:13px}
+.hmchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.hmchips button{border:1px solid var(--line);background:var(--emb);color:var(--ink2);font-family:inherit;
+  font-size:10px;font-weight:600;padding:4px 10px;border-radius:99px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:transform .12s,background .2s}
+.hmchips button:active{transform:scale(.94)}
+.hmchips button.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.dk .hmchips button.on{color:#171102}
+/* 图表提示框（复用 .dual .tipbox 的样式约定） */
+.hmtip{position:absolute;top:0;left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:10.5px;box-shadow:var(--sh);z-index:5;
+  pointer-events:none;opacity:0;transition:opacity .15s;line-height:1.55}
+.hmtip.on{opacity:1}
+.hmtip b{font-size:12px;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+.hmchart{position:relative}
+.hmchart svg{display:block;width:100%;height:auto}
+.hmdot{cursor:pointer;transition:r .16s,opacity .16s}
+.hmdot:hover{filter:brightness(1.15)}
+/* 指标说明弹层里的统计行 */
+.hmstat{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.hmstat div{background:var(--emb);border:1px solid var(--line2);border-radius:9px;padding:7px 4px 6px;text-align:center}
+body.dk .hmstat div{background:rgba(255,255,255,.04)}
+.hmstat span{display:block;font-size:9px;color:var(--ink3)}
+.hmstat b{display:block;font-size:13px;font-weight:700;margin-top:3px;
+  font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<script>
+/* 首屏就把深浅色定好 —— 否则在深色手机上会先闪一下白底再变黑（阿成 2026-10-03）。
+   这段必须在 CSS 之后、页面内容之前跑，且逻辑要和下面 syncTh() 保持一致。 */
+try{var _m=localStorage.getItem('thm')||'auto';
+  var _d=_m==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:(_m==='d');
+  if(_d)document.body.classList.add('dk');}catch(e){}
+</script>
+
+<div id="app"></div>
+
+<nav id="tab">
+  <a href="#/" data-r="#/"><i>◎</i><span>首页</span></a>
+  <a href="#/records" data-r="#/records"><i>≡</i><span>记录</span></a>
+  <a href="#/train" data-r="#/train"><i>◆</i><span>训练</span></a>
+  <a href="#/route" data-r="#/route"><i>⌖</i><span>路线</span></a>
+  <a href="#/advice" data-r="#/advice"><i>✦</i><span>建议</span></a>
+</nav>
+
+<div id="mask" onclick="closeSheet()"></div>
+<div id="sheet"><div class="grab"></div><div class="sbody" id="sheetBody"></div></div>
+
+<!-- 路线详情全屏层（z 100，盖在明细弹层之上） -->
+<div id="rtView" role="dialog" aria-modal="true">
+  <div class="rtbar">
+    <button class="rtx" onclick="closeRoute()" aria-label="关闭">✕</button>
+    <div class="rtt" id="rtTitle">路线轨迹<span>ROUTE TRACE</span></div>
+  </div>
+  <div id="rtBody"></div>
+</div>
+
+<script>
+const D={};
+/* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
+   主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
+   data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
+const APPV="b0ce5208f5a";
+const WD=['周一','周二','周三','周四','周五','周六','周日'];
+const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
+  '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
+  '健身游戏':['🎮','lift'],'椭圆机':['⚙️','lift'],'游泳':['🏊','run']};
+
+/* 哪些类型的"配速（分钟/公里）"有意义 ——
+   游泳按每公里算会显示成 102'45" 这种怪数字，干脆不显示。 */
+const PACE_TYPES=['跑步','骑行','步行','徒步','爬楼梯'];
+function hasPace(w){return !!w&&PACE_TYPES.indexOf(w.类型)>=0&&(w.距离||0)>0&&w.配速显示&&w.配速显示!=='—'}
+
+/* 当前月 / 当前月的文字标签 —— 一切跟“今天”有关的东西都从这里取，
+   ⚠️ 以前这里写死过 '2026-10'，换个月份页面就全错。 */
+function nowYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function nowMonthLabel(){const d=new Date();return d.getFullYear()+' · '+String(d.getMonth()+1).padStart(2,'0')}
+
+/* 主题：默认**跟随手机系统的深/浅色**（阿成 2026-10-03 要求）。
+   手动点过「浅色/深色」就固定成手动，点「自动」回到跟随系统。
+   偏好存在 'thm'（auto/d/l）；旧的 'th' 不再读 —— 否则他以前点过一次浅色，
+   就永远不跟随系统了。 */
+const MQ=matchMedia('(prefers-color-scheme: dark)');
+let THMODE=localStorage.getItem('thm')||'auto';
+const wantDark=()=>THMODE==='auto'?MQ.matches:THMODE==='d';
+let ST={theme:wantDark(), ym:nowYM(), pick:{}, focus:null, hmode:'chart'};
+
+/* 当月汇总：当月没数据就退回数据里最新的那个月（别让页面读到 undefined） */
+function curOv(){
+  const ks=Object.keys(D.overview||{}).sort();
+  return (D.overview||{})[nowYM()]||(ks.length?D.overview[ks[ks.length-1]]:null)
+      ||{次数:0,天数:0,总时长:0,总距离:0,总消耗:0,workouts:[],types:[]};
+}
+
+function fmtDay(s){const p=s.split('-');return +p[2]}
+function hm(m){m=Math.round(m);return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0')+'m'}
+function mins(m){return Math.round(m)+'分'}
+/* 时长显示：不满 1 小时用「X 分」，满 1 小时用「X 小时 Y 分」（整分省略）。
+   阿成 2026-10-05 定的口径：超过一小时就说小时，别拿 683 分这种数字糊弄人。 */
+function fmtDur(t){t=Math.round(t);
+  if(t<60) return t+' 分';
+  const h=Math.floor(t/60),m=t%60;
+  return h+' 小时'+(m?' '+m+' 分':'')}
+function fmtNum(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+function esc(s){return String(s==null?'':s)}
+
+/* 封面那行"日期范围"：一律从数据现算。写死过 "2026 · 08 – 10"，其实跑步数据从 2025-05 就开始了。 */
+function spanLabel(dates){
+  const ys=[...new Set(dates.map(d=>String(d).slice(0,7)))].sort();
+  if(!ys.length) return '暂无数据';
+  const a=ys[0], b=ys[ys.length-1];
+  if(a===b) return a.slice(0,4)+' · '+a.slice(5);
+  return a.slice(0,4)===b.slice(0,4)
+    ? a.slice(0,4)+' · '+a.slice(5)+' – '+b.slice(5)
+    : a.slice(0,4)+' · '+a.slice(5)+' – '+b.slice(0,4)+' · '+b.slice(5);
+}
+
+/* 标签词：换成普通人一眼懂的说法（红旗 → 警示） */
+const TAGS={'红旗':'警示','外伤':'撞伤','复发':'又来了','性质':'性质','存疑':'存疑','顺序':'顺序',
+  '间隔':'间隔','补水':'补水','作息':'作息','器械':'器械','跑步':'跑步'};
+function tagText(t){return TAGS[t]||t}
+
+function head(title,en){
+  return `<div class="cover">
+    <div class="topbar"><span class="brand" onclick="goHome()" title="回到首页">Health Report</span>
+      <div class="sw" role="group" aria-label="深浅色">
+        <button type="button" data-m="auto" aria-pressed="false" onclick="setTh('auto')" title="跟随手机系统">自动</button>
+        <button type="button" data-m="l" aria-pressed="false" onclick="setTh('l')" title="一直浅色">浅色</button>
+        <button type="button" data-m="d" aria-pressed="false" onclick="setTh('d')" title="一直深色">深色</button>
+      </div></div>
+    <div class="month">${title.month}</div><div class="title">${title.t}</div><div class="en">${en}</div>
+    <div class="sub">${title.s}</div>
+    ${title.badge?`<div class="srcpill">${title.badge}</div>`:''}
+    ${title.week||''}
+    <div class="rline"></div>${title.strip||''}</div>`;
+}
+
+/* 本周节奏条：周一~周日，格子上有数字＝那天练了多少分钟 */
+function weekStrip(){
+  const now=new Date(), dow=(now.getDay()+6)%7;         // 0=周一
+  const mon=new Date(now); mon.setDate(now.getDate()-dow);
+  const byday={}; D.recent.forEach(r=>{byday[r.date]=(byday[r.date]||0)+r.时长});
+  let cells='';
+  for(let i=0;i<7;i++){
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const m=byday[ds]||0;
+    const cls='wd2'+(m?' on':'')+(i===dow?' today':'');
+    cells+=`<div><div class="wl">${WD[i][1]}</div>
+      <div class="${cls}" ${m?`onclick="detailDay('${ds}')"`:''} style="${m?'cursor:pointer':''}">${m?Math.round(m)+'′':''}</div></div>`;
+  }
+  const wkMin=Object.keys(byday).filter(k=>{const d=new Date(k);
+    return d>=mon&&d<=new Date(mon.getTime()+6*864e5)}).reduce((a,k)=>a+byday[k],0);
+  return `<div class="wkt"><span>本周节奏</span><em>${wkMin?('已练 '+Math.round(wkMin)+' 分钟'):'本周还没动'}</em></div>
+    <div class="wk">${cells}</div>`;
+}
+
+/* ── 首页看板用的数据计算（全部现算，不写死） ── */
+
+/* 近 n 个月（含当月）的训练时长序列；用 overview 的键排序，取最后 n 个 */
+function monthsBack(n){
+  return Object.keys(D.overview).sort().slice(-n);
+}
+/* 单月时长（分钟）→ 小时，一位小数 */
+function hrsOf(min){return Math.round(min/6)/10}
+
+/* 类型配色 —— 必须两两可区分（原来骑行和跑步都用 var(--run) 蓝，图例里分不出来）。
+   有氧系用蓝系渐变、力量系用紫系、其余用绿/橙/金，逐个分色。 */
+function mixColor(n){const p=pal();return p[n]||'#8A8578'}
+/* 同色系里按占比排序，深浅拉开（骑行占多时更蓝、占少时更浅） */
+function mixPalette(){
+  const ms=stackMonths(MONTHS_N);
+  const tot={}; ms.forEach(m=>m.types.forEach(t=>tot[t.名称]=(tot[t.名称]||0)+t.时长));
+  const grp={}, p={};
+  Object.keys(tot).forEach(n=>{
+    const base=navigator_hue(n);
+    (grp[base]=grp[base]||[]).push([n,tot[n]]);
+  });
+  Object.keys(grp).forEach(b=>{
+    const arr=grp[b].sort((a,c)=>c[1]-a[1]);
+    const n=arr.length;
+    arr.forEach((x,i)=>{
+      const t=n===1?1:i/(n-1);
+      p[x[0]]=shade(baseOf(b),t);
+    });
+  });
+  return p;
+}
+const BASE={blue:[34,99,196],purple:[107,51,214],green:[15,122,82],orange:[180,98,44],gold:[144,112,47]};
+function navigator_hue(n){
+  if(/跑|骑|游|椭圆/.test(n)) return 'blue';
+  if(/力量|核心|健身/.test(n)) return 'purple';
+  if(/徒|步|爬/.test(n)) return 'green';
+  if(/乒乓/.test(n)) return 'orange';
+  return 'gold';
+}
+function baseOf(b){return BASE[b]||BASE.gold}
+function shade(rgb,t){
+  /* t=0 → 最深（该项占比最大），t=1 → 最浅 */
+  const k=1-t*0.52;
+  return `rgb(${Math.round(rgb[0]*k)},${Math.round(rgb[1]*k)},${Math.round(rgb[2]*k)})`;
+}
+let __PAL=null;
+function pal(){ return __PAL || (__PAL=mixPalette()) }
+
+/* 配速条形宽度：越快越宽，在这批里自己归一；最慢保底 30% 以免压成一个点 */
+function paceBar(p,bestSec,worstSec){
+  const s=secOf(p), rg=(worstSec-bestSec)||1;
+  return Math.max(30,Math.round(100-(s-bestSec)/rg*70));
+}
+
+/* overview 里没有按天的分布，从 D.recent 现算某月的 {日期: 分钟} */
+function bydayOf(ym){
+  const m={}; D.recent.forEach(r=>{if(r.date.slice(0,7)===ym)m[r.date]=(m[r.date]||0)+r.时长}); return m;
+}
+
+/* 环比：按「当月已过天数 vs 上月同样天数」比，避免月中对比整月的误导 */
+function momCompare(){
+  const keys=Object.keys(D.overview).sort();
+  const cur=keys[keys.length-1], prev=keys[keys.length-2];
+  if(!prev) return null;
+  const now=new Date(), dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const passed=now.getDate();
+  const pd=Object.keys(bydayOf(prev)).sort().slice(0,passed);
+  const pMin=pd.reduce((a,k)=>a+bydayOf(prev)[k],0);
+  if(!pMin) return null;
+  const pct=Math.round((D.overview[cur].总时长/pMin-1)*100);
+  return {pct, cur:D.overview[cur].总时长, prev:pMin, passed, 上月整月:D.overview[prev].总时长};
+}
+
+/* 体重进度：起点取「今年最早的记录」。
+   ⚠️ 别用 2025 年的 149.2 斤当起点 —— 那是去年的低谷，拿来当"起点"会把进度算得离谱地高。
+   今年 3 月最高 169.2 斤 → 现在 162.8，这个口径才反映今年的实际减重。 */
+function weightProg(){
+  const b=D.body.slice().sort((x,y)=>x.date<y.date?-1:1);
+  if(b.length<2) return null;
+  const cur=b[b.length-1];
+  const y=cur.date.slice(0,4);
+  const thisYear=b.filter(r=>r.date.slice(0,4)===y);
+  const st=(thisYear.length>=2?thisYear[0]:b[0]);
+  const 起点=st.weight_jin;
+  const 已减=Math.max(0,起点-cur.weight_jin);
+  const 还需=Math.max(0,cur.weight_jin-D.profile['目标斤']);
+  const 总需=Math.max(1,起点-D.profile['目标斤']);
+  return {cur:cur.weight_jin, goal:D.profile['目标斤'], 起点, 起点日期:st.date, 已减, 还需,
+    pct:Math.max(0,Math.min(100,Math.round(已减/总需*100))),
+    bf:cur.bf_pct, visceral:cur.visceral, date:cur.date};
+}
+
+/* 跑步能力：最近 5 次配速 + 均心率，取最快/最慢与趋势 */
+function runAbility(){
+  const rs=D.recent.filter(r=>r.类型==='跑步'&&hasPace(r)).slice(0,5);
+  if(!rs.length) return null;
+  const sp=rs.map(r=>secOf(r.配速显示));
+  const hr=rs.map(r=>r.平均心率).filter(Boolean);
+  const 最新=rs[0], 最快=rs[sp.indexOf(Math.min(...sp))];
+  const 同比=rs.length>=2?Math.round((sp[sp.length-1]/sp[0]-1)*100):null;
+  return {n:rs.length, 最新, 最快, avgHr:hr.length?Math.round(hr.reduce((a,b)=>a+b,0)/hr.length):null,
+    bestSec:Math.min(...sp), worstSec:Math.max(...sp),
+    趋势pct:同比, list:rs, 里程:+rs.reduce((a,b)=>a+(b.距离||0),0).toFixed(1)};
+}
+
+/* 身体信号：从手记里现扫「肩」等关键词，扫到就在首页提示（不写死结论） */
+function bodySignals(){
+  const out=[];
+  const kw=[['肩','肩部不适'],['膝','膝部不适'],['脚','足部不适'],['痛','疼痛记录']];
+  D.journal.forEach(j=>{
+    const blob=(j.感受||'')+JSON.stringify(j.要点||[])+JSON.stringify(j.建议||[]);
+    kw.forEach(([k,label])=>{
+      if(blob.indexOf(k)>=0 && !out.some(o=>o.label===label))
+        out.push({label, date:j.date, k, 疲劳:j.疲劳});
+    });
+  });
+  return out.sort((a,b)=>a.date<b.date?1:-1).slice(0,2);
+}
+
+/* 近 n 个月时长柱状（SVG 高度现算，标出当月） */
+function trendBars(){
+  const keys=monthsBack(6), mx=Math.max(...keys.map(k=>D.overview[k].总时长),1);
+  const W=320,H=96,pad=4, gap=(W-pad*2)/keys.length;
+  const bw=Math.min(30,(gap-12));
+  return {keys,mx,W,H,pad,gap,bw,
+    bars:keys.map((k,i)=>{
+      const v=D.overview[k].总时长, h=Math.max(4,(v/mx)*(H-pad*2-22));
+      const x=pad+i*gap+(gap-bw)/2;
+      return {k,v,h,x,w:bw,on:i===keys.length-1};
+    })};
+}
+
+/* ═══════════ v3 图表：数据准备 ═══════════ */
+
+/* 近 n 个月的类型分段（堆叠柱用）。
+   ⚠️ 10 月只过了半个月，跟整月柱放一起会显得"暴跌"—— 柱子上标"至今"，
+   并且在图例下写明，避免误读。 */
+function stackMonths(n){
+  return Object.keys(D.overview).sort().slice(-n).map(k=>{
+    const o=D.overview[k];
+    const ts=(o.types||[]).slice().sort((a,b)=>b.时长-a.时长);
+    return {ym:k, 总时长:o.总时长, 次数:o.次数, 天数:o.天数, types:ts,
+      距离:o.总距离, 消耗:o.总消耗};
+  });
+}
+/* 当月是否已过完 —— 没过完要标"至今" */
+function isCurrentMonth(ym){
+  const now=new Date();
+  return ym===now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+}
+
+/* 近 n 周 × 7 天热力图。weeks 从早到晚返回，每周 7 格（周一→周日）。 */
+function heatWeeks(n){
+  const now=new Date(), dow=(now.getDay()+6)%7;
+  const mon=new Date(now); mon.setDate(now.getDate()-dow);
+  const start=new Date(mon); start.setDate(mon.getDate()-(n-1)*7);
+  const byday=bydayOf(nowYM());
+  /* bydayOf 只扫当月 —— 周跨月时上个月那几天会漏，这里补全月 */
+  const all={}; D.recent.forEach(r=>{all[r.date]=(all[r.date]||0)+r.时长});
+  const weeks=[];
+  for(let w=0;w<n;w++){
+    const cells=[];
+    for(let d=0;d<7;d++){
+      const x=new Date(start); x.setDate(start.getDate()+w*7+d);
+      const ds=ymd(x);
+      const m=all[ds]||0;
+      const fut=x>now;
+      cells.push({ds, min:m, wd:d, fut, today:ds===ymd(now)});
+    }
+    weeks.push(cells);
+  }
+  /* 强度分级：按当月最大单日时长 */
+  const mx=Math.max(...Object.values(all),1);
+  weeks.forEach(w=>w.forEach(c=>{
+    c.lv=c.min<=0?0:c.min<mx*0.25?1:c.min<mx*0.5?2:c.min<mx*0.8?3:4;
+  }));
+  return {weeks, start, mx};
+}
+
+/* 跑步序列（双轴图用）—— 距离太短的不进（2km 那次配速不可比） */
+function runSeries(n){
+  const rs=D.recent.filter(r=>r.类型==='跑步'&&hasPace(r)&&(r.距离||0)>=4)
+    .slice(0,n);
+  if(!rs.length) return null;
+  const sp=rs.map(r=>secOf(r.配速显示));
+  const hr=rs.filter(r=>r.平均心率).map(r=>r.平均心率);
+  return {rs, sp,
+    best:Math.min(...sp), worst:Math.max(...sp),
+    hrMin:hr.length?Math.min(...hr):0, hrMax:hr.length?Math.max(...hr):0};
+}
+
+/* 体重 + 体脂双线 */
+function weightSeries(){
+  const b=D.body.slice().sort((x,y)=>x.date<y.date?-1:1);
+  if(b.length<2) return null;
+  const cur=b[b.length-1], y=cur.date.slice(0,4);
+  /* 只画今年 —— 2025 年那两次和今年不是一条连续曲线，混在一起会误导 */
+  const thisYear=b.filter(r=>r.date.slice(0,4)===y);
+  const use=thisYear.length>=3?thisYear:b;
+  return {b:use, 全:b,
+    wMin:Math.min(...use.map(r=>r.weight_jin))-1, wMax:Math.max(...use.map(r=>r.weight_jin))+1,
+    fMin:Math.min(...use.map(r=>r.bf_pct))-.6, fMax:Math.max(...use.map(r=>r.bf_pct))+.6,
+    年份:y};
+}
+
+/* ═══════════ v3 图表：交互（统一的点选状态机） ═══════════
+   ST.pick={图表名:选中项}，点已选中的 = 取消选中。
+   不用变量重渲染整页（会闪、丢滚动位置），只更新受影响的 DOM 节点。 */
+function pickAt(chart,key,sel){
+  const cur=ST.pick[chart];
+  if(cur===key){ ST.pick[chart]=null; }else{ ST.pick[chart]=key; }
+  paintCharts(chart);
+}
+function picked(chart){return ST.pick[chart]}
+
+/* 只刷新某个图表区域，避免整页重绘 */
+function paintCharts(chart){
+  if(chart==='month') paintMonthChart();
+  else if(chart==='heat') paintHeatChart();
+  else if(chart==='dual') paintDualChart();
+  else if(chart==='weight') paintWeightChart();
+}
+
+/* 选中项高亮 + 降透明度其它项：一次把所有相关 class 刷一遍 */
+function applySel(scope, selAttr, hitSel, dimSel){
+  const box=document.getElementById(scope);
+  if(!box) return;
+  Array.prototype.forEach.call(box.querySelectorAll(hitSel), el=>{
+    const on=el.dataset[selAttr]===String(ST.pick[chartOf(scope)]);
+    el.classList.toggle(dimSel, !!ST.pick[chartOf(scope)] && !on);
+  });
+}
+function chartOf(scope){return scope}
+
+/* 提示气泡：跟随点/柱显示，HTML 字符串 */
+function showTip(tipId,html,x,y){
+  const t=document.getElementById(tipId);
+  if(!t) return;
+  t.innerHTML=html; t.classList.add('on');
+  const box=document.getElementById(tipId).parentNode.getBoundingClientRect();
+  const w=t.offsetWidth||150;
+  let left=Math.max(0,Math.min(box.width-w, x-w/2));
+  t.style.left=left+'px';
+  t.style.top=Math.max(0,y)+'px';
+}
+function hideTip(tipId){const t=document.getElementById(tipId); if(t)t.classList.remove('on')}
+
+/* ═══════════ v3 首页：看板（不是目录） ═══════════
+   排序逻辑：① 本月练了多少 + 趋势  ② 体重离目标多远  ③ 跑步能力  ④ 身体信号
+   没有「去看看」入口宫格 —— 去哪儿由底栏和卡片里的行负责。 */
+function viewHome(){
+  const o=curOv(), last=D.recent[0], mom=momCompare(), w=weightProg(), ab=runAbility(), sig=bodySignals();
+  const tb=trendBars();
+  const now=new Date();
+  const mode=ST.hmode||'chart';      /* chart=图表优先（默认） / num=数字优先 */
+
+  /* ① 训练量主卡：一个大数字说清本月 */
+  const bars=tb.bars.map(x=>`<div class="tb${x.on?' on':''}">
+      <b>${hrsOf(x.v)}</b>
+      <i style="height:${x.h.toFixed(1)}px"></i>
+      <em>${+x.k.slice(5)}月</em></div>`).join('');
+  /* ⚠️ 环比不放在大数字旁边。当月才过了半个月，跟上月同期比是 -66%，
+     挂个红箭头会被读成"这个月退步了"，而实际上九月整月本来就练得多。
+     挪到柱状图下面当说明文字，颜色也改中性。 */
+  const dTag=mom?`<span style="font-size:11px;color:var(--ink3);margin-top:9px;display:block">
+      这个月过了 ${mom.passed} 天，${mom.pct>=0?'比':'比'}上月同期${mom.pct>=0?'多':'少'} ${Math.abs(mom.pct)}%（上月整月 ${hrsOf(mom.上月整月)} 小时）</span>`:'';
+
+  /* 模式切换条 */
+  const switcher=`<div class="segbar" style="margin-bottom:4px">
+      <button class="${mode==='chart'?'on':''}" onclick="setHMode('chart')">图表</button>
+      <button class="${mode==='num'?'on':''}" onclick="setHMode('num')">数字</button>
+    </div>`;
+
+  /* 数字模式才显示的紧凑月趋势 */
+  const miniTrend=mode==='num'?`<div class="trend">${bars}</div>${dTag}`:'';
+
+  /* ② 体重进度 */
+  const wCard=w?`<div class="card block tap" onclick="navigate('#/body')">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div><div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">当前体重 · ${w.date.slice(5)}</div>
+          <div style="font-size:30px;font-weight:700;letter-spacing:-1px;margin-top:3px">${w.cur}<u style="font-size:12px;font-weight:600;color:var(--ink2);text-decoration:none"> 斤</u></div></div>
+        <div style="text-align:right"><div style="font-size:10.5px;color:var(--ink3)">距目标 ${w.goal} 斤</div>
+          <div style="font-size:15px;font-weight:600;color:var(--gold);margin-top:6px">还差 ${w.还需.toFixed(1)} 斤</div></div>
+      </div>
+      <div class="prog"><i style="width:${w.pct}%"></i></div>
+      <div class="ticks"><span>${w.起点日期.slice(5)} ${w.起点}斤</span><span>已完成 ${w.pct}%</span><span>目标 ${w.goal}斤</span></div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:10px">体脂 ${w.bf}% · 内脏脂肪 ${w.visceral} 级 · 起点是 ${w.起点日期.slice(0,4)} 年第一次称重</div>
+      <div class="cap">点开看完整曲线与围度记录 ▸</div>
+    </div>`:'';
+
+  /* ③ 跑步能力 */
+  const rCard=ab?`<div class="card block">
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="flex:1"><div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">最近一次 · ${ab.最新.date.slice(5)}</div>
+          <div style="font-size:28px;font-weight:700;letter-spacing:-1px;margin-top:3px;font-family:ui-monospace,Menlo,monospace">${ab.最新.配速显示}<u style="font-size:11px;font-weight:600;color:var(--ink2);text-decoration:none;margin-left:5px">/km</u></div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:4px">${ab.最新.距离} km · ${mins(ab.最新.时长)}${ab.最新.平均心率?(' · ♥'+ab.最新.平均心率):''}</div></div>
+        <div style="width:1px;align-self:stretch;background:var(--line2)"></div>
+        <div style="flex:1"><div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">近 ${ab.n} 次均心率</div>
+          <div style="font-size:28px;font-weight:700;letter-spacing:-1px;margin-top:3px">${ab.avgHr}<u style="font-size:11px;font-weight:600;color:var(--ink2);text-decoration:none"> bpm</u></div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:4px">最快 ${ab.最快.配速显示} · ${ab.最快.date.slice(5)}${ab.趋势pct!=null?(' · 配速'+(ab.趋势pct<=0?'快了':'慢了')+Math.abs(ab.趋势pct)+'%'):''}</div></div>
+      </div>
+      <div class="mini">最近 ${ab.n} 次 · 金色最快</div>
+      ${ab.list.map(r=>`<div class="prow tap" onclick="detailDay('${r.date}')">
+        <div class="pdate">${r.date.slice(5)}</div>
+        <div class="ptrack"><i class="${r.配速显示===ab.最快.配速显示?'fast':''}" style="width:${paceBar(r.配速显示,ab.bestSec,ab.worstSec)}%"></i></div>
+        <div class="pval"><span class="ppace">${r.配速显示}</span><span class="phr">${HEART}${r.平均心率||'—'}</span></div>
+      </div>`).join('')}
+      <div class="cap" style="margin-top:8px">点任意一行看当天完整明细</div>
+    </div>`:'';
+
+  /* ④ 身体信号 —— 只在真扫到手记关键词时出现，没数据就不占版面 */
+  const sigBlock=sig.length?`<div class="sec"><div class="shead"><span class="tt">身体信号</span></div>
+      ${sig.map(s=>`<div class="sig ${s.k==='肩'||s.k==='膝'?'crit':''}" style="margin-bottom:9px">
+        <div class="bar"></div><div class="bd">
+          <b>${s.label}</b>
+          <p>最近一次记录于 ${s.date.slice(5)}${s.疲劳?' · 当次主观疲劳 '+s.疲劳+'/5':''}</p>
+          <div class="mt">来自你自己写的训练手记 · 点「建议」看每次的原因▸</div>
+        </div></div>`).join('')}
+      <div class="cap">${sig.length>=2?'还有更早的同类记录':'点「建议」看每次的具体原因和下一步动作'}</div></div>`:'';
+
+  return head({month:nowMonthLabel(),t:'今天怎么样',
+    s:`${now.getMonth()+1} 月已练 ${o.天数} 天 · ${o.次数} 次 · 最近一次 ${last.date.slice(5)} ${last.类型}`},
+    'Health Dashboard')+
+  `<div class="wrap">
+    <div class="sec" style="margin-top:14px">
+      ${switcher}
+      <div class="card hero">
+        <div class="hlabel">本月训练时长</div>
+        <div class="hbig">${hrsOf(o.总时长)}<u>小时</u></div>
+        <div class="hsub">${o.次数} 次 · ${o.天数} 天 · 平均每次 ${Math.round(o.总时长/Math.max(o.次数,1))} 分钟</div>
+        ${miniTrend}
+        ${mode==='chart'?`<div class="mini">本月练了什么</div>
+        <div class="mixbar">${(o.types||[]).map(t=>`<i style="flex:${t.时长};background:${mixColor(t.名称)}"></i>`).join('')}</div>
+        <div class="mixlg">${(o.types||[]).map(t=>`<span><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′</span>`).join('')}</div>`:''}
+      </div>
+    </div>
+
+    ${hmHomeCard()}
+
+    ${mode==='chart'?`
+    ${monthChartHTML()}
+    ${heatHTML()}
+    ${dualHTML()}
+    ${weightChartHTML()}
+    ${sigBlock}
+    ${wCard?`<div class="sec"><div class="shead"><span class="tt">体重与目标</span></div>${wCard}</div>`:''}
+    ${rCard?`<div class="sec"><div class="shead"><span class="tt">跑步明细</span></div>${rCard}</div>`:''}
+    `:`<div class="sec"><div class="shead"><span class="tt">本周</span></div>
+      <div class="card block">${weekStripInner()}</div></div>
+    ${sigBlock}
+    ${wCard?`<div class="sec"><div class="shead"><span class="tt">体重与目标</span></div>${wCard}</div>`:''}
+    ${rCard?`<div class="sec"><div class="shead"><span class="tt">跑步明细</span></div>${rCard}</div>`:''}`}
+
+    <div class="sec">
+      <div class="rows">
+        <a class="rw" href="#/records" style="text-decoration:none;color:inherit"><div class="tx"><b>全部记录</b><span>按月翻 · 每次运动的明细与手记</span></div><div class="go"></div></a>
+        <a class="rw" href="#/calendar" style="text-decoration:none;color:inherit"><div class="tx"><b>训练日历</b><span>点任意一天看当天做了什么</span></div><div class="go"></div></a>
+      </div>
+      ${rtHomeCard()}
+      <div class="cap" style="text-align:center;padding:12px 0 4px">数据来自 Apple Watch + 手动补录 · 每天 00:05 更新<br>
+        <span style="color:var(--gold)">← 手指从屏幕左边缘往右滑，任何页面都直接回首页</span></div>
+    </div>
+  </div>`;
+}
+/* 首页「路线轨迹」卡：最新一条 + 总数，缩略图等 routes.json 到了再补 */
+function rtHomeCard(){
+  const idx=D.routeIdx;
+  if(!idx||!idx.n) return '';
+  const top=idx.idx[0];
+  return `<div class="sec"><div class="shead"><span class="tt">路线轨迹</span><span class="en2">Routes</span><span class="ln"></span></div>
+    <div class="card block tap" onclick="navigate('#/route')">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">最近一次 · ${top.date.slice(5).replace('-','/')} ${top.time}</div>
+          <div style="font-size:24px;font-weight:700;letter-spacing:-.5px;margin-top:3px;font-family:ui-monospace,Menlo,monospace">${top.dist}<u style="font-size:11px;font-weight:600;color:var(--ink2);text-decoration:none;margin-left:3px">km</u>
+            <span style="font-size:11px;color:var(--ink2);font-family:-apple-system,'PingFang SC',sans-serif;margin-left:7px">${(TY[top.type]||['',''])[0]} ${top.type}</span></div>
+          <div style="font-size:10.5px;color:var(--ink3);margin-top:4px">共 ${idx.n} 条 GPS 轨迹 · 累计 ${idx.totalKm} km · 总爬升 ${idx.totalElev} m</div>
+        </div>
+        <div class="rtmini">${rtHomeMini()}</div>
+      </div>
+      <div class="cap">点开看全部轨迹、每公里配速与心率 ▸</div>
+    </div></div>`;
+}
+function rtHomeMini(){
+  if(!D.routeIdx||!D.routeIdx.idx.length) return '<div class="rtmini-sk"></div>';
+  const top=D.routeIdx.idx[0];
+  const r=RT.data&&RT.data.routes.find(x=>x.id===top.id);
+  return r?rtMiniSVG(r.pts,RT_COL[r.type]||'#8A93A3'):'<div class="rtmini-sk"></div>';
+}
+
+/* ═══════════ v3 图表：① 月度堆叠柱 ═══════════ */
+const MONTHS_N=8;
+function monthChartHTML(){
+  const ms=stackMonths(MONTHS_N);
+  ST.__ms=ms;
+  /* 顺序与总数缓存起来，供 paint* 重画时复用，别每次重算 */
+  const allTypes=[]; ms.forEach(m=>m.types.forEach(t=>{if(allTypes.indexOf(t.名称)<0)allTypes.push(t.名称)}));
+  const byTot={}; allTypes.forEach(n=>byTot[n]=0);
+  ms.forEach(m=>m.types.forEach(t=>byTot[t.名称]+=t.时长));
+  ST.__order=allTypes.slice().sort((a,b)=>byTot[b]-byTot[a]);
+  const on=ST.pick.month;
+  /* 图例关掉某类后，柱子要按「可见时长」重新归一化 —— 否则 9 月隐藏骑行后
+     柱子还是全高、里面只剩一小段彩色（空心柱），图例就失去了"只看某一类"的意义。
+     visMin=0（该类全被关掉）时柱子整根消失，也不再给选中态。 */
+  const visMin=m=>m.types.filter(t=>!lgOff(t.名称)).reduce((a,t)=>a+t.时长,0);
+  const mx=Math.max(...ms.map(visMin),1);
+
+  const bars=ms.map(m=>{
+    const vm=visMin(m);
+    const h=vm>0?Math.max(8,(vm/mx)*100):0;
+    const segs=m.types.map(t=>{
+      if(lgOff(t.名称)) return '';
+      const sh=vm>0?(t.时长/vm)*100:0;   /* 每段占「可见总时长」的比例 */
+      return `<i style="height:${sh.toFixed(2)}%;background:${mixColor(t.名称)}"></i>`;
+    }).join('');
+    const isOn=on===m.ym&&vm>0;
+    return `<div class="mg${isOn?' on':''}" data-month="${m.ym}" onclick="pickAt('month','${m.ym}')">
+      <div class="mtop">${isOn?hrsOf(vm):''}</div>
+      <div class="mzone"><div class="mstack" style="height:${h}%">${segs}</div></div>
+      <div class="mlab">${+m.ym.slice(5)}月${isCurrentMonth(m.ym)?'*':''}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="gsec">
+    <div class="gt">每个月练了什么</div>
+    <div class="gd">柱子里每一段是一种运动。点柱子看当月明细，点图例可隐藏某一类。</div>
+    <div class="mbar chart" id="ch-month">${bars}</div>
+    <div class="legend" style="margin-top:13px">${legendHTML()}</div>
+    ${pickBodyHTML()}
+  </div>`;
+}
+function paintMonthChart(){
+  const card=document.querySelector('#app .gsec .mg')&&document.querySelector('#app .gsec .mg').closest('.gsec');
+  if(!card) return;
+  const on=ST.pick.month;
+  /* 图例：先在原位置刷 off 类，再按需重建（顺序可能变） */
+  const lg=card.querySelector('.legend[data-live]');
+  if(lg){
+    lg.innerHTML=legendHTML();
+    lg.setAttribute('data-live','1');
+  }
+  Array.prototype.forEach.call(card.querySelectorAll('.mg'), el=>{
+    const m=ST.__ms.find(x=>x.ym===el.dataset.month);
+    const vm=m?m.types.filter(t=>!lgOff(t.名称)).reduce((a,t)=>a+t.时长,0):0;
+    el.classList.toggle('on', el.dataset.month===on&&vm>0);
+    el.classList.toggle('dim', !!on && el.dataset.month!==on);
+    const top=el.querySelector('.mtop');
+    if(top) top.textContent=(el.dataset.month===on&&vm>0)?hrsOf(vm):'';
+  });
+  /* 明细条：整体替换 */
+  const old=card.querySelector('.pick[data-pick]');
+  const tmp=document.createElement('div');
+  tmp.innerHTML=pickBodyHTML();
+  const nb=tmp.firstElementChild;
+  if(nb) nb.setAttribute('data-pick','1');
+  if(old) old.replaceWith(nb);
+  else card.appendChild(nb);
+}
+/* 图例聚焦：ST.focus=null 看全部；=某类型名时只看那一类。
+   ⚠️ 旧版是"多选隐藏"（ST.legendOff 逐个点掉），阿成反馈"我想看其中一个得把其他
+   全部点掉，看起来好累"——参照淘宝/小红书筛选 chip 的逻辑改成**单选聚焦**：
+   点一下只看它，再点同一项恢复全部，点其他项切换过去，随时有「全部」可回。 */
+function lgOff(name){ return !!ST.focus && ST.focus!==name; }
+function legendHTML(){
+  const order=ST.__order||[], f=ST.focus;
+  const all=f?`<span class="allchip" onclick="tglLegend('__all__')">全部</span>`:'';
+  return all+order.map(n=>`<span class="${f===n?'on':(f?'dim':'')}" onclick="tglLegend('${esc(n)}')">
+      <i style="background:${mixColor(n)}"></i><b>${esc(n)}</b></span>`).join('');
+}
+function pickBodyHTML(){
+  const on=ST.pick.month;
+  const sel=on?ST.__ms.find(m=>m.ym===on):null;
+  if(!sel) return `<div class="pick" data-pick="1" style="opacity:.72">
+      <div class="pk-s">点任意一根柱子看那个月的构成 · 点图例可只看某一类</div></div>`;
+  const vis=sel.types.filter(t=>!lgOff(t.名称));
+  const tot=vis.reduce((a,t)=>a+t.时长,0);
+  if(!vis.length) return `<div class="pick" data-pick="1">
+      <div class="pk-t">${+sel.ym.slice(5)} 月</div>
+      <div class="pk-s">这个月没练过「${esc(ST.focus)}」· 点图例里的「全部」看所有类型</div>
+      <div class="pk-x" onclick="pickAt('month','${sel.ym}')">×</div></div>`;
+  const tip=ST.focus?` · 正在只看「${esc(ST.focus)}」`:'';
+  return `<div class="pick" data-pick="1">
+      <div class="pk-t">${+sel.ym.slice(5)} 月</div>
+      <div class="pk-s">${sel.次数} 次 · ${sel.天数} 天 · ${hrsOf(tot)} 小时 · ${sel.距离.toFixed(1)} km · ${sel.消耗} kcal${tip}
+        ${isCurrentMonth(sel.ym)?'（至今）':''}</div>
+      <div class="pk-x" onclick="pickAt('month','${sel.ym}')">×</div>
+    </div>
+    <div class="legend" data-live="1" style="margin-top:10px">${vis.map(t=>
+      `<span style="pointer-events:none"><i style="background:${mixColor(t.名称)}"></i>${esc(t.名称)} ${Math.round(t.时长)}′ · ${Math.round(t.时长/tot*100)}%</span>`).join('')}</div>`;
+}
+/* 图例开关：只重画这张图这张卡，不整页重绘（否则滚动位置会丢）
+   ⚠️ 踩过的坑（2026-10-16 阿成录屏反馈）：这里原来是 card.innerHTML=monthChartHTML()，
+   而 monthChartHTML() 返回的是**一整个 .gsec 卡片**，等于把新卡片塞进旧卡片的 innerHTML，
+   卡片套卡片；再点一次图例，closest('.gsec') 找到最内层那张，又套一层 ——
+   点几下首页就层层嵌套、内容重复、可视区被挤爆（他描述"一直重叠、越来越小"）。
+   必须用 outerHTML 整块替换，且替换后不用再手动补 on/dim class
+   （monthChartHTML() 生成时已经按 ST.pick.month 写好了）。 */
+function tglLegend(n){
+  /* 单选聚焦：点同一项或「全部」→ 恢复全部；点其他项 → 切换聚焦到它 */
+  ST.focus=(n==='__all__'||ST.focus===n)?null:n;
+  const anchor=document.querySelector('#app .mg');
+  if(!anchor) return;
+  const card=anchor.closest('.gsec');
+  const scrollY=window.scrollY;
+  card.outerHTML=monthChartHTML();
+  window.scrollTo(0,scrollY);
+}
+
+/* ② 训练热力图 —— 12 周× 7 格在375pt 宽屏上大约 330px 高，占一整屏太多。
+   改成「按列（周）竖向堆叠、每列是 7 天」仍然太高，所以这里用**上下两段**：
+   近 6 周 + 更早 6 周，中间可折叠。默认只显示近 6 周（约 165px）。 */
+const HEAT_WEEKS=12;
+function heatHTML(){
+  const h=heatWeeks(HEAT_WEEKS);
+  const on=ST.pick.heat;
+  const expanded=!!ST.heatAll;
+  const visible=expanded?h.weeks:h.weeks.slice(HEAT_WEEKS/2);
+
+  /* 跨月处（或当月 1 号）日期带月份前缀 —— 阿成反馈"下面是七八九十月，不知道对应哪"
+     所以底部月份标签行整个去掉，让每格自己说"我是哪天" */
+  const dLabel=ds=>{
+    const d=new Date(ds);
+    const yest=new Date(ds); yest.setDate(d.getDate()-1);
+    const cross=yest.getMonth()!==d.getMonth()||d.getDate()===1;
+    return cross?`${d.getMonth()+1}/${d.getDate()}`:`${d.getDate()}`;
+  };
+
+  /* 一周一行：上行日期（小）、下行分钟数（粗，有训练才显示） */
+  const grid=visible.map(wk=>wk.map(c=>{
+    const cls=['hc','l'+c.lv,c.today?'tdy':'',on===c.ds?'on':'',c.fut?'fut':''].filter(Boolean).join(' ');
+    return `<div class="${cls}" data-ds="${c.ds}" ${c.fut?'':`onclick="pickAt('heat','${c.ds}')"`}>
+      <i class="d">${dLabel(c.ds)}</i>${c.min>0?`<b class="m">${Math.round(c.min)}′</b>`:'<s class="m"></s>'}</div>`;
+  }).join('')).join('');
+
+  const all=h.weeks.flat(), act=all.filter(c=>c.min>0);
+  const totalMin=all.reduce((a,c)=>a+c.min,0);
+  const weeks=expanded?HEAT_WEEKS:HEAT_WEEKS/2;
+
+  const sel=on?all.find(c=>c.ds===on):null;
+  const selBody=sel?heatPickHTML(sel):'';
+
+  return `<div class="gsec">
+    <div class="gt">训练节奏</div>
+    <div class="gd">一周一行，一格一天，颜色越深练得越久。蓝框是今天。点格子看那天练了什么。</div>
+    <div class="chart" id="ch-heat">
+      <div class="heatwk">${WD.map(d=>`<div>${d[1]}</div>`).join('')}</div>
+      <div class="heat">${grid}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:11px">
+      <div style="flex:1;font-size:11.5px;color:var(--ink2)">
+        近 ${weeks} 周 · <b style="color:var(--ink);font-weight:600">${act.length}</b> 天有训练 · 周均 <b style="color:var(--ink);font-weight:600">${Math.round(totalMin/weeks/6)/10}</b> 小时
+      </div>
+      <button class="minibtn" onclick="toggleHeat()">${expanded?'收起':'看更早 6 周'}</button>
+    </div>
+    ${selBody}
+  </div>`;
+}
+function heatPickHTML(c){
+  const list=D.recent.filter(r=>r.date===c.ds);
+  return `<div class="pick" style="flex-direction:column;align-items:stretch;gap:9px" data-pick-heat="1">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="pk-t">${c.ds.slice(5)} ${WD[(new Date(c.ds).getDay()+6)%7]}</div>
+        <div class="pk-s">${c.min>0?Math.round(c.min)+' 分钟':'这天没训练'}</div>
+        <div class="pk-x" onclick="pickAt('heat','${c.ds}')">×</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map(r=>
+        `<span style="font-size:10.5px;padding:3px 8px;border-radius:99px;background:var(--card);
+           border:1px solid var(--line2)">${(TY[r.类型]||['·'])[0]} ${esc(r.类型)} ${Math.round(r.时长)}′${r.距离?' · '+r.距离+'km':''}</span>`).join('')||
+        `<span style="font-size:10.5px;color:var(--ink3)">这天没有记录，休息也是训练的一部分</span>`}</div>
+      <div style="font-size:10.5px;color:var(--ink3)">在「记录」里能看当天完整明细</div>
+    </div>`;
+}
+function toggleHeat(){
+  const y=window.scrollY;
+  ST.heatAll=!ST.heatAll;
+  route();
+  window.scrollTo(0,y);
+}
+function paintHeatChart(){
+  const box=document.getElementById('ch-heat'); if(!box) return;
+  const on=ST.pick.heat;
+  Array.prototype.forEach.call(box.querySelectorAll('.hc'), el=>{
+    el.classList.toggle('on', el.dataset.ds===on);
+  });
+  const card=box.closest('.gsec'); if(!card) return;
+  const old=card.querySelector('[data-pick-heat]');
+  const h=heatWeeks(HEAT_WEEKS);
+  const sel=on?h.weeks.flat().find(c=>c.ds===on):null;
+  const tmp=document.createElement('div');
+  if(sel) tmp.innerHTML=heatPickHTML(sel);
+  const nb=tmp.firstElementChild;
+  if(old) nb?old.replaceWith(nb):old.remove();
+  else if(nb) card.appendChild(nb);
+}
+
+/* ═══════════ v3 图表：③ 配速 — 心率 双轴 ═══════════
+   左轴＝配速（秒，越短越高），右轴＝平均心率。
+   柱＝配速（越快越高），点＝心率。两个轴各自归一，各自标注单位。 */
+/* ═══════════ v4 图表：③ 跑步配速折线（单轴，砍掉双轴） ═══════════
+   ⚠️ v3 这里是「柱=配速 + 点=心率」双轴图，阿成反馈"柱状图跟点状图结合很奇怪、
+   怎么看都怪怪的、一眼不知道在看什么"。双轴对普通用户学习成本太高。
+   v4 改回**只说一件事**：配速趋势。线越靠上=跑得越快，金圈=最快那次。
+   心率从图上撤掉，进选中明细 + 标题小结（避免一图两尺）。 */
+function paceTxt(sec){return Math.floor(sec/60)+"'"+String(Math.round(sec%60)).padStart(2,'0')+'"'}
+function dualHTML(){
+  const d=runSeries(14);
+  if(!d) return '';
+  const W=330,H=150,padL=36,padR=14,padT=18,padB=26;
+  const iw=W-padL-padR, ih=H-padT-padB;
+  const n=d.rs.length;
+  const spR=(d.worst-d.best)||1;
+  const X=i=>padL+(n===1?iw/2:iw*i/(n-1));
+  const Y=sp=>padT+((sp-d.best)/spR)*ih;      /* 秒数越小越快 → 越靠上 */
+  const on=ST.pick.dual;
+  const pts=d.rs.map((r,i)=>({x:X(i),y:Y(d.sp[i]),r,i}));
+  const line=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const area=`${padL},${(padT+ih).toFixed(1)} ${line} ${X(n-1).toFixed(1)},${(padT+ih).toFixed(1)}`;
+  const fastI=d.sp.indexOf(d.best);
+
+  const grid=[0,.5,1].map(t=>{
+    const y=padT+ih*t;
+    return `<line class="dgrid" x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}"/>`;
+  }).join('');
+
+  /* y 轴配速刻度：上=最快，下=最慢 */
+  const yl=[0,.5,1].map(t=>{
+    const sp=d.best+spR*t;
+    return `<text class="daxl" x="${padL-6}" y="${(padT+ih*t).toFixed(0)}" text-anchor="end"
+      dominant-baseline="central">${paceTxt(sp)}</text>`;
+  }).join('');
+
+  const dots=pts.map(p=>{
+    const r=p.r, sel=on===r.date, fast=p.i===fastI;
+    return `<circle class="ddot" data-dual="${r.date}" data-cx="${p.x.toFixed(0)}" data-cy="${(p.y-8).toFixed(0)}"
+      cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${sel?6:4.2}"
+      fill="${sel?'var(--gold)':'var(--card)'}" stroke="${fast?'var(--gold)':'var(--run)'}"
+      stroke-width="${fast?2.8:2}" opacity="${on&&!sel?.4:1}"
+      onpointerenter="dualTip('${r.date}',${p.x.toFixed(0)},${(p.y-8).toFixed(0)})"
+      onpointerdown="dualTap('${r.date}')"/>`;
+  }).join('');
+
+  /* 最快那点上方标两个字，不用猜哪个是最快 */
+  const fp=pts[fastI];
+  const fastMark=`<text class="dfast" x="${fp.x.toFixed(1)}" y="${(fp.y-13).toFixed(1)}" text-anchor="middle">最快</text>`;
+
+  /* ⚠️ (n-1)/2 可能带 .5（n=14 → 6.5），取 .date 会抛 undefined。必须 Math.floor。 */
+  const xl=[0,Math.floor((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>{
+    const r=d.rs[i];
+    return `<text class="daxl" x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${r.date.slice(5)}</text>`;
+  }).join('');
+
+  const avgSp=d.sp.reduce((a,b)=>a+b,0)/n;
+  const hrs=d.rs.map(r=>r.平均心率).filter(Boolean);
+  const avgHr=hrs.length?Math.round(hrs.reduce((a,b)=>a+b,0)/hrs.length):null;
+  const fast=d.rs[fastI];
+
+  return `<div class="gsec">
+    <div class="gt">跑步配速</div>
+    <div class="gd">线越靠上＝跑得越快，金圈是这 ${n} 次里最快的。平均 ${paceTxt(avgSp)}，最快 ${fast.配速显示}（${fast.date.slice(5)}）${avgHr!=null?`，平均心率 ♥${avgHr}`:''}。点圆点看那天详情。</div>
+    <div class="chart dual" id="ch-dual">
+      <div class="tipbox" id="tip-dual"></div>
+      <svg viewBox="0 0 ${W} ${H}" height="${H}">
+        <defs><linearGradient id="pgrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--gold)" stop-opacity=".30"/>
+          <stop offset="1" stop-color="var(--gold)" stop-opacity="0"/>
+        </linearGradient></defs>
+        ${grid}
+        <polygon points="${area}" fill="url(#pgrad)"/>
+        <polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="2.2"
+          stroke-linejoin="round" stroke-linecap="round"/>
+        ${fastMark}${dots}${xl}${yl}
+      </svg>
+    </div>
+    ${dualPickHTML(on?d.rs.find(r=>r.date===on):null,d)}
+  </div>`;
+}
+/* 选中明细：心率在这里给，还带"比平均高/低几跳"，言之有物 */
+function dualPickHTML(sel,d){
+  if(!sel) return `<div class="pick" data-pick-dual="1" style="opacity:.72">
+      <div class="pk-s">点任意圆点，看那天的配速、心率和它在这批里的位置</div></div>`;
+  const sp=d.sp[d.rs.indexOf(sel)];
+  const ratio=Math.round(sp/d.best*100);
+  const hrs=d.rs.map(r=>r.平均心率).filter(Boolean);
+  const avgHr=hrs.length?Math.round(hrs.reduce((a,b)=>a+b,0)/hrs.length):null;
+  const hrDiff=(sel.平均心率&&avgHr!=null)?Math.round(sel.平均心率-avgHr):null;
+  const fast=ratio<=100;
+  return `<div class="pick" data-pick-dual="1">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.距离} km · ${sel.配速显示}/km · ${Math.round(sel.时长)} 分钟
+        ${sel.平均心率?`· ♥${sel.平均心率}（最高 ${sel.最高心率}）${hrDiff!=null?`，比平均${hrDiff>0?'高':'低'} ${Math.abs(hrDiff)} 跳`:''}`:''}
+        ${fast?'<span style="color:var(--gold);font-weight:600"> · 是这批里最快的一次</span>'
+              :`<span style="color:var(--gold)"> · 比最快那次慢 ${ratio-100}%</span>`}</div>
+      <div class="pk-x" onclick="pickAt('dual','${sel.date}')">×</div></div>`;
+}
+function dualTip(ds,x,y){
+  const r=D.recent.find(v=>v.date===ds); if(!r) return;
+  showTip('tip-dual',`<b>${ds.slice(5)}</b> ${esc(r.类型)} ${r.距离||''}km<br>
+    配速 ${r.配速显示||'—'} · ♥${r.平均心率||'—'} · ${Math.round(r.时长)}分钟 · ${r.消耗}kcal`, x, y);
+}
+function dualTap(ds){ hideTip('tip-dual'); pickAt('dual',ds) }
+function paintDualChart(){
+  const box=document.getElementById('ch-dual'); if(!box) return;
+  const on=ST.pick.dual;
+  Array.prototype.forEach.call(box.querySelectorAll('[data-dual]'), el=>{
+    const sel=el.dataset.dual===on;
+    el.setAttribute('r', sel?6:4.2);
+    el.setAttribute('fill', sel?'var(--gold)':'var(--card)');
+    el.setAttribute('opacity', on&&!sel?.4:1);
+  });
+  const card=box.closest('.gsec'); if(!card) return;
+  const old=card.querySelector('[data-pick-dual]');
+  const d=runSeries(14);
+  const sel=on?d.rs.find(r=>r.date===on):null;
+  const tmp=document.createElement('div');
+  tmp.innerHTML=dualPickHTML(sel,d);
+  const nb=tmp.firstElementChild;
+  if(old) nb?old.replaceWith(nb):old.remove();
+  else if(nb) card.appendChild(nb);
+}
+
+/* ═══════════ v3 图表：④ 体重 + 体脂 双线 ═══════════ */
+function weightChartHTML(){
+  const d=weightSeries(); if(!d) return '';
+  const W=330,H=150,padL=32,padR=34,padT=12,padB=26;
+  const iw=W-padL-padR, ih=H-padT-padB, n=d.b.length;
+  const step=iw/(n-1);
+  const X=i=>padL+step*i;
+  const wR=(d.wMax-d.wMin)||1, fR=(d.fMax-d.fMin)||1;
+  const Yw=v=>padT+ih-((v-d.wMin)/wR)*ih;
+  const Yf=v=>padT+ih-((v-d.fMin)/fR)*ih;
+  const on=ST.pick.weight;
+
+  const grid=[0,.5,1].map(t=>`<line class="dgrid" x1="${padL}" y1="${(padT+ih*t).toFixed(1)}"
+    x2="${W-padR}" y2="${(padT+ih*t).toFixed(1)}"/>`).join('');
+
+  const pw=d.b.map((r,i)=>`${X(i).toFixed(1)},${Yw(r.weight_jin).toFixed(1)}`).join(' ');
+  const pf=d.b.map((r,i)=>`${X(i).toFixed(1)},${Yf(r.bf_pct).toFixed(1)}`).join(' ');
+
+  const dotsW=d.b.map((r,i)=>{
+    const sel=on===r.date;
+    return `<circle class="wdot" data-wt="${r.date}" data-cx="${X(i).toFixed(1)}"
+      data-cy="${(Yw(r.weight_jin)-14).toFixed(0)}" cx="${X(i).toFixed(1)}" cy="${Yw(r.weight_jin).toFixed(1)}"
+      r="${sel?5.5:4}" fill="var(--gold)" stroke="var(--card)" stroke-width="1.4"
+      opacity="${on&&!sel?.32:1}"
+      onpointerenter="wTip('${r.date}',${X(i).toFixed(0)},${(Yw(r.weight_jin)-22).toFixed(0)})"
+      onpointerdown="wTap('${r.date}')"/>`;
+  }).join('');
+  const dotsF=d.b.map((r,i)=>{
+    const sel=on===r.date;
+    return `<circle class="wdot" data-wt="${r.date}" data-cx="${X(i).toFixed(1)}"
+      data-cy="${(Yf(r.bf_pct)-14).toFixed(0)}" cx="${X(i).toFixed(1)}" cy="${Yf(r.bf_pct).toFixed(1)}"
+      r="${sel?5.5:4}" fill="var(--warn)" stroke="var(--card)" stroke-width="1.4"
+      opacity="${on&&!sel?.32:1}"
+      onpointerenter="wTip('${r.date}',${X(i).toFixed(0)},${(Yf(r.bf_pct)-22).toFixed(0)})"
+      onpointerdown="wTap('${r.date}')"/>`;
+  }).join('');
+
+  /* x 轴标签按点数稀疏化：<=6 个全标，否则标首、中、尾。
+     （11 次称重标 11 个会挤成一团，之前只标了 3 个又显得信息太少。） */
+  const marks=n<=6?Array.from({length:n},(_,i)=>i)
+    :[0,Math.round((n-1)/3),Math.round(2*(n-1)/3),n-1].filter((v,i,a)=>a.indexOf(v)===i);
+  const xl=marks.map(i=>
+    `<text class="daxl" x="${X(i).toFixed(1)}" y="${H-9}" text-anchor="middle">${d.b[i].date.slice(2)}</text>`).join('');
+
+  const ylL=[0,1].map(t=>`<text class="daxl" x="${padL-5}" y="${(padT+ih-ih*t).toFixed(0)}"
+    text-anchor="end" dominant-baseline="central">${Math.round(d.wMin+wR*t)}</text>`).join('');
+  const ylR=[0,1].map(t=>`<text class="daxl" x="${W-padR+5}" y="${(padT+ih-ih*t).toFixed(0)}"
+    text-anchor="middle" dominant-baseline="central">${(d.fMin+fR*t).toFixed(1)}</text>`).join('');
+
+  const cur=d.b[n-1], first=d.b[0];
+  const 净变化=(cur.weight_jin-first.weight_jin).toFixed(1);
+  const sel=on?d.b.find(r=>r.date===on):null;
+
+  return `<div class="gsec">
+    <div class="gt">体重与体脂（${d.年份}）</div>
+    <div class="gd">金线＝体重（斤，左轴），橙虚线＝体脂率（%，右轴）。点任一点看当次全部读数。</div>
+    <div class="chart dual wl2" id="ch-weight">
+      <div class="tipbox" id="tip-weight"></div>
+      <svg viewBox="0 0 ${W} ${H}" height="${H}">
+        ${grid}
+        <polyline class="wline" points="${pf}" stroke="var(--warn)" stroke-width="1.8"
+          stroke-dasharray="4 3" opacity=".9"/>
+        <polyline class="wline" points="${pw}" stroke="var(--gold)" stroke-width="2.4"/>
+        ${dotsF}${dotsW}${xl}${ylL}${ylR}
+      </svg>
+    </div>
+    <div class="legend ro" style="margin-top:10px;grid-template-columns:1fr 1fr auto">
+      <span><i style="background:var(--gold)"></i><b>体重（斤）</b></span>
+      <span><i style="background:var(--warn)"></i><b>体脂率（%）</b></span>
+      <span style="border:0;justify-content:flex-end;color:${Number(净变化)<=0?'var(--green)':'var(--heart)'};font-weight:700">
+        今年${Number(净变化)<=0?'减了':'增了'} ${Math.abs(净变化)} 斤</span>
+    </div>
+    ${sel?`<div class="pick">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.weight_jin} 斤 · 体脂 ${sel.bf_pct}% · 去脂 ${sel.lean_jin} 斤 · 内脏脂肪 ${sel.visceral} 级 · 健康分 ${sel.health}</div>
+      <div class="pk-x" onclick="pickAt('weight','${sel.date}')">×</div></div>`:''}
+  </div>`;
+}
+function wTip(ds,x,y){
+  const r=D.body.find(v=>v.date===ds); if(!r) return;
+  showTip('tip-weight',`<b>${ds}</b> 称重<br>${r.weight_jin} 斤 · 体脂 ${r.bf_pct}% · 内脏 ${r.visceral} 级`, x, y);
+}
+function wTap(ds){ hideTip('tip-weight'); pickAt('weight',ds) }
+function paintWeightChart(){
+  const box=document.getElementById('ch-weight'); if(!box) return;
+  const on=ST.pick.weight;
+  Array.prototype.forEach.call(box.querySelectorAll('[data-wt]'), el=>{
+    const sel=el.dataset.wt===on;
+    el.setAttribute('r', sel?5.5:4);
+    el.setAttribute('opacity', on&&!sel?.32:1);
+  });
+  const card=box.closest('.gsec'); if(!card) return;
+  const old=card.querySelector('[data-pick-wt]');
+  const sel=on?D.body.find(r=>r.date===on):null;
+  const tmp=document.createElement('div');
+  if(sel) tmp.innerHTML=`<div class="pick" data-pick-wt="1">
+      <div class="pk-t">${sel.date.slice(5)}</div>
+      <div class="pk-s">${sel.weight_jin} 斤 · 体脂 ${sel.bf_pct}% · 去脂 ${sel.lean_jin} 斤 · 内脏脂肪 ${sel.visceral} 级 · 健康分 ${sel.health}</div>
+      <div class="pk-x" onclick="pickAt('weight','${sel.date}')">×</div></div>`;
+  const nb=tmp.firstElementChild;
+  if(old) old.replaceWith(nb||old.remove());
+  else if(nb) card.appendChild(nb);
+}
+
+/* 周节奏条的内层（供首页「本周」卡复用；weekStrip 是封面用的带标题版本） */
+function weekStripInner(){
+  const now=new Date(), dow=(now.getDay()+6)%7;
+  const mon=new Date(now); mon.setDate(now.getDate()-dow);
+  const byday=bydayOf(nowMonthLabel().replace(' · ','-'));
+  let cells='';
+  for(let i=0;i<7;i++){
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const m=byday[ds]||0;
+    const cls='wd2'+(m?' on':'')+(i===dow?' today':'');
+    cells+=`<div><div class="wl">${WD[i][1]}</div>
+      <div class="${cls}" ${m?`onclick="detailDay('${ds}')"`:''} style="${m?'cursor:pointer':''}">${m?Math.round(m)+'′':''}</div></div>`;
+  }
+  const wk=Object.keys(byday).filter(k=>k>=ymd(mon)).reduce((a,k)=>a+byday[k],0);
+  const nD=Object.keys(byday).filter(k=>k>=ymd(mon)).length;
+  return `<div class="wkt" style="margin-top:0"><span>本周已练</span><em>${nD} 天 · ${Math.round(wk)} 分钟</em></div>
+    <div class="wk">${cells}</div>`;
+}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+/* ═══════════ 身体指标 hm（2026-10-18 接入，数据见 脚本/import_metrics.py）═══════════
+   两条来源合并：Apple Health 全量导出（2025-01-01~2026-09-19）+ 手机「健康自动导出」
+   App 的每日指标（2025-01~04 / 2026-01 / 2026-10）。**睡眠数据按阿成要求未纳入**。
+   手表没戴 / 没导出的日子没有数据 —— 图表按真实日期定位，缺口自然留空，不插值不补零。 */
+const HM_METRICS={
+  rhr  :{name:'静息心率',unit:'bpm',dec:0,better:'low', icon:'♥',
+         note:'静息心率越低，通常说明恢复越好、心脏负担越小'},
+  hrv  :{name:'HRV',    unit:'ms', dec:0,better:'high',icon:'∿',
+         note:'HRV（心率变异性）越高，通常说明自主神经恢复越好'},
+  spo2 :{name:'血氧',   unit:'%',  dec:0,better:'high',icon:'◍',
+         note:'血氧日常都在 95% 上下，突然掉下去才值得注意'},
+  rr   :{name:'呼吸率', unit:'次/分',dec:1,better:'low',icon:'≈',
+         note:'静息呼吸率升高有时和疲劳、恢复不足有关'},
+  vo2  :{name:'VO₂Max', unit:'',   dec:1,better:'high',icon:'⤴',
+         note:'最大摄氧量，有氧体能的硬指标；只在户外走/跑后更新，所以稀疏'},
+  steps:{name:'步数',   unit:'步', dec:0,better:'high',icon:'👟',comma:1,
+         note:'全天累计步数（手表逐分钟记录求和）'},
+  kcal :{name:'活动千卡',unit:'kcal',dec:0,better:'high',icon:'🔥',comma:1,
+         note:'动态千卡（不含基础代谢），全天活动累计'},
+};
+function hmDays(){return (D.hm&&D.hm.days)||[]}
+function hmByDate(){
+  if(hmByDate._src===D.hm) return hmByDate._m;
+  const m={}; hmDays().forEach(r=>{m[r.d]=r});
+  hmByDate._src=D.hm; hmByDate._m=m; return m;
+}
+/* 最近 nDays 自然日内的有值点（升序）；nDays=0/不传 = 全部 */
+function hmSeries(key,nDays){
+  const out=[]; if(!hmDays().length) return out;
+  const cut=nDays?ymd(new Date(Date.now()-nDays*864e5)):'0000-00-00';
+  for(const r of hmDays()){ if(r[key]!=null&&r.d>=cut) out.push({d:r.d,v:r[key]}); }
+  return out;
+}
+function hmAvg(a){return a.reduce((s,p)=>s+p.v,0)/a.length}
+/* 以每个点为中心 ±half 个自然日的均值（跨缺口不硬桥接） */
+function hmRoll(arr,half){
+  return arr.map(p=>{
+    const c=new Date(p.d).getTime(), lo=c-half*864e5, hi=c+half*864e5;
+    let s=0,n=0;
+    for(const q of arr){const t=new Date(q.d).getTime(); if(t>=lo&&t<=hi){s+=q.v;n++;}}
+    return n?s/n:null;
+  });
+}
+/* 最近 days 天均值 vs 前一个有数据的同长度窗口（缺口味自动往前找，最多回看 90 天）；
+   样本不足返回 null。winLast=对照窗内最后一个有数据的日期（文案里跟它比）。 */
+function hmDelta(arr,days){
+  if(arr.length<4) return null;
+  const now=Date.now();
+  const cut=ymd(new Date(now-days*864e5));
+  const a=arr.filter(p=>p.d>=cut);
+  if(a.length<2) return null;
+  const hard=ymd(new Date(now-90*864e5));
+  for(let back=days;back<=90;back+=days){
+    const hi=ymd(new Date(now-back*864e5));
+    const lo=ymd(new Date(now-(back+days)*864e5));
+    if(lo<hard) break;
+    const b=arr.filter(p=>p.d>=lo&&p.d<hi);
+    if(b.length>=2) return {now:hmAvg(a),prev:hmAvg(b),n:a.length,winLast:b[b.length-1].d};
+  }
+  return null;
+}
+function hmFmt(k,v){
+  if(v==null) return '—';
+  const m=HM_METRICS[k];
+  const d=m?m.dec:0;
+  return m&&m.comma?fmtNum(v):(d?v.toFixed(d):String(Math.round(v)));
+}
+/* 把序列按「>7 天没数据」的缺口切成段 —— 折线不硬跨缺口，不然 9/19→10/11 会被
+   画成一条连续下降的线，把"没数据"读成"在变差"（阿成对口径很敏感）。 */
+function hmSegs(arr){
+  const segs=[];let cur=[];
+  for(let i=0;i<arr.length;i++){
+    if(cur.length&&(new Date(arr[i].d)-new Date(arr[i-1].d))/864e5>7){segs.push(cur);cur=[];}
+    cur.push(arr[i]);
+  }
+  if(cur.length)segs.push(cur);
+  return segs;
+}
+/* 通用 SVG 折线图：x=真实日期（有缺口留空），y 值域自适应；可选 ±roll 日均线 */
+function hmLineSVG(series,o){
+  o=o||{};
+  const W=342,H=o.h||124,PL=o.pl||34,PR=10,PT=12,PB=20;
+  const n=series.length;
+  if(n<2) return `<div class="cap">${o.empty||'这段时间数据不足（手表没戴的日子没有记录）'}</div>`;
+  const vs=series.map(p=>p.v);
+  let lo=Math.min(...vs),hi=Math.max(...vs);
+  if(o.min!=null)lo=Math.min(lo,o.min);
+  if(o.max!=null)hi=Math.max(hi,o.max);
+  if(hi===lo){hi+=1;lo-=1;}
+  const pad=(hi-lo)*.12; lo-=pad; hi+=pad;
+  const t0=new Date(series[0].d).getTime(),t1=new Date(series[n-1].d).getTime();
+  const x=d=>PL+(t1===t0?(W-PL-PR)/2:(new Date(d).getTime()-t0)/(t1-t0)*(W-PL-PR));
+  const y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);
+  const col=o.color||'var(--gold)';
+  const segs=hmSegs(series);
+  const roll=o.roll?hmRoll(series,o.roll):null;
+  const line=segs.map(s=>`<polyline points="${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')}"
+    fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`).join('');
+  const area=segs.map(s=>`<polygon points="${PL},${y(lo).toFixed(1)} ${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')} ${x(s[s.length-1].d).toFixed(1)},${y(lo).toFixed(1)}"
+    fill="${col}" fill-opacity=".09"/>`).join('');
+  let rollLine='';
+  if(roll){
+    const rsegs=[];let cur=[];
+    series.forEach((p,i)=>{ if(roll[i]!=null){cur.push(i);} else if(cur.length){rsegs.push(cur);cur=[];} });
+    if(cur.length)rsegs.push(cur);
+    rollLine=rsegs.map(is=>`<polyline points="${is.map(i=>`${x(series[i].d).toFixed(1)},${y(roll[i]).toFixed(1)}`).join(' ')}"
+      fill="none" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 2.5" opacity=".65"/>`).join('');
+  }
+  const yv=[hi,(hi+lo)/2,lo];
+  const grid=yv.map(v=>`<line x1="${PL}" y1="${y(v).toFixed(1)}" x2="${W-PR}" y2="${y(v).toFixed(1)}" class="dgrid"/>
+    <text x="${PL-5}" y="${(y(v)+2.6).toFixed(1)}" class="daxl" text-anchor="end">${o.yfmt?o.yfmt(v):(Math.round(v*10)/10)}</text>`).join('');
+  const dots=series.map((p,i)=>`<circle cx="${x(p.d).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="2.3"
+    fill="${col}" class="hmdot" onclick="hmTip('${o.tip||'hm'}','${p.d}',${p.v},${roll&&roll[i]!=null?roll[i].toFixed(1):'null'},'${o.label||''}','${o.unit||''}')"/>`).join('');
+  const xl=`<text x="${PL}" y="${H-6}" class="daxl">${series[0].d.slice(5).replace('-','/')}</text>
+    <text x="${W-PR}" y="${H-6}" class="daxl" text-anchor="end">${series[n-1].d.slice(5).replace('-','/')}</text>`;
+  return `<div class="hmchart"><div class="hmtip" id="tip-${o.tip||'hm'}"></div>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+      ${grid}${area}${line}${rollLine}${dots}${xl}
+    </svg></div>`;
+}
+function hmTip(id,d,v,roll,label,unit){
+  const t=document.getElementById('tip-'+id); if(!t)return;
+  const m=HM_METRICS[Object.keys(HM_METRICS).find(k=>HM_METRICS[k].name===label)]||null;
+  const dec=m?m.dec:0;
+  t.innerHTML=`${d.slice(5).replace('-',' 月 ')} 日 · ${label||''} <b>${dec?v.toFixed(dec):Math.round(v)}</b>${unit?' '+unit:''}`+
+    (roll!=='null'?`<br><span style="color:var(--ink3)">附近日均 ${roll}${unit?' '+unit:''}</span>`:'');
+  t.classList.add('on');
+}
+/* ── 首页「今日身体」卡 ── */
+function hmHomeCard(){
+  const days=hmDays(); if(!days.length) return '';
+  const last=days[days.length-1];
+  /* 三格大数字：静息心率 / HRV / 血氧，各自取最近 30 天内有值的一天 */
+  const cells=['rhr','hrv','spo2'].map(k=>{
+    const m=HM_METRICS[k], arr=hmSeries(k,30);
+    if(!arr.length) return '';
+    const p=arr[arr.length-1], d7=hmDelta(arr,7);
+    let dh='<div class="hd">近 7 天样本不足</div>';
+    if(d7){
+      const diff=d7.now-d7.prev, same=Math.abs(diff)<(m.dec?0.05:0.5);
+      const better=m.better==='low'?diff<0:diff>0;
+      /* 对照窗就是紧邻的前 7 天 → 不用说日期；跨了缺口找回来的 → 把对比日期摆出来，
+         不然"跟 9 月中旬比"会被读成"跟上周比"（阿成对口径很敏感） */
+      const near=ymd(new Date(Date.now()-8*864e5));
+      const vs=`近 7 天 ${hmFmt(k,d7.now)}${same?' · <b class="eq">基本持平</b>':
+        ` · <b class="${better?'up':'dn'}">${diff>0?'↑':'↓'}${Math.abs(diff).toFixed(m.dec)}</b>`}`;
+      const from=d7.winLast<near?` <span style="opacity:.8">较 ${d7.winLast.slice(5).replace('-','/')} 周</span>`:'';
+      dh=`<div class="hd">${vs}${from}</div>`;
+    }
+    return `<div class="hc"><div class="hl">${m.icon} ${m.name}</div>
+      <div class="hv">${hmFmt(k,p.v)}<u>${m.unit}</u></div>${dh}</div>`;
+  }).filter(Boolean).join('');
+  /* 活动四项：取最近一个有步数的日子（通常就是同一天） */
+  let act=null;
+  for(let i=days.length-1;i>=0;i--){ if(days[i].steps!=null){act=days[i];break;} }
+  const actHtml=act?`<div class="hmact">
+      ${[['👟','步数',fmtNum(act.steps),'步'],['🔥','锻炼',act.exmin!=null?act.exmin:'—','分钟'],
+         ['🧍','站立',act.stand!=null?act.stand:'—','小时'],['🪜','爬楼',act.flights!=null?act.flights:'—','层']]
+        .map(a=>`<div class="ac"><i>${a[0]}</i><b>${a[2]}</b><span>${a[3]}</span></div>`).join('')}
+    </div>`:'';
+  const spark=hmSparkHTML();
+  const gap=hmGapNote();
+  return `<div class="sec"><div class="shead"><span class="tt">今日身体</span><span class="en2">Body</span><span class="ln"></span></div>
+    <div class="card block tap" onclick="hmSheet()">
+      <div style="display:flex;align-items:baseline;justify-content:space-between">
+        <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">最近一次记录 · ${last.d.slice(5).replace('-','/')}</div>
+        <div style="font-size:9.5px;color:var(--gold);font-weight:600">更多指标 ▸</div></div>
+      <div class="hmgrid" style="grid-template-columns:repeat(${cells.split('<div class="hc">').length-1||1},1fr)">${cells}</div>
+      ${actHtml}
+      ${spark}
+      <div class="cap">点开看任意指标 · 30/90 天趋势与对比${gap?' · '+gap:''}</div>
+    </div></div>`;
+}
+/* 首页卡里的 14 天迷你趋势（可切 静息心率/HRV/血氧） */
+function hmSparkHTML(){
+  const k=ST.hmKey||'rhr', m=HM_METRICS[k];
+  const chips=['rhr','hrv','spo2'].map(c=>`<button class="${c===k?'on':''}"
+     onclick="event.stopPropagation();ST.hmKey='${c}';hmSparkRepaint()">${HM_METRICS[c].name}</button>`).join('');
+  const arr=hmSeries(k,14);
+  let body;
+  if(arr.length<2){ body='<div class="cap">近两周数据不足</div>'; }
+  else{
+    const W=342,H=46,PL=4,PR=4,PT=8,PB=8;
+    const vs=arr.map(p=>p.v); let lo=Math.min(...vs),hi=Math.max(...vs);
+    if(hi===lo){hi+=1;lo-=1;}
+    const t0=new Date(arr[0].d).getTime(),t1=new Date(arr[arr.length-1].d).getTime();
+    const x=d=>PL+(new Date(d).getTime()-t0)/((t1-t0)||1)*(W-PL-PR);
+    const y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);
+    const lines=hmSegs(arr).map(s=>`<polyline points="${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')}"
+      fill="none" stroke="var(--gold)" stroke-width="1.7" stroke-linejoin="round"/>`).join('');
+    const lastP=arr[arr.length-1];
+    body=`<div class="hmchart"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+        ${hmSegs(arr).map(s=>`<polygon points="${PL},${H-PB} ${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')} ${x(s[s.length-1].d).toFixed(1)},${H-PB}" fill="var(--gold)" fill-opacity=".10"/>`).join('')}
+        ${lines}
+        ${arr.map(p=>`<circle cx="${x(p.d).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="1.9" fill="var(--gold)"/>`).join('')}
+        <text x="${W-2}" y="${y(lastP.v)-4}" class="daxl" text-anchor="end" style="fill:var(--gold);font-weight:700">${hmFmt(k,lastP.v)}</text>
+      </svg></div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:2px">
+        <span>${arr[0].d.slice(5).replace('-','/')}</span><span>${m.name}</span>
+        <span>${arr[arr.length-1].d.slice(5).replace('-','/')}</span></div>`;
+  }
+  return `<div class="hmspark"><div class="hmchips">${chips}</div>${body}</div>`;
+}
+function hmSparkRepaint(){
+  const el=document.querySelector('.hmspark'); if(!el)return;
+  el.outerHTML=hmSparkHTML();
+}
+/* ── 指标浏览弹层（首页卡点开）── */
+function hmSheet(){
+  ST.hmM=ST.hmM||'rhr'; ST.hmR=ST.hmR||90;
+  const k=ST.hmM,m=HM_METRICS[k];
+  const R=ST.hmR, arr=hmSeries(k,R==='all'?0:R);
+  const mchips=Object.keys(HM_METRICS).map(c=>`<button class="${c===k?'on':''}"
+     onclick="ST.hmM='${c}';hmSheet()">${HM_METRICS[c].name}</button>`).join('');
+  const rchips=[30,90,'all'].map(r=>`<button class="${String(r)===String(R)?'on':''}"
+     onclick="ST.hmR=${r==='all'?"'all'":r};hmSheet()">${r==='all'?'全部':r+' 天'}</button>`).join('');
+  const roll=arr.length>10?3:0;
+  const chart=hmLineSVG(arr,{roll,tip:'sheet',label:m.name,unit:m.unit,h:132});
+  const st=arr.length?{avg:hmAvg(arr),min:Math.min(...arr.map(p=>p.v)),max:Math.max(...arr.map(p=>p.v))}:null;
+  const d30=hmDelta(hmSeries(k,0),30);
+  let concl='';
+  if(d30){
+    const diff=d30.now-d30.prev, better=m.better==='low'?diff<0:diff>0;
+    concl=`最近 30 天平均 ${hmFmt(k,d30.now)}${m.unit?' '+m.unit:''}，比再前 30 天${diff>0?'高':'低'} ${Math.abs(diff).toFixed(m.dec)}${m.unit?' '+m.unit:''} —— ${m.note}。`;
+  } else if(st){ concl=`这段时间平均 ${hmFmt(k,st.avg)}${m.unit?' '+m.unit:''}。${m.note}。`; }
+  openSheet(`<h3>身体指标 · ${m.name}</h3>
+    <div class="hmchips" style="margin-top:10px">${mchips}</div>
+    <div class="hmchips">${rchips}</div>
+    ${chart}
+    ${st?`<div class="hmstat">
+      <div><span>平均</span><b>${hmFmt(k,st.avg)}</b></div>
+      <div><span>最高</span><b>${hmFmt(k,st.max)}</b></div>
+      <div><span>最低</span><b>${hmFmt(k,st.min)}</b></div>
+      <div><span>有数据</span><b>${arr.length} 天</b></div></div>`:''}
+    ${concl?`<div class="sst" style="margin-top:11px">${concl}</div>`:''}
+    <div class="cap">虚线为附近 7 日均值 · 手表没戴的日子没有数据，图上留空不插值${hmGapNote(true)?'<br>'+hmGapNote(true):''}</div>`);
+}
+/* 数据覆盖说明（缺口 >10 天才提，鸡毛缺口不说） */
+function hmGapNote(full){
+  const days=hmDays(); if(days.length<2) return '';
+  let worst=0,wa='',wb='';
+  for(let i=1;i<days.length;i++){
+    const g=(new Date(days[i].d)-new Date(days[i-1].d))/864e5;
+    if(g>worst){worst=g;wa=days[i-1].d;wb=days[i].d;}
+  }
+  if(worst<=10) return '';
+  const fmt=d=>d.slice(5).replace('-','/');
+  return full?`最长缺口 ${Math.round(worst)} 天（${fmt(wa)} → ${fmt(wb)}），期间没有身体数据`
+    :`最长缺口 ${Math.round(worst)} 天`;
+}
+/* ── 记录页 detailDay：当天身体数据 ── */
+function hmDayBlock(ds){
+  const row=hmByDate()[ds]; if(!row) return '';
+  const items=[];
+  const push=(l,v,u)=>{if(v!=null)items.push([l,typeof v==='number'&&v>=1000?fmtNum(v):v,u||''])};
+  push('步数',row.steps,'步'); push('活动千卡',row.kcal,'kcal');
+  push('步行+跑步',row.dist,'km'); push('站立',row.stand,'小时');
+  push('锻炼',row.exmin,'分钟'); push('爬楼',row.flights,'层');
+  push('日照',row.dl,'分钟'); push('静息心率',row.rhr,'bpm');
+  push('HRV',row.hrv,'ms'); push('血氧',row.spo2,'%');
+  push('呼吸率',row.rr,'次/分'); push('VO₂Max',row.vo2,'');
+  if(!items.length) return '';
+  return `<div class="sh2">当天身体数据</div>
+    <div class="hmact hmday">${items.map(a=>`<div class="ac"><b>${a[1]}${a[2]?`<u style="text-decoration:none;font-size:9px;font-weight:600;color:var(--ink2);margin-left:2px">${a[2]}</u>`:''}</b><span>${a[0]}</span></div>`).join('')}</div>
+    <div class="cap">来自 Apple Watch 当天记录 · 手表没戴的项目没有数据</div>`;
+}
+/* 对照窗的口径说法：紧邻的前一窗 → "再前 N 天"；跨缺口找回的 → 把日期摆出来 */
+function hmWinLabel(d,days){
+  const near=ymd(new Date(Date.now()-(days+1)*864e5));
+  return d.winLast>=near?'再前 '+days+' 天':d.winLast.slice(5).replace('-','/')+' 前 '+days+' 天';
+}
+/* ── 建议页：恢复趋势 ── */
+function hmTrendSec(){
+  if(!hmDays().length) return '';
+  const rhr=hmSeries('rhr',90), hrv=hmSeries('hrv',90), vo2=hmSeries('vo2',90);
+  const dR=hmDelta(hmSeries('rhr',0),30), dH=hmDelta(hmSeries('hrv',0),30);
+  const ks=hmDays(); const cov=`${ks[0].d.slice(2).replace('-','/')} ~ ${ks[ks.length-1].d.slice(2).replace('-','/')} 共 ${ks.length} 天`;
+  /* VO2Max 卡：最新值 + 区间首末变化 */
+  let vo2Card='';
+  if(vo2.length){
+    const f=vo2[0],l=vo2[vo2.length-1],chg=(l.v-f.v);
+    vo2Card=`<div class="card block">
+      <div class="srow2"><b>最近一次 VO₂Max</b><span>${l.v.toFixed(1)} · ${l.d.slice(5).replace('-','/')}</span></div>
+      <div class="srow2"><b>近 90 天测量</b><span>${vo2.length} 次（只在户外走/跑后更新）</span></div>
+      <div class="srow2"><b>区间变化</b><span>${f.v.toFixed(1)}（${f.d.slice(5).replace('-','/')}）→ ${l.v.toFixed(1)}，
+        <b style="color:${chg>=0?'var(--green)':'var(--warn)'}">${chg>=0?'+':''}${chg.toFixed(1)}</b></span></div>
+      <div class="cap">最大摄氧量是有氧体能的硬指标；按你近 90 天的记录在${chg>=0?'上升':'下降'}。</div></div>`;
+  }
+  /* 自动建议：两个指标都够才下结论，只有一个就说一个 */
+  let adv='';
+  if(dR&&dH){
+    const rImp=dR.now<dR.prev, hImp=dH.now>dH.prev;
+    const rTxt=`最近 30 天静息心率平均 ${dR.now.toFixed(1)} bpm（${hmWinLabel(dR,30)} ${dR.prev.toFixed(1)}）`;
+    const hTxt=`HRV 平均 ${dH.now.toFixed(1)} ms（${hmWinLabel(dH,30)} ${dH.prev.toFixed(1)}）`;
+    if(rImp&&hImp) adv=['a3','p2','恢复正在变好',
+      `${rTxt}，${hTxt} —— 一个往下、一个往上，都是恢复能力改善的方向。`,
+      ['这个趋势下可以适度加一点量，但每周增幅别超 10%','加量优先加在轻松跑（Z2），别先加强度','继续保证睡眠，恢复是练出来的也是睡出来的']];
+    else if(!rImp&&!hImp) adv=['a1','p2','恢复压力在变大，注意减压',
+      `${rTxt}，${hTxt}。两个指标同向走差，通常是疲劳在累积。`,
+      ['接下来 3~5 天把强度课停一停，只留轻松活动','每晚多睡 30~60 分钟，比加练一次值钱','如果伴随"抬手没劲"或持续疲惫，先停练两天看看']];
+    else adv=['a2','p3','恢复指标一升一降，先观望',
+      `${rTxt}，${hTxt}，方向不一致。单日波动受喝水、酒精、熬夜、生病影响很大，别凭一两天下结论。`,
+      ['连续看 7 天再判断趋势','训练量维持现状，不加不减','把每天的静息心率记在同一时间看，可比性更高']];
+  } else if(dR) adv=['a2','p3','静息心率趋势',
+    `最近 30 天平均 ${dR.now.toFixed(1)} bpm，${hmWinLabel(dR,30)} ${dR.prev.toFixed(1)}。${dR.now<dR.prev?'往下走是恢复改善的信号。':'往上走要注意是不是疲劳或没睡够。'}`,
+    ['连续记录 7 天以上再看趋势，单日意义不大']];
+  const advCard=adv?`<div class="abox ${adv[0]}">
+      <div class="ah"><span class="pri ${adv[1]}">${adv[1].toUpperCase()}</span><b>${adv[2]}</b></div>
+      <div class="why">${adv[3]}</div>
+      <div class="do"><div class="dt">怎么做</div>${adv[4].map(x=>`<li>${x}</li>`).join('')}</div></div>`:'';
+  return `<div class="sec"><div class="shead"><span class="tt">恢复趋势</span><span class="en2">Recovery</span><span class="ln"></span></div>
+    <div class="card block">
+      <div style="font-size:11.5px;color:var(--ink2);line-height:1.65">
+        静息心率和 HRV 是恢复的两个硬指标：<b style="color:var(--gold)">静息心率越低越好，HRV 越高越好</b>。
+        下面两条线是近 90 天的真实记录，虚线是附近 7 日均值。</div>
+      <div style="margin-top:12px">${hmLineSVG(rhr,{roll:3,tip:'rhr',label:'静息心率',unit:'bpm',h:126,color:'var(--heart)'})}</div>
+      <div style="margin-top:14px">${hmLineSVG(hrv,{roll:3,tip:'hrv',label:'HRV',unit:'ms',h:126,color:'var(--lift)'})}</div>
+      <div class="cap">${dR?`静息心率：最近 30 天平均 ${dR.now.toFixed(1)} bpm，${hmWinLabel(dR,30)} ${dR.prev.toFixed(1)}。`:''}
+        ${dH?`HRV：最近 30 天平均 ${dH.now.toFixed(1)} ms，${hmWinLabel(dH,30)} ${dH.prev.toFixed(1)}。`:''}</div>
+    </div>
+    ${vo2Card?`<div class="sec" style="margin-top:14px"><div class="card block">${vo2Card}</div></div>`:''}
+    ${advCard?`<div style="margin-top:14px">${advCard}</div>`:''}
+    <div class="cap" style="margin-top:12px">数据覆盖 ${cov}：2025-01 ~ 2026-09 来自 Apple Health 全量导出，2026-10 来自手机每日自动导出。
+      手表没戴 / 没导出的日子没有数据，图上留空。睡眠数据按你的要求未纳入。</div></div>`;
+}
+
+/* ── 速览 ── */
+function viewOvr(){
+  const o=curOv(), last=D.recent[0];
+  const t19=D.recent.filter(r=>r.类型==='跑步').slice(0,10);
+  const hrs=o.workouts.filter(w=>w.平均心率), hrN=hrs.length;
+  const avgHr=hrN?Math.round(hrs.reduce((s,w)=>s+w.平均心率,0)/hrN):'—';
+  const at=`${+last.date.slice(5,7)} 月 ${+last.date.slice(8,10)} 日`;
+  return head({month:nowMonthLabel(),t:'本月速览',s:`数据截至 ${at} · 每天 00:05 自动更新`},'Monthly Overview')+
+  `<div class="wrap">
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">核心指标</span><span class="en2">Core</span><span class="ln"></span></div>
+      <div class="kgrid">
+        <div class="kpi tap" onclick="toast('本月有 ${o.天数} 天练过，一共 ${o.次数} 次')"><div class="lb">运动天数</div><div class="v">${o.天数}<u>天</u></div><div class="e">共 ${o.天数} 天有训练</div><div class="mb"><i style="width:8%"></i></div></div>
+        <div class="kpi tap" onclick="toast('${o.次数} 次加起来 ${hm(o.总时长)}，平均每次 ${Math.round(o.总时长/Math.max(o.次数,1))} 分钟')"><div class="lb">单次均时长</div><div class="v">${Math.round(o.总时长/Math.max(o.次数,1))}<u>分</u></div><div class="e">共 ${hm(o.总时长)}</div><div class="mb"><i style="width:52%"></i></div></div>
+        <div class="kpi tap" onclick="toast('本月 ${hrN} 次运动的心率平均得来')"><div class="lb">平均心率</div><div class="v">${avgHr}<u>bpm</u></div><div class="e">${hrN} 次运动的均值</div><div class="mb"><i style="width:59%"></i></div></div>
+        <div class="kpi tap" onclick="toast('按 ${o.天数} 个训练日算的日均消耗')"><div class="lb">日均消耗</div><div class="v">${o.总消耗}<u>kcal</u></div><div class="e">按 ${o.天数} 个训练日计</div><div class="mb"><i style="width:63%"></i></div></div>
+      </div>
+      <div class="cap">点任意一张卡，会说清楚这个数是怎么来的</div></div>
+
+    <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">十月分布</span><span class="en2">Mix</span><span class="ln"></span></div>
+      <div class="card block">
+        <div style="display:flex;gap:15px;align-items:center" id="mix"></div>
+        <div class="cap">按累计时长算的占比 · 点色块看该项明细</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">03</span><span class="tt">最近 10 次跑步</span><span class="en2">Running</span><span class="ln"></span></div>
+      <div class="card block">
+        <div class="chartbox" id="paceChart"></div>
+        <div class="cap">点任意一次，看那天的完整数据</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">训练手记</span><span class="en2">Journal</span><span class="ln"></span></div>
+      <div id="jlist"></div></div>
+  </div>`;
+}
+
+/* 渲染：构成环形 */
+function renderMix(){
+  const o=curOv(), tot=o.总时长||1;
+  let acc=0, segs='';
+  const cols={'跑步':'var(--run)','力量训练':'var(--lift)','核心训练':'var(--lift)','骑行':'var(--green)','步行':'var(--warn)','徒步':'var(--warn)','爬楼梯':'var(--warn)','乒乓球':'var(--gold)','游泳':'var(--green)'};
+  o.types.forEach(t=>{
+    const frac=t.时长/tot, C=2*Math.PI*46;
+    segs+=`<circle cx="60" cy="60" r="46" fill="none" stroke="${cols[t.名称]||'var(--lift)'}" stroke-width="13"
+      stroke-dasharray="${(frac*C).toFixed(1)} 999" stroke-dashoffset="${(-acc*C).toFixed(1)}" transform="rotate(-90 60 60)"
+      style="cursor:pointer" onclick="toast('${t.名称}：${t.次数} 次 · ${hm(t.时长)} · ${t.消耗} kcal')"></circle>`;
+    acc+=frac;
+  });
+  document.getElementById('mix').innerHTML=`
+    <svg viewBox="0 0 120 120" width="104" height="104" style="flex:none">
+      <circle cx="60" cy="60" r="46" fill="none" stroke="var(--line2)" stroke-width="13"/>${segs}
+      <text x="60" y="57" text-anchor="middle" font-size="22" font-weight="600" fill="var(--ink)">${o.次数}</text>
+      <text x="60" y="71" text-anchor="middle" font-size="9" fill="var(--ink3)">次运动</text></svg>
+    <div style="flex:1;min-width:0">${o.types.map(t=>`<div class="lgr tap" onclick="toast('${t.名称}：${t.次数} 次 · ${hm(t.时长)} · ${t.消耗} kcal')">
+      <span class="dot" style="background:${cols[t.名称]||'var(--lift)'}"></span><b>${t.名称}</b>
+      <span class="vv">${Math.round(t.时长/tot*100)}% · ${hm(t.时长)}</span></div>`).join('')}</div>`;
+}
+
+/* 渲染：配速点图（可点） */
+function renderPace(){
+  const rs=D.recent.filter(r=>r.类型==='跑步'&&r.距离>0).slice(0,10).reverse();
+  if(!rs.length){document.getElementById('paceChart').innerHTML='<div class="empty-tip">暂无跑步数据</div>';return}
+  const W=342,H=130,pad=16;
+  const secs=s=>{const m=s.match(/(\d+)'(\d+)"/);return m?(+m[1])*60+(+m[2]):0};
+  const vs=rs.map(r=>secs(r.配速显示)).filter(v=>v>0);
+  const mn=Math.min(...vs), mx=Math.max(...vs), rg=(mx-mn)||1;
+  const step=(W-pad*2)/(Math.max(rs.length-1,1));
+  const pts=rs.map((r,i)=>{
+    const x=pad+i*step, y=H-pad-((secs(r.配速显示)-mn)/rg)*(H-pad*2-24);
+    return {x,y,r};
+  });
+  const poly=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  document.getElementById('paceChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+      <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/>
+        <line x1="0" y1="${(H/2).toFixed(0)}" x2="${W}" y2="${(H/2).toFixed(0)}"/>
+        <line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+      <polyline fill="none" stroke="var(--run)" stroke-width="2.2" stroke-linejoin="round" points="${poly}"/>
+      ${pts.map((p,i)=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i===pts.length-1?5:3.2}"
+        fill="${i===pts.length-1?'var(--gold)':'var(--run)'}" opacity="${i===pts.length-1?1:.55}"
+        class="barhit" onclick="detailDay('${p.r.date}','跑步')"/>
+        <rect x="${(p.x-14).toFixed(1)}" y="${(p.y-16).toFixed(1)}" width="28" height="30" fill="transparent" class="barhit"
+        onclick="detailDay('${p.r.date}','跑步')"/>`).join('')}
+      <text x="0" y="12" font-size="8.5" fill="var(--ink3)">上方＝更快</text>
+      <text x="${W}" y="${H-2}" font-size="8.5" fill="var(--ink3)" text-anchor="end">最早 → 最新</text>
+    </svg>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:4px">
+      <span>${rs[0].date.slice(5)}</span><span>最快 ${rs.map(r=>r.配速显示).sort()[0]}</span><span>${rs[rs.length-1].date.slice(5)}</span></div>`;
+}
+
+/* ══ 手记配图：多次同类运动对比（2026-10-06 加）══
+   只在手记详情 sheet 里出现，别的地方不引用。
+   距离/爬升/心率/消耗一律从 D.recent 现算；只有「运动后心率恢复」这种
+   原始明细里才有的数值跟在手记的 图表.恢复 上（recent 没这个字段）。 */
+function jcBox(t,sub,svg,note){
+  return `<div style="background:var(--emb);border:0.5px solid var(--line2);border-radius:10px;padding:9px 10px 6px;margin-top:9px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+      <b style="font-size:11px;font-weight:500;color:var(--ink)">${t}</b>
+      <span style="font-size:8.5px;color:var(--ink3);white-space:nowrap">${sub}</span></div>
+    ${svg}${note?`<div style="font-size:8.5px;color:var(--ink3);margin-top:3px">${note}</div>`:''}</div>`;
+}
+const jcSw=(c,o)=>`<i style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${c};opacity:${o||1};vertical-align:-1px;margin-right:3px;margin-left:3px"></i>`;
+
+function jCharts(e){
+  const c=e.图表; if(!c||!c.日期) return '';
+  const days=c.日期, ty=c.类型, W=342;
+  const lbl=days.map(d=>d===e.date?d.slice(5)+' 今天':d.slice(5));
+  const recs=days.map(d=>D.recent.filter(r=>r.date===d&&(!ty||r.类型===ty))[0]);
+  if(recs.some(r=>!r)) return '';                    // 记录被删/没同步到就不画，别画半截
+  const cl=i=>i===days.length-1?'var(--gold)':'var(--ink3)';
+
+  /* ① 心率：均心 + 峰值（纵轴 130 起，否则三天差 7 bpm 根本看不出来） */
+  const A=118,La=27,Ra=8,Ta=12,Ba=19,ha=A-Ta-Ba,va=v=>Ta+ha-(v-130)/65*ha,ga=(W-La-Ra)/days.length;
+  let s1='';
+  [130,150,170,190].forEach(v=>{s1+=`<line x1="${La}" y1="${va(v)}" x2="${W-Ra}" y2="${va(v)}" stroke="var(--grid)" stroke-width=".6"/>`
+    +`<text x="${La-4}" y="${va(v)}" font-size="8" fill="var(--ink3)" text-anchor="end" dominant-baseline="middle">${v}</text>`});
+  recs.forEach((r,i)=>{const cx=La+ga*(i+.5);
+    [[r.平均心率,1],[r.最高心率,.42]].forEach((p,k)=>{
+      const bw=21,bx=cx-23+k*24,y=va(p[0]);
+      s1+=`<rect x="${bx.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${(Ta+ha-y).toFixed(1)}" rx="2" fill="var(--heart)" opacity="${p[1]}"/>`
+        +`<text x="${(bx+bw/2).toFixed(1)}" y="${(y-3).toFixed(1)}" font-size="9" fill="var(--ink)" text-anchor="middle">${p[0]}</text>`});
+    s1+=`<text x="${cx.toFixed(1)}" y="${A-6}" font-size="9" fill="${cl(i)}" text-anchor="middle">${lbl[i]}</text>`});
+  const c1=jcBox('心率对比','bpm '+jcSw('var(--heart)')+' 均心 '+jcSw('var(--heart)',.42)+' 峰值',
+    `<svg viewBox="0 0 ${W} ${A}" width="100%" height="${A}">${s1}</svg>`,'纵轴从 130 起');
+
+  /* ② 运动后心率恢复：三条折线（结束时 → 60 秒 → 120 秒） */
+  const rd=c.恢复; if(!rd||!rd.数据) return `<div class="sh2">数据对比</div>${c1}`;
+  const B=126,Lb=27,Rb=30,Tb=12,Bb=19,hb=B-Tb-Bb,vb=v=>Tb+hb-(v-90)/100*hb;
+  const st=(W-Lb-Rb)/(rd.标签.length-1), cols=['var(--ink3)','var(--run)','var(--gold)'];
+  let s2='';
+  [100,130,160,190].forEach(v=>{s2+=`<line x1="${Lb}" y1="${vb(v)}" x2="${W-Rb}" y2="${vb(v)}" stroke="var(--grid)" stroke-width=".6"/>`
+    +`<text x="${Lb-4}" y="${vb(v)}" font-size="8" fill="var(--ink3)" text-anchor="end" dominant-baseline="middle">${v}</text>`});
+  rd.数据.forEach((d,i)=>{
+    s2+=`<polyline points="${d.map((v,j)=>`${(Lb+j*st).toFixed(1)},${vb(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${cols[i]}" stroke-width="${i===rd.数据.length-1?2.2:1.5}" opacity="${i===rd.数据.length-1?1:.8}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    d.forEach((v,j)=>{s2+=`<circle cx="${(Lb+j*st).toFixed(1)}" cy="${vb(v).toFixed(1)}" r="${i===rd.数据.length-1?3:2.3}" fill="${cols[i]}"/>`});
+  });
+  const lab=rd.数据.map((d,i)=>({v:d[d.length-1],y:vb(d[d.length-1]),c:cols[i]})).sort((a,b)=>a.y-b.y);
+  for(let k=1;k<lab.length;k++) if(lab[k].y-lab[k-1].y<11) lab[k].y=lab[k-1].y+11;
+  lab.forEach(o=>{s2+=`<text x="${(Lb+(rd.标签.length-1)*st+4).toFixed(1)}" y="${o.y.toFixed(1)}" font-size="9" fill="${o.c}" dominant-baseline="middle">${o.v}</text>`});
+  rd.标签.forEach((t,j)=>{s2+=`<text x="${(Lb+j*st).toFixed(1)}" y="${B-6}" font-size="8.5" fill="var(--ink3)" text-anchor="${j===0?'start':j===rd.标签.length-1?'end':'middle'}">${t}</text>`});
+  const c2=jcBox('运动后心率恢复','bpm '+days.map((d,i)=>jcSw(cols[i])+d.slice(5)).join(' '),
+    `<svg viewBox="0 0 ${W} ${B}" width="100%" height="${B}">${s2}</svg>`,'线越陡＝恢复越快');
+
+  /* ③ 距离（柱）＋ 每公里消耗（线，右轴） */
+  const C=126,Lc=27,Rc=30,Tc=12,Bc=19,hc=C-Tc-Bc,gc=(W-Lc-Rc)/days.length;
+  const pk=recs.map(r=>Math.round((r.消耗||0)/(r.距离||1)));
+  const vd=v=>Tc+hc-(v/3.5)*hc, vk=v=>Tc+hc-(v-100)/40*hc;
+  let s3='';
+  [0,1,2,3].forEach(v=>{s3+=`<line x1="${Lc}" y1="${vd(v)}" x2="${W-Rc}" y2="${vd(v)}" stroke="var(--grid)" stroke-width=".6"/>`
+    +`<text x="${Lc-4}" y="${vd(v)}" font-size="8" fill="var(--ink3)" text-anchor="end" dominant-baseline="middle">${v}</text>`});
+  [100,120,140].forEach(v=>{s3+=`<line x1="${W-Rc}" y1="${vk(v)}" x2="${W-Rc+3}" y2="${vk(v)}" stroke="var(--line)" stroke-width=".6"/>`
+    +`<text x="${W-Rc+5}" y="${vk(v)}" font-size="8" fill="var(--ink3)" dominant-baseline="middle">${v}</text>`});
+  const cx3=recs.map((r,i)=>Lc+gc*(i+.5));
+  s3+=`<polyline points="${pk.map((v,i)=>`${cx3[i].toFixed(1)},${vk(v).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linejoin="round"/>`;
+  recs.forEach((r,i)=>{
+    const bw=26,bx=cx3[i]-bw/2,y=vd(r.距离||0);
+    s3+=`<rect x="${bx.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${(Tc+hc-y).toFixed(1)}" rx="2" fill="var(--run)" opacity=".85"/>`
+      +`<text x="${cx3[i].toFixed(1)}" y="${(y-3).toFixed(1)}" font-size="9" fill="var(--ink)" text-anchor="middle">${r.距离}</text>`
+      +`<circle cx="${cx3[i].toFixed(1)}" cy="${vk(pk[i]).toFixed(1)}" r="3" fill="var(--gold)"/>`
+      +`<text x="${cx3[i].toFixed(1)}" y="${(vk(pk[i])-6).toFixed(1)}" font-size="9" fill="var(--gold)" text-anchor="middle">${pk[i]}</text>`
+      +`<text x="${cx3[i].toFixed(1)}" y="${C-6}" font-size="9" fill="${cl(i)}" text-anchor="middle">${lbl[i]}</text>`});
+  const c3=jcBox('走得越远 · 越省','km '+jcSw('var(--run)',.85)+' 距离　'+jcSw('var(--gold)')+' kcal/公里',
+    `<svg viewBox="0 0 ${W} ${C}" width="100%" height="${C}">${s3}</svg>`,'柱越高＝走得越远；金线越低＝每公里越省力');
+
+  return `<div class="sh2">数据对比</div>${c1}${c2}${c3}`;
+}
+
+/* 渲染：手记列表 */
+function renderJ(){
+  document.getElementById('jlist').innerHTML=D.journal.map(e=>`
+    <div class="card tap" style="margin-bottom:10px" onclick="openJ('${e.date}')">
+      <div class="block">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <b style="font-size:13px">${e.date.slice(5)} ${e.time||''} · 疲劳 ${e.疲劳}/5</b>
+          <span style="font-size:10px;color:var(--gold);flex:none">${e.图表?'看点评 + '+((e.图表.日期||[]).length)+' 天对比图 ▸':'看点评 ▸'}</span></div>
+        <div style="font-size:11.5px;color:var(--ink2);margin-top:8px;line-height:1.6">
+          ${esc(e.结论)}</div>
+        <div class="fail" style="margin-top:8px">${[1,2,3,4,5].map(i=>`<i class="${i<=e.疲劳?'on':''}"></i>`).join('')}
+          <span style="font-size:9px;color:var(--ink3);margin-left:5px">${['轻松','有点累','累但能扛','很累','撑不住'][e.疲劳-1]}</span></div>
+      </div></div>`).join('');
+}
+
+/* 手记正文（感受 / 补给 / 结论 / 图表 / 要点 / 建议）—— 日历详情页与手记弹层共用同一段 */
+function jBlock(e){
+  if(!e||!e.date) return '';
+  let h='';
+  if(e.感受) h+=`<div class="sh2" style="margin-top:14px">他的感受</div><div class="quote">${esc(e.感受)}</div>`;
+  /* 补给：数据管道一直有传（build_preview_data.py 的 journal 映射），但页面从来没渲染过
+     —— 2026-10-13 才发现 09-25 那条的「1.4L 凉白开 + 电解质水」一直没显示。放在感受后面。 */
+  if(e.补给) h+=`<div class="sst" style="margin-top:8px">补给 · ${esc(e.补给)}</div>`;
+  if(e.结论) h+=`<div class="sh2">点评</div><b style="font-size:12.5px">${esc(e.结论)}</b>`;
+  h+=jCharts(e);
+  if(e.要点&&e.要点.length) h+=`<div class="sh2">关键数据</div><div class="adv" style="margin-top:6px">${
+    e.要点.map(p=>`<li><span class="tag">${tagText(p[0])}</span>${esc(p[1])}</li>`).join('')}</div>`;
+  if(e.建议&&e.建议.length) h+=`<div class="sh2">建议</div><div class="adv">${
+    e.建议.map(s=>`<li>${esc(s)}</li>`).join('')}</div>`;
+  return h;
+}
+
+function openJ(date){
+  const e=D.journal.find(x=>x.date===date)||{};
+  openSheet(`<h3>${date.slice(5)} 训练手记</h3><div class="sst">记录时间 ${e.time||'—'} · 疲劳度 ${e.疲劳}/5（${['轻松','有点累','累但能扛','很累','撑不住'][e.疲劳-1]||'—'}）</div>${jBlock(e)}`);
+}
+
+/* ── 日历 ── */
+function viewCal(){
+  if(ST.caly) return calYearView();          // 年视图（12 宫格）分支
+  if(ST.embed) ST.ym=CUR_YM;                 /* 嵌在记录页里时，默认跟着当前月份 */
+  const ymp=ST.ym, [Y,M]=ymp.split('-').map(Number);
+  const first=new Date(Y,M-1,1), lead=(first.getDay()+6)%7;
+  const days=new Date(Y,M,0).getDate();
+  const byday={}; D.recent.forEach(r=>{(byday[r.date]=byday[r.date]||[]).push(r)});
+  const today=new Date().toISOString().slice(0,10);
+  let cells='';
+  for(let i=0;i<lead;i++) cells+='<div class="cd empty"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=`${ymp}-${String(d).padStart(2,'0')}`;
+    const list=byday[ds]||[];
+    const cls=['cd', list.length?'hit':'', ds===today?'now':''].join(' ');
+    const pills=list.slice(0,2).map(r=>{const k=(TY[r.类型]||['·'])[1];
+      return `<span class="pl ${k==='run'?'run':k==='ride'?'ride':k==='lift'?'lift':'walk'}">${r.类型.slice(0,2)} ${Math.round(r.时长)}′</span>`}).join('');
+    cells+=`<div class="${cls}" onclick="${list.length?`detailDay('${ds}')`:`toast('${d} 号没有训练记录')`}">
+      <span class="cdn">${d}</span>${pills}</div>`;
+  }
+  /* 翻月边界：最晚＝本月（翻不到未来），最早＝数据起点。
+     ⚠️ 别写死"往前 N 个月"（以前写过 2026-08 / 本月-2，过一个月就错）——
+     年视图能把用户带到任何有数据的月份，翻月箭头必须跟得到数据起点。 */
+  const minYm=(Object.keys(D.overview||{}).sort()[0])||monShift(CUR_YM,-23);
+  const prev=ymp===minYm?'off':'';
+  const nx=ymp===CUR_YM?'off':'';
+  return (ST.embed?'':
+    head({month:`${Y} · ${String(M).padStart(2,'0')}`,t:'训练日历',s:'点任意一天，看当天练了什么 · 点月份名看全年'},'Calendar'))+
+  `<div class="wrap"><div class="sec">
+    <div class="card block">
+      <div class="teartop"></div>
+      <div class="bind"><i></i><i></i></div>
+      <div class="mnav">
+        <div class="arw ${prev}" onclick="${prev?'':`navMonth(-1)`}">‹</div>
+        <div class="ytit" style="display:flex;align-items:baseline;gap:7px">
+          <b onclick="calYearOpen()">${Y} 年 ${M} 月 <span style="font-size:11px;color:var(--gold)">›</span></b>
+          <button class="btn ${ymp===CUR_YM?'off':''}" onclick="navToday()">回到本月</button>
+        </div>
+        <div class="arw ${nx}" onclick="${nx?'':`navMonth(1)`}">›</div>
+      </div>
+      <div class="ch7">${WD.map(d=>`<span>${d[1]}</span>`).join('')}</div>
+      <div class="cg">${cells}</div>
+      <div class="cap">有运动的那天格子上有标签 · 点开看当天明细 · 今天是金色边框 · 点「${Y} 年 ${M} 月」看全年</div>
+    </div>
+    ${calMonthRecap(ymp)}
+  </div></div>`;
+}
+/* 月度概览卡：2×2 小 KPI + 一段总结。数据全从 overview[ym].workouts 现算，不写死。 */
+function calMonthRecap(ym){
+  const ov=(D.overview||{})[ym];
+  const [Y,M]=ym.split('-').map(Number);
+  const title=`<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+    <span style="font-size:10px;color:var(--ink3);letter-spacing:2px">MONTHLY REVIEW</span>
+    <b style="font-size:12px;color:var(--ink)">${Y} 年 ${M} 月</b></div>`;
+  if(!ov||!ov.次数) return `<div class="card" style="margin-top:10px"><div class="block">${title}
+    <div style="font-size:11.5px;color:var(--ink3);line-height:1.7">${ym>CUR_YM?'这个月还没到。':'这个月没有训练记录。'}</div></div></div>`;
+  const ws=ov.workouts||[];
+  const hrw=ws.filter(w=>w.平均心率>0);
+  const ahr=hrw.length?Math.round(hrw.reduce((a,w)=>a+w.平均心率*w.时长,0)/hrw.reduce((a,w)=>a+w.时长,0)):null;
+  const mx=ws.reduce((a,w)=>w.时长>(a?.时长||0)?w:a,null);
+  const days=ov.天数||Object.keys(ws.reduce((a,w)=>(a[w.date]=1,a),{})).length;
+  const stat=(v,l)=>`<div class="mst"><div class="v">${v}</div><div class="lb">${l}</div></div>`;
+  const line=ahr
+    ?`${M} 月共 <b style="color:var(--gold)">${ov.次数}</b> 次运动、练了 <b>${days}</b> 天，累计 <b>${fmtDur(ov.总时长)}</b>、消耗 <b>${fmtNum(ov.总消耗)}</b> 千卡；平均心率 <b>${ahr}</b> 次/分${mx?`，最长的一次是 ${+mx.date.slice(5,7)}/${+mx.date.slice(8)}${mx.类型}（${fmtDur(mx.时长)}）`:''}。`
+    :`${M} 月共 <b style="color:var(--gold)">${ov.次数}</b> 次运动、练了 <b>${days}</b> 天，累计 <b>${fmtDur(ov.总时长)}</b>、消耗 <b>${fmtNum(ov.总消耗)}</b> 千卡${mx?`，最长的一次是 ${+mx.date.slice(5,7)}/${+mx.date.slice(8)}${mx.类型}（${fmtDur(mx.时长)}）`:''}。`;
+  return `<div class="card" style="margin-top:10px"><div class="block">${title}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${stat(`${ov.次数}<u>次</u>`,'训练次数')}
+      ${stat(fmtDur(ov.总时长),'累计时长')}
+      ${stat(`${fmtNum(ov.总消耗)}<u>千卡</u>`,'消耗') }
+      ${stat(ahr?`${ahr}<u>次/分</u>`:'—','平均心率')}
+    </div>
+    <div style="font-size:11.5px;color:var(--ink2);line-height:1.8;border-top:1px solid var(--line2);margin-top:11px;padding-top:10px">${line}</div>
+  </div></div>`;
+}
+function monShift(ym,n){const[Y,M]=ym.split('-').map(Number);const d=new Date(Y,M-1+n,1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+/* 翻月：hash 不变时 go() 不会触发重渲染，必须直接调 route() */
+function navMonth(n){ST.ym=monShift(ST.ym,n);route()}
+const CUR_YM=(()=>{const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})();
+function navToday(){ST.ym=CUR_YM;route()}
+
+/* ── 年视图（12 宫格）：点日历顶部的「X 年 X 月」进来，点任意月份回到那月的日历 ── */
+function calYearOpen(){ST.caly=1;ST.calyr=Number(ST.ym.slice(0,4));route()}
+function calPick(ym){ST.caly=0;ST.ym=ym;route()}
+function calYearShift(n){ST.calyr+=n;route()}
+function calYearView(){
+  const Y=ST.calyr||Number(CUR_YM.slice(0,4));
+  const OV=D.overview||{};
+  const ovKeys=Object.keys(OV).sort();               // 倒序存的，sort() 后 [0] 是最早的月
+  const minY=Number((ovKeys[0]||'2025-01').slice(0,4)), maxY=Number(CUR_YM.slice(0,4));
+  let cells='';
+  for(let m=1;m<=12;m++){
+    const ym=`${Y}-${String(m).padStart(2,'0')}`;
+    const ov=OV[ym], fut=ym>CUR_YM, now=ym===CUR_YM, hit=ov&&ov.次数>0;
+    const cls=['mc',hit?'hit':'',now?'now':'',fut?'fut':''].join(' ');
+    const sub=fut?'—':(hit?`${ov.次数} 次 · ${fmtDur(ov.总时长)}`:'无训练');
+    cells+=`<div class="${cls}" ${fut?'':`onclick="calPick('${ym}')"`}>
+      <b>${m} 月</b><span>${sub}</span></div>`;
+  }
+  const pv=Y>minY?'':'off', nx=Y<maxY?'':'off';
+  const yk=ovKeys.filter(k=>k.startsWith(Y+'-'));
+  const ytot=yk.reduce((a,k)=>a+(OV[k].次数||0),0);
+  const ydur=yk.reduce((a,k)=>a+(OV[k].总时长||0),0);
+  const yen=yk.reduce((a,k)=>a+(OV[k].总消耗||0),0);
+  const ymon=yk.filter(k=>(OV[k].次数||0)>0).length;
+  const stat=(v,l)=>`<div class="mst"><div class="v">${v}</div><div class="lb">${l}</div></div>`;
+  return head({month:`${Y}`,t:'全年月历',s:'点开一个月，回到那月的训练日历'},'Months')+
+  `<div class="wrap"><div class="sec"><div class="card block">
+    <div class="teartop"></div><div class="bind"><i></i><i></i></div>
+    <div class="mnav">
+      <div class="arw ${pv}" onclick="${pv?'':`calYearShift(-1)`}">‹</div>
+      <b>${Y} 年</b>
+      <div class="arw ${nx}" onclick="${nx?'':`calYearShift(1)`}">›</div>
+    </div>
+    <div class="mg">${cells}</div>
+    <div class="cap">金色边框是本月 · 有底色的月份练过 · 点任意月份回到那月</div>
+  </div>
+  <div class="card" style="margin-top:10px"><div class="block">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:10px;color:var(--ink3);letter-spacing:2px">YEARLY REVIEW</span>
+      <b style="font-size:12px;color:var(--ink)">${Y} 年${Y===Number(CUR_YM.slice(0,4))?'（至今）':''}</b></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${stat(`${ytot}<u>次</u>`,'训练次数')}
+      ${stat(fmtDur(ydur),'累计时长')}
+      ${stat(`${fmtNum(yen)}<u>千卡</u>`,'总消耗')}
+      ${stat(`${ymon}<u>/ 12</u>`,`练过的月份${Y===Number(CUR_YM.slice(0,4))?'（至今）':''}`)}
+    </div>
+  </div></div></div></div>`;
+}
+
+/* ── 有氧（跑步）/ 无氧（器械）专区 ── */
+function repsNum(s){
+  const p=String(s||'').split(/[–—\-~]/).map(v=>parseFloat(v)).filter(v=>!isNaN(v));
+  if(!p.length) return 0;
+  return p.length>1 ? (p[0]+p[1])/2 : p[0];
+}
+function volOf(it){return (it.kg||0)*(it.sets||0)*repsNum(it.reps)}
+function secOf(s){const m=String(s||'').match(/(\d+)'(\d+)"/);return m?(+m[1])*60+(+m[2]):0}
+/* 心率用的实心 ♥（SVG 而非 emoji：emoji 在 iOS/安卓上样式和大小都不一样，
+   而且彩色 emoji 不跟随深/浅色主题，这里用 currentColor 吃到 --heart）。 */
+const HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.2 4.1 13.3a5 5 0 0 1 7.1-7.1l.8.8.8-.8a5 5 0 0 1 7.1 7.1z"/></svg>';
+
+function viewTrain(){
+  const tab=localStorage.getItem('tseg')||'run';
+  const src=tab==='run'?(D.runs||D.recent.filter(r=>r.类型==='跑步')):(D.strength||[]);
+  return head({month:spanLabel(src.map(x=>x.date)),t:tab==='run'?'有氧 · 跑步':'无氧 · 器械',
+    s:tab==='run'?'配速、距离与心率的变化':'重量、组数与训练容量'},tab==='run'?'Cardio':'Strength')+
+  `<div class="wrap">
+    <div class="seg">
+      <button class="${tab==='run'?'on':''}" onclick="localStorage.setItem('tseg','run');route()">有氧 · 跑步</button>
+      <button class="${tab==='lift'?'on':''}" onclick="localStorage.setItem('tseg','lift');route()">无氧 · 器械</button>
+    </div>
+    <div id="tsegBody">${tab==='run'?runBody():liftBody()}</div>
+  </div>`;
+}
+
+function runBody(){
+  const rs=(D.runs||D.recent.filter(r=>r.类型==='跑步')).slice().sort((a,b)=>a.date<b.date?1:-1);
+  if(!rs.length) return '<div class="empty-tip">暂无跑步数据</div>';
+  const tot=rs.reduce((a,b)=>a+b.距离,0), kcal=rs.reduce((a,b)=>a+(b.消耗||0),0);
+  const avg=rs.reduce((a,b)=>a+(b.平均心率||0),0)/rs.length;
+  const paces=rs.map(r=>secOf(r.配速显示)).filter(v=>v>0);
+  const best=Math.min(...paces), worst=Math.max(...paces);
+  const fmm=s=>Math.floor(s/60)+"'"+String(Math.round(s%60)).padStart(2,'0')+'"';
+  const chr=rs.slice().reverse();          /* 最早 → 最新（图表从左往右） */
+  const W=342,H=132,pad=18;
+  const mn=best-10,mx=worst+10,rg=mx-mn||1;
+  const step=(W-pad*2)/Math.max(rs.length-1,1);
+  const pt=chr.map((r,i)=>[pad+i*step, H-pad-((secOf(r.配速显示)-mn)/rg)*(H-pad*2-28)]);
+  const dists=rs.map(r=>r.距离), dmx=Math.max(...dists)||1;
+  return `
+  <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">跑步总览</span><span class="en2">Summary</span><span class="ln"></span></div>
+    <div class="card"><div class="strip" style="border-top:0;margin:0">
+      <div><b>${rs.length}<u>次</u></b><span>跑步次数</span></div>
+      <div><b>${tot.toFixed(1)}<u>km</u></b><span>总距离</span></div>
+      <div><b>${fmm(best)}</b><span>最好配速</span></div>
+      <div><b>${Math.round(avg)}<u>bpm</u></b><span>平均心率</span></div>
+    </div></div></div>
+
+  <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">配速走势</span><span class="en2">Pace</span><span class="ln"></span></div>
+    <div class="card block">
+      <div class="chartbox">
+        <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+          <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/>
+            <line x1="0" y1="${(H/2).toFixed(0)}" x2="${W}" y2="${(H/2).toFixed(0)}"/>
+            <line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+          <polyline fill="none" stroke="var(--run)" stroke-width="2.2" stroke-linejoin="round"
+            points="${pt.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}"/>
+          ${pt.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===pt.length-1?5:3.2}"
+            fill="${i===pt.length-1?'var(--gold)':'var(--run)'}" opacity="${i===pt.length-1?1:.5}" class="barhit"
+            onclick="detailDay('${chr[i].date}','跑步')"/>
+            <rect x="${(p[0]-13).toFixed(1)}" y="${(p[1]-16).toFixed(1)}" width="26" height="30" fill="transparent" class="barhit"
+            onclick="detailDay('${chr[i].date}','跑步')"/>`).join('')}
+          <text x="0" y="12" font-size="8.5" fill="var(--ink3)">上方＝更快</text>
+          <text x="${W}" y="12" font-size="9" fill="var(--gold)" text-anchor="end">最新 ${rs[0].配速显示}</text>
+        </svg>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:4px">
+        <span>${chr[0].date.slice(5)}（最早）</span><span>最慢 ${fmm(worst)}</span><span>${chr[chr.length-1].date.slice(5)}（最新）</span></div>
+      <div class="cap">点任意一次看当天明细</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">03</span><span class="tt">最近跑量</span><span class="en2">Distance</span><span class="ln"></span></div>
+    <div class="card block">
+      <svg viewBox="0 0 ${W} 152" width="100%" height="152">
+        <g stroke="var(--grid)"><line x1="0" y1="16" x2="${W}" y2="16"/>
+          <line x1="0" y1="60" x2="${W}" y2="60"/><line x1="0" y1="104" x2="${W}" y2="104"/>
+          <line x1="0" y1="126" x2="${W}" y2="126"/></g>
+        ${(()=>{const bs=chr.slice(-12), n=bs.length, slot=(W-16)/n, bw=Math.min(slot-8,26);
+          return bs.map((r,i)=>{
+          const h=Math.max((r.距离/(dmx*1.08))*98,3), x=8+i*slot+(slot-bw)/2, y=126-h;
+          return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="4"
+              fill="var(--run)" opacity="${i===n-1?1:.45}" class="barhit" onclick="detailDay('${r.date}','跑步')"/>
+            <text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" font-size="8.5" fill="var(--ink)" text-anchor="middle"
+              font-family="ui-monospace,Menlo,monospace">${r.距离.toFixed(1)}</text>
+            ${(i%2===0||i===n-1)?`<text x="${(x+bw/2).toFixed(1)}" y="144" font-size="8" fill="var(--ink3)" text-anchor="middle">${r.date.slice(5)}</text>`:''}`;}).join('')})()}
+      </svg>
+      <div class="cap">柱高＝单次距离（km）· 实心柱为最近一次 · 从左到右由早到近 · 点柱子看那次跑步</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">月跑量</span><span class="en2">Monthly</span><span class="ln"></span></div>
+    <div class="card block">
+      ${(()=>{const bym={}; rs.forEach(r=>{const k=r.date.slice(0,7); bym[k]=(bym[k]||0)+r.距离;});
+        const ks=Object.keys(bym).sort().slice(-6), mx2=Math.max(...ks.map(k=>bym[k]))||1;
+        return `<svg viewBox="0 0 ${W} 132" width="100%" height="132">
+          <line x1="0" y1="104" x2="${W}" y2="104" stroke="var(--grid)"/>
+          ${ks.map((k,i)=>{const slot=(W-16)/ks.length, bw=Math.min(slot-14,38);
+            const h=Math.max((bym[k]/mx2)*90,3), x=8+i*slot+(slot-bw)/2, y=104-h;
+            return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="4"
+                fill="var(--gold)" opacity="${i===ks.length-1?1:.5}"/>
+              <text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" font-size="9" fill="var(--ink)" text-anchor="middle"
+                font-family="ui-monospace,Menlo,monospace">${bym[k].toFixed(1)}</text>
+              <text x="${(x+bw/2).toFixed(1)}" y="120" font-size="8.5" fill="var(--ink3)" text-anchor="middle">${k.slice(5)}月</text>`}).join('')}
+        </svg>`;})()}
+      <div class="cap">最近 6 个月的累计跑量（km）</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">05</span><span class="tt">心率与配速对照</span><span class="en2">HR vs Pace</span><span class="ln"></span></div>
+    <div class="card block">
+      ${(()=>{const top=rs.slice(0,10);
+        /* 条形比例和「金色＝最快」都按**这 10 次自己**比。
+           ⚠️ 别再借用 viewTrain 顶层的 best/worst —— 那是全量跑步算出来的，
+           全量最快的一次多半不在这 10 条里，金色永远不会亮。 */
+        const tp=top.map(r=>secOf(r.配速显示)).filter(v=>v>0);
+        const tb=Math.min(...tp), tw=Math.max(...tp);
+        /* 条形长度：最慢的也留 12%，否则 10 次里出现一次特别慢的（如 7'02"）
+           会被压成一个几乎看不见的点，看着像没渲染出来。 */
+        return top.map(r=>{const p=secOf(r.配速显示);
+          const w=Math.min(100,Math.max(((tw-p)/(tw-tb||1))*100,12));
+          return `<div class="prow tap" onclick="detailDay('${r.date}','跑步')">
+          <span class="pdate">${r.date.slice(5)}</span>
+          <span class="ptrack"><i class="${p===tb?'fast':''}" style="width:${w.toFixed(0)}%"></i></span>
+          <span class="pval"><span class="ppace">${r.配速显示}</span><span class="phr">${HEART}${r.平均心率||'—'}</span></span></div>`}).join('')})()}
+      <div class="cap">条越长越快，金色＝这 10 次里最快 · 右侧：配速 ｜ ♥ 平均心率（bpm）· 点任意一行看当天明细</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">06</span><span class="tt">跑步明细</span><span class="en2">Log</span><span class="ln"></span></div>
+    ${(()=>{const ys=[...new Set(rs.map(r=>r.date.slice(0,4)))].sort().reverse();
+      if(!ST.runY||!ys.includes(ST.runY)) ST.runY=ys[0];
+      const yr=rs.filter(r=>r.date.startsWith(ST.runY));
+      const ytot=yr.reduce((a,b)=>a+b.距离,0);
+      const bym={}; yr.forEach(r=>{const m=+r.date.slice(5,7);(bym[m]=bym[m]||[]).push(r)});
+      return `<div class="ychips">${ys.map(v=>`<button class="btn ${v===ST.runY?'':'off'}" onclick="ST.runY='${v}';route()">${v} 年</button>`).join('')}</div>
+      <div class="card block">
+        <div style="font-size:11.5px;color:var(--ink2);line-height:1.7;margin-bottom:4px">
+          <b style="color:var(--gold)">${ST.runY} 年</b> 共 <b>${yr.length}</b> 次 · ${ytot.toFixed(1)} km</div>
+        ${Object.keys(bym).map(Number).sort((a,b)=>b-a).map(m=>{const list=bym[m];
+          const mt=list.reduce((a,b)=>a+b.距离,0);
+          return `<div class="sh2">${ST.runY} 年 ${m} 月 · ${list.length} 次 · ${mt.toFixed(1)} km</div>
+          <table>
+            <tr><th>日期</th><th>距离</th><th>配速</th><th>心率</th><th>消耗</th></tr>
+            ${list.map(r=>`<tr onclick="detailDay('${r.date}','跑步')" style="cursor:pointer">
+              <td>${r.date.slice(5)}</td><td>${r.距离.toFixed(2)}</td><td>${r.配速显示}</td><td>${r.平均心率}</td><td>${r.消耗}</td></tr>`).join('')}
+          </table>`;}).join('')}
+        <div class="cap">点任意一行看当天明细 · 历史合计 ${tot.toFixed(1)} km · ${kcal} kcal</div>
+      </div>`;})()}
+    </div></div>`;
+}
+
+const GEAR={'自重':'徒手','器械':'固定器械'};
+function gearOf(it){return GEAR[it.gear]||it.gear||''}
+
+function liftBody(){
+  const ss=D.strength.slice().sort((a,b)=>a.date<b.date?1:-1);
+  if(!ss.length) return '<div class="empty-tip">暂无器械记录</div>';
+  const byPart={}; let totSets=0, totItems=0;
+  const byGear={};
+  ss.forEach(s=>s.items.forEach(it=>{
+    const p=it.部位||'其他';
+    byPart[p]=(byPart[p]||0)+(it.sets||0);
+    const g=gearOf(it)||'其他';
+    byGear[g]=(byGear[g]||0)+(it.sets||0);
+    totSets+=(it.sets||0); totItems++;
+  }));
+  const parts=Object.entries(byPart).sort((a,b)=>b[1]-a[1]);
+  const gears=Object.entries(byGear).sort((a,b)=>b[1]-a[1]);
+  const COL={'胸':'var(--lift)','背':'var(--run)','腿臀':'var(--green)','肩':'var(--warn)',
+    '手臂':'#9CA3AF','核心':'var(--gold)','其他':'var(--ink3)'};
+  let acc=0, segs=''; const C=2*Math.PI*46, pTot=parts.reduce((a,b)=>a+b[1],0)||1;
+  parts.forEach(([p,n])=>{
+    segs+=`<circle cx="60" cy="60" r="46" fill="none" stroke="${COL[p]||'var(--ink3)'}" stroke-width="13"
+      stroke-dasharray="${(n/pTot*C).toFixed(1)} 999" stroke-dashoffset="${(-acc*C).toFixed(1)}"
+      transform="rotate(-90 60 60)"></circle>`; acc+=n/pTot;
+  });
+  const last=ss[0];
+  const today0=new Date(); today0.setHours(0,0,0,0);
+  const daysAgo=Math.round((today0-new Date(last.date+'T00:00:00'))/864e5);
+  const setsOf=s=>s.items.reduce((a,i)=>a+(i.sets||0),0);
+  const smx=Math.max(...ss.map(setsOf))||1;
+
+  /* 个人最好成绩：按动作取最大重量 */
+  const best={};
+  ss.forEach(s=>s.items.forEach(it=>{
+    if(!it.kg) return;
+    const b=best[it.name];
+    if(!b||it.kg>b.kg) best[it.name]={kg:it.kg,date:s.date,gear:gearOf(it),sets:it.sets,reps:it.reps};
+  }));
+  const prList=Object.entries(best).sort((a,b)=>b[1].kg-a[1].kg).slice(0,8);
+  const bwList=[];
+  ss.forEach(s=>s.items.forEach(it=>{if(!it.kg) bwList.push({name:it.name,sets:it.sets,reps:it.reps,date:s.date})}));
+
+  return `
+  <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">器械总览</span><span class="en2">Summary</span><span class="ln"></span></div>
+    <div class="card"><div class="strip" style="border-top:0;margin:0">
+      <div><b>${ss.length}<u>次</u></b><span>训练次数</span></div>
+      <div><b>${totSets}<u>组</u></b><span>累计组数</span></div>
+      <div><b>${parts.length}<u>处</u></b><span>练到部位</span></div>
+      <div><b>${daysAgo}<u>天前</u></b><span>上次是 ${last.date.slice(5)}</span></div>
+    </div></div></div>
+
+  <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">练了哪些部位</span><span class="en2">By Part</span><span class="ln"></span></div>
+    <div class="card block"><div style="display:flex;gap:16px;align-items:center">
+      <svg viewBox="0 0 120 120" width="106" height="106" style="flex:none">
+        <circle cx="60" cy="60" r="46" fill="none" stroke="var(--line2)" stroke-width="13"/>${segs}
+        <text x="60" y="57" text-anchor="middle" font-size="21" font-weight="600" fill="var(--ink)">${totSets}</text>
+        <text x="60" y="71" text-anchor="middle" font-size="9" fill="var(--ink3)" letter-spacing="1">总组数</text></svg>
+      <div style="flex:1;min-width:0">${parts.map(([p,n])=>`<div class="lgr">
+        <span class="dot" style="background:${COL[p]||'var(--ink3)'}"></span><b>${p}</b>
+        <span class="vv">${n} 组 · ${Math.round(n/pTot*100)}%</span></div>`).join('')}</div>
+    </div><div class="cap">按组数统计 · 复合动作计入主要发力部位</div></div></div>
+
+  <div class="sec"><div class="shead"><span class="no">03</span><span class="tt">每次练了多少</span><span class="en2">Per Session</span><span class="ln"></span></div>
+    <div class="card block">
+      <svg viewBox="0 0 342 ${ss.length*46+8}" width="100%" height="${ss.length*46+8}">
+        ${ss.map((s,i)=>{const y=i*46+6, w=Math.max((setsOf(s)/smx)*176,3), ps={};
+          s.items.forEach(it=>{const p=it.部位||'其他'; ps[p]=(ps[p]||0)+(it.sets||0)});
+          const pstr=Object.keys(ps).map(p=>p+' '+ps[p]+'组').join(' · ');
+          return `<g class="barhit" onclick="detailDay('${s.date}','lift')"><text x="0" y="${y+11}" font-size="9.5" fill="var(--ink3)">${s.date.slice(5)}</text>
+            <rect x="42" y="${y}" width="${w.toFixed(1)}" height="12" rx="3" fill="var(--lift)" opacity="${i===0?1:.5}"/>
+            <text x="${(42+w+6).toFixed(1)}" y="${y+11}" font-size="9.5" fill="var(--ink)">${setsOf(s)} 组 · ${s.items.length} 个动作</text>
+            <text x="42" y="${y+25}" font-size="8.5" fill="var(--ink3)">${pstr}</text></g>`}).join('')}
+      </svg>
+      <div class="cap">条长＝这一次做了多少组 · 下面一行是这次练的部位 · 点任意一行，弹出那天练了什么</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">我能推多重</span><span class="en2">Best Lift</span><span class="ln"></span></div>
+    <div class="card block">
+      ${prList.map(([n,b],i)=>`<div class="pr ${i===0?'top':''} tap" onclick="toast('${esc(n)}：最好 ${b.kg} kg，${b.date.slice(5)} 做到的')">
+        <div class="rk">${i+1}</div>
+        <div class="mid"><b>${esc(n)}</b>
+          <div class="meta">${b.gear?esc(b.gear)+' · ':''}${b.date.slice(5)} 达成${b.sets?' · '+b.sets+' 组 × '+b.reps:''}</div></div>
+        <div class="vv"><b>${b.kg}<u> kg</u></b><span>最好成绩</span></div></div>`).join('')}
+      ${bwList.length?`<div class="sh2">徒手动作（不加重量）</div>
+        <div class="chips" style="margin-top:2px">${bwList.map(x=>
+          `<span class="chip">${esc(x.name)} ${x.sets} 组 × ${x.reps}</span>`).join('')}</div>
+        <div class="cap">俯卧撑、仰卧起坐这类不加铁的动作，看次数而不是重量</div>`:''}
+      <div class="cap">同一个动作取你做过最重的那一次 · 不同健身房的器械重量不能直接比</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">05</span><span class="tt">用过哪些器械</span><span class="en2">Equipment</span><span class="ln"></span></div>
+    <div class="card block">
+      ${gears.map(([g,n],gi)=>{const gmx=gears[0][1]||1; return `
+        <div class="grow2"><span style="color:var(--ink2)">${esc(g)}</span>
+          <span class="bar"><i style="width:${Math.max(n/gmx*100,4).toFixed(0)}%"></i></span>
+          <span class="num">${n} 组</span></div>`}).join('')}
+      <div class="cap">条越长＝这个器械用得越多 · 每个动作只计一次，和上面的部位分布是同一批组数的两种分法，不是重复计算</div>
+    </div></div>
+
+  <div class="sec"><div class="shead"><span class="no">06</span><span class="tt">各次训练明细</span><span class="en2">Sessions</span><span class="ln"></span></div>
+    ${ss.map(s=>`<div class="card tap" style="margin-bottom:10px" onclick="detailDay('${s.date}','lift')">
+      <div class="block">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="calbox"><div class="tear"></div><div class="m">${+s.date.slice(5,7)} 月</div>
+            <div class="d">${s.date.slice(8)}</div><div class="w">${WD[(new Date(s.date).getDay()+6)%7]}</div></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;font-weight:600">${esc(s.title||'力量训练')}</div>
+            <div style="font-size:10px;color:var(--ink3);margin-top:3px">${s.items.length} 个动作 · ${setsOf(s)} 组 · ${Object.keys(s.items.reduce((a,i)=>{a[i.部位||'其他']=1;return a},{})).join('·')}</div>
+          </div></div>
+        <div class="chips">${s.items.map(i=>`<span class="chip">${esc(i.name)} ${i.kg?i.kg+'kg':'徒手'}</span>`).join('')}</div>
+      </div></div>`).join('')}</div>`;
+}
+
+/* ── 训练建议 ── */
+/* ═══════════ 路线轨迹（⌖ tab） ═══════════
+   数据管线：iCloud 源文件 → 脚本/build_routes.py → routes.json（折线，懒加载）
+             data.json 的 routeIdx（瘦索引，列表首屏直接用，不用等折线）。
+   速度配色是「蓝慢 → 红快」五档，不跟随深浅色（两组底色都清楚）。 */
+const RT={data:null,loading:false,err:null,cur:null,proj:null,down:false,play:0};
+const RT_COL={'跑步':'#4A8FD4','骑行':'#3FA07A','徒步':'#D9A83C','步行':'#8A93A3'};
+const SPD_STOPS=['#4A8FD4','#3FA07A','#D9A83C','#E07B39','#C8503C'];   /* 慢 → 快 */
+
+function rtLoad(){
+  if(RT.data||RT.loading) return;
+  RT.loading=true;
+  fetch('routes.json?v='+Date.now()).then(r=>r.json()).then(d=>{
+    RT.data=d;RT.loading=false;
+    rtFillHome();
+    if(CUR==='#/route') route();          /* 在路线页触发的加载 → 重画列表补上缩略图 */
+    if(RT.cur) rtOpen(RT.cur);            /* 加载期间点了卡片/明细入口 → 补开详情 */
+  }).catch(e=>{RT.loading=false;RT.err=String(e);route()});
+}
+/* 首页「路线轨迹」卡的缩略图（数据到了再补，不挡首屏） */
+function rtFillHome(){
+  const el=document.getElementById('homeRtMini');
+  if(!el||!RT.data||!D.routeIdx||!D.routeIdx.idx.length) return;
+  const top=D.routeIdx.idx[0];
+  const r=RT.data.routes.find(x=>x.id===top.id);
+  if(r) el.innerHTML=rtMiniSVG(r.pts,RT_COL[r.type]||'#8A93A3');
+}
+
+/* ── 投影：经纬度 → SVG 坐标（等距圆柱近似，1px 代表的米数各处一致） ── */
+function rtProject(pts,w,h,pad){
+  const n=pts.length, lat0=pts.reduce((a,p)=>a+p[1],0)/n;
+  const MY=110540, MX=111320*Math.cos(lat0*Math.PI/180);
+  let mnx=1e18,mxx=-1e18,mny=1e18,mxy=-1e18;
+  for(const p of pts){const x=p[0]*MX,y=p[1]*MY;
+    if(x<mnx)mnx=x;if(x>mxx)mxx=x;if(y<mny)mny=y;if(y>mxy)mxy=y;}
+  const rx=Math.max(mxx-mnx,1), ry=Math.max(mxy-mny,1);
+  const s=Math.min((w-pad*2)/rx,(h-pad*2)/ry);
+  const ox=(w-rx*s)/2, oy=(h-ry*s)/2;
+  const xs=new Array(n),ys=new Array(n),cum=new Array(n);
+  let tot=0;cum[0]=0;
+  for(let i=0;i<n;i++){
+    xs[i]=ox+(pts[i][0]*MX-mnx)*s;
+    ys[i]=h-(oy+(pts[i][1]*MY-mny))*s;
+    if(i){tot+=Math.hypot((pts[i][0]-pts[i-1][0])*MX,(pts[i][1]-pts[i-1][1])*MY);cum[i]=tot;}
+  }
+  return {xs:xs,ys:ys,cum:cum,total:tot||1,s:s};
+}
+function rtLine(xs,ys,stride){
+  let out='';
+  for(let i=0;i<xs.length;i+=stride) out+=(out?' ':'')+xs[i].toFixed(1)+','+ys[i].toFixed(1);
+  const last=xs.length-1;
+  if(last%stride) out+=' '+xs[last].toFixed(1)+','+ys[last].toFixed(1);
+  return out;
+}
+function rtPct(arr,p){const a=arr.slice().sort((x,y)=>x-y);return a[Math.floor((a.length-1)*p)]||0;}
+function rtSpdCol(v,lo,hi){
+  const t=hi>lo?Math.max(0,Math.min(1,(v-lo)/(hi-lo))):.5;
+  return SPD_STOPS[Math.min(4,Math.floor(t*4.999))];
+}
+function rtMiniSVG(pts,col){
+  const p=rtProject(pts,92,68,8);
+  const stride=Math.max(1,Math.ceil(p.xs.length/40));
+  return `<svg viewBox="0 0 92 68" width="92" height="68" aria-hidden="true">
+    <polyline fill="none" stroke="${col}" stroke-opacity=".16" stroke-width="5" stroke-linecap="round"
+      points="${rtLine(p.xs,p.ys,stride)}"/>
+    <polyline fill="none" stroke="${col}" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"
+      points="${rtLine(p.xs,p.ys,stride)}"/>
+    <circle cx="${p.xs[0].toFixed(1)}" cy="${p.ys[0].toFixed(1)}" r="2.8" fill="var(--card)" stroke="${col}" stroke-width="1.7"/>
+  </svg>`;
+}
+
+/* ── 路线列表页 ── */
+function viewRoute(){
+  const idx=D.routeIdx;
+  if(!idx||!idx.n)
+    return head({month:'—',t:'路线轨迹',s:'还没有带路线数据的运动'},'Routes')+
+    `<div class="wrap"><div class="empty-tip">用 Apple Watch 记录的运动会自动带上路线<br>之后这里会出现轨迹图</div></div>`;
+  if(!RT.data&&!RT.loading&&!RT.err) rtLoad();
+  const f=ST.rtf||'all';
+  const all=idx.idx||[];
+  const types={};all.forEach(r=>{types[r.type]=(types[r.type]||0)+1});
+  const order=['跑步','骑行','徒步','步行'].filter(t=>types[t]);
+  const chips=`<button class="${f==='all'?'on':''}" onclick="ST.rtf='all';route()">全部 ${idx.n}</button>`+
+    order.map(t=>`<button class="${f===t?'on':''}" onclick="ST.rtf='${t}';route()">${(TY[t]||['',''])[0]} ${RT_LONG2(t)} ${types[t]}</button>`).join('');
+  const list=f==='all'?all:all.filter(r=>r.type===f);
+  const first=list.length?list[0].date:'—';
+  return head({month:spanLabel(all.map(r=>r.date)),t:'路线轨迹',
+    s:`${idx.n} 条 GPS 轨迹 · 累计 ${idx.totalKm} km · 总爬升 ${idx.totalElev} m`},'Routes')+
+  `<div class="wrap">
+    <div class="sec" style="margin-top:16px">
+      <div class="rtstat">
+        <div class="cell"><div class="v">${idx.n}<u>条</u></div><div class="lb">轨迹总数</div></div>
+        <div class="cell"><div class="v">${idx.totalKm}<u>km</u></div><div class="lb">累计距离</div></div>
+        <div class="cell"><div class="v">${idx.totalElev>=1000?(idx.totalElev/1000).toFixed(1)+'<u>km</u>':idx.totalElev+'<u>m</u>'}</div><div class="lb">累计爬升</div></div>
+      </div>
+    </div>
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">按类型看</span><span class="en2">Filter</span><span class="ln"></span></div>
+      <div class="rflt">${chips}</div>
+      ${RT.err?`<div class="empty-tip">轨迹数据加载失败：${RT.err}<br><button class="rtgo" style="margin-top:10px" onclick="RT.err=null;rtLoad()">重试</button></div>`:''}
+      ${!RT.err&&RT.loading&&!RT.data?`<div class="empty-tip">正在载入轨迹数据…</div>`:''}
+      ${list.length?list.map(r=>rtCardHTML(r)).join('')
+        :`<div class="empty-tip">这个类型还没有轨迹</div>`}
+      <div class="cap" style="text-align:center;padding:10px 0 4px">轨迹来自 Apple Watch 的 GPS 记录 · 点任意一条看完整轨迹<br>
+        最新一条 ${first.slice(5).replace('-','/')}</div>
+    </div>
+  </div>`;
+}
+function RT_LONG2(t){return {'跑步':'户外跑','骑行':'骑行','徒步':'徒步','步行':'步行'}[t]||t;}
+function rtCardHTML(r){
+  const col=RT_COL[r.type]||'#8A93A3';
+  const full=RT.data&&RT.data.routes.find(x=>x.id===r.id);
+  const pace=(['跑步','骑行','步行','徒步'].indexOf(r.type)>=0&&r.dist>0)
+    ?paceTxt(Math.round(r.dur*60/r.dist)):'';
+  return `<div class="card rtc" onclick="openRoute('${r.id}')">
+    <div class="rtmini">${full?rtMiniSVG(full.pts,col):'<div class="rtmini-sk"></div>'}</div>
+    <div class="info">
+      <div class="d1"><b>${r.date.slice(5).replace('-','/')}</b><span>${(TY[r.type]||['',''])[0]} ${r.type}</span></div>
+      <div class="d2">${r.dist} km · ${fmtDur(r.dur)}${pace?' · '+pace+'/km':''}</div>
+      <div class="d3">${r.hrAvg?'♥ '+r.hrAvg+(r.hrMax?'–'+r.hrMax:'')+' bpm':'心率 —'}${r.elevUp?' · 爬升 '+r.elevUp+' m':''}</div>
+    </div><div class="go"></div></div>`;
+}
+
+/* ── 详情 ── */
+function openRoute(id){
+  closeSheet();
+  if(!RT.data){RT.cur=id;rtLoad();return;}
+  rtOpen(id);
+}
+function rtOpen(id){
+  RT.cur=id;
+  const r=RT.data&&RT.data.routes.find(x=>x.id===id);
+  if(!r){toast('这条轨迹的数据缺失');return;}
+  document.getElementById('rtTitle').innerHTML=
+    `${r.date.slice(5).replace('-','/')} · ${(TY[r.type]||['',''])[0]} ${r.type}<span>ROUTE TRACE</span>`;
+  document.getElementById('rtBody').innerHTML=rtDetailHTML(r);
+  const v=document.getElementById('rtView');
+  v.classList.add('on');v.scrollTop=0;
+  rtBindMap(r);
+}
+function closeRoute(){
+  if(RT.play){cancelAnimationFrame(RT.play);RT.play=0;}
+  document.getElementById('rtView').classList.remove('on');
+  RT.cur=null;RT.down=false;
+}
+function rtDetailHTML(r){
+  const paceSec=r.dist>0?r.dur*60/r.dist:0;
+  const isPace=['跑步','徒步','步行'].indexOf(r.type)>=0;
+  const spd=r.dur>0?r.dist/(r.dur/60):0;
+  const cadU=r.type==='骑行'?'rpm':'spm', cadL=r.type==='骑行'?'踏频':'步频';
+  const cells=[
+    [r.dist,'km','距离'],[fmtDur(r.dur),'','时长'],
+    [isPace?paceTxt(Math.round(paceSec)):spd.toFixed(1),isPace?'/km':'km/h',isPace?'配速':'均速'],
+    [r.hrAvg||'—','bpm','均心'],[r.hrMax||'—','bpm','峰心'],
+    [r.elevUp||0,'m','爬升'],[r.kcal||'—','kcal','消耗'],
+    [r.cadence||'—',cadU,cadL]];
+  const conds=[];
+  if(r.temp!=null)conds.push('🌡 '+r.temp+' ℃');
+  if(r.humidity)conds.push('💧 湿度 '+r.humidity+'%');
+  if(r.loc)conds.push('📍 '+esc(r.loc));
+  if(r.effort)conds.push('⚡ 竭力度 '+r.effort+'/10');
+  return `<div class="wrap" style="padding-top:14px">
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">轨迹</span><span class="en2">Trace</span><span class="ln"></span></div>
+      <div class="rtmap">
+        ${rtRouteMap(r)}
+        <div class="rtread" id="rtRead"></div>
+        <button class="rtplay" onclick="rtPlay()">▶ 回放</button>
+      </div>
+      <div class="cap">线条颜色＝当时速度（蓝慢 → 红快）· 在轨迹上拖动可查看任意位置 · 空心圈为每公里刻度</div>
+    </div>
+    <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">数据</span><span class="en2">Stats</span><span class="ln"></span></div>
+      <div class="rtgrid">${cells.map(c=>`<div class="cell"><div class="v">${c[0]}<u>${c[1]}</u></div><div class="lb">${c[2]}</div></div>`).join('')}</div>
+    </div>
+    ${r.elev&&r.elev.length>1?`<div class="sec"><div class="shead"><span class="no">03</span><span class="tt">海拔剖面</span><span class="en2">Elevation</span><span class="ln"></span></div>
+      <div class="card block">${rtElevSVG(r)}
+      <div class="cap">同样可以拖动 · 和上面的轨迹左右对齐</div></div></div>`:''}
+    ${r.hr&&r.hr.length>1?`<div class="sec"><div class="shead"><span class="no">04</span><span class="tt">心率曲线</span><span class="en2">Heart Rate</span><span class="ln"></span></div>
+      <div class="card block">${rtHRSVG(r)}
+      <div class="cap">纵轴 bpm · 横轴为开始运动后的分钟数</div></div></div>`:''}
+    ${r.splits&&r.splits.length?`<div class="sec"><div class="shead"><span class="no">05</span><span class="tt">每公里分段</span><span class="en2">Splits</span><span class="ln"></span></div>
+      <div class="card block"><table>
+        <tr><th>公里</th><th>用时</th><th>配速</th><th>心率</th></tr>
+        ${r.splits.map(q=>`<tr class="${q.pace===Math.min.apply(null,r.splits.map(z=>z.pace))?'fast':''}">
+          <td>${q.km}</td><td>${Math.floor(q.sec/60)}'${String(q.sec%60).padStart(2,'0')}"</td>
+          <td>${paceTxt(q.pace)}</td><td>${q.hr||'—'}</td></tr>`).join('')}
+      </table><div class="cap">金色＝最快的一公里 · 心率取自该公里平均</div></div></div>`:''}
+    ${conds.length?`<div class="sec"><div class="shead"><span class="no">06</span><span class="tt">环境与强度</span><span class="en2">Conditions</span><span class="ln"></span></div>
+      <div class="card block"><div class="rtcond">${conds.map(c=>`<span>${c}</span>`).join('')}</div>
+      <div class="cap">Apple Watch 当场记录 · 竭力度 1（轻松）～ 10（最大）</div></div></div>`:''}
+  </div>`;
+}
+/* 大轨迹图：光晕 + 按速度分段上色 + 起终点 + 公里刻度 + 方向箭头 */
+function rtRouteMap(r){
+  const W=342,H=232,pad=16;
+  const p=rtProject(r.pts,W,H,pad);
+  RT.proj=p;
+  const n=r.pts.length;
+  const sp=r.pts.map(q=>q[2]);
+  const lo=rtPct(sp,.1),hi=rtPct(sp,.9);
+  let segs='';
+  for(let i=1;i<n;i++)
+    segs+=`<line x1="${p.xs[i-1].toFixed(1)}" y1="${p.ys[i-1].toFixed(1)}" x2="${p.xs[i].toFixed(1)}" y2="${p.ys[i].toFixed(1)}" stroke="${rtSpdCol((sp[i-1]+sp[i])/2,lo,hi)}" stroke-width="2.6" stroke-linecap="round"/>`;
+  /* 公里刻度（空心圈 + 数字），点一下把游标拽过去 */
+  const scale=r.dist/(p.total||1);
+  let ticks='',k=1;
+  while(k<=Math.floor(r.dist)){
+    for(let i=1;i<n;i++){
+      if(p.cum[i]*scale>=k){
+        ticks+=`<g style="cursor:pointer" onclick="rtShowAt(${i})">
+          <circle cx="${p.xs[i].toFixed(1)}" cy="${p.ys[i].toFixed(1)}" r="5.4" fill="var(--card)"/>
+          <text x="${p.xs[i].toFixed(1)}" y="${(p.ys[i]-7.5).toFixed(1)}" font-size="7.5" fill="var(--ink3)" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">${k}</text></g>`;
+        break;}
+    }
+    k++;
+  }
+  /* 方向箭头：全程均匀取 5 个，按局部朝向旋转 */
+  let arrows='';
+  for(let f=0.12;f<0.9;f+=0.16){
+    const i=Math.min(n-2,Math.round(f*n)), j=Math.min(n-1,i+2);
+    const ang=Math.atan2(p.ys[j]-p.ys[i],p.xs[j]-p.xs[i])*180/Math.PI;
+    arrows+=`<g transform="translate(${p.xs[i].toFixed(1)},${p.ys[i].toFixed(1)}) rotate(${ang.toFixed(0)})" opacity=".55">
+      <path d="M-2.6,-2.4 L3.4,0 L-2.6,2.4 Z" fill="var(--ink3)"/></g>`;
+  }
+  const x0=p.xs[0].toFixed(1),y0=p.ys[0].toFixed(1),
+        x1=p.xs[n-1].toFixed(1),y1=p.ys[n-1].toFixed(1);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" id="rtSvg" aria-label="运动轨迹图">
+    <g stroke="var(--grid)">${[0.25,0.5,0.75].map(f=>`<line x1="0" y1="${(H*f).toFixed(0)}" x2="${W}" y2="${(H*f).toFixed(0)}"/><line x1="${(W*f).toFixed(0)}" y1="0" x2="${(W*f).toFixed(0)}" y2="${H}"/>`).join('')}</g>
+    <polyline fill="none" stroke="var(--gold)" stroke-opacity=".14" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
+      points="${rtLine(p.xs,p.ys,1)}"/>
+    ${segs}
+    ${arrows}
+    ${ticks}
+    <circle id="rtMkHalo" cx="0" cy="0" r="11" fill="var(--gold)" opacity="0"/>
+    <circle id="rtMk" cx="0" cy="0" r="5" fill="var(--card)" stroke="var(--gold)" stroke-width="2.6" opacity="0"/>
+    <g><circle cx="${x0}" cy="${y0}" r="5.6" fill="#fff" stroke="#0F7A52" stroke-width="2.4"/>
+      <circle cx="${x0}" cy="${y0}" r="1.8" fill="#0F7A52"/>
+      <text x="${x0}" y="${(+y0-8).toFixed(1)}" font-size="8" fill="#0F7A52" text-anchor="middle" font-weight="700">起</text></g>
+    <g><circle cx="${x1}" cy="${y1}" r="5.6" fill="var(--gold)"/>
+      <circle cx="${x1}" cy="${y1}" r="2" fill="var(--card)"/>
+      <text x="${x1}" y="${(+y1-8).toFixed(1)}" font-size="8" fill="var(--gold)" text-anchor="middle" font-weight="700">终</text></g>
+  </svg>${rtScaleBar(p)}`;
+}
+function rtScaleBar(p){
+  const mpp=1/p.s;
+  const cands=[50,100,200,500,1000,2000,5000];
+  let best=cands[0];
+  for(const c of cands){if(c/mpp<=90)best=c;else break;}
+  return `<div class="rtscale"><i style="width:${Math.round(best/mpp)}px"></i>${best>=1000?(best/1000)+' km':best+' m'}</div>`;
+}
+function rtElevSVG(r){
+  const e=r.elev,W=342,H=96,pad=12;
+  const mx=e[e.length-1][0]||1;
+  const als=e.map(q=>q[1]),mn=Math.min.apply(null,als),mxa=Math.max.apply(null,als),rg=Math.max(mxa-mn,1);
+  const X=k=>pad+(k/mx)*(W-pad*2),Y=a=>H-pad-((a-mn)/rg)*(H-pad*2);
+  const pts=e.map(q=>X(q[0]).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" id="rtElevSvg" style="touch-action:none;cursor:crosshair">
+    <defs><linearGradient id="rtEg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--gold)" stop-opacity=".30"/><stop offset="1" stop-color="var(--gold)" stop-opacity=".02"/></linearGradient></defs>
+    <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/><line x1="0" y1="${(H/2).toFixed(0)}" x2="${W}" y2="${(H/2).toFixed(0)}"/><line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+    <polygon points="${pad},${H-pad} ${pts} ${(W-pad).toFixed(1)},${H-pad}" fill="url(#rtEg)"/>
+    <polyline fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linejoin="round" points="${pts}"/>
+    <text x="${pad}" y="${H-2}" font-size="7.5" fill="var(--ink3)">0 km</text>
+    <text x="${W}" y="${H-2}" font-size="7.5" fill="var(--ink3)" text-anchor="end">${mx.toFixed(1)} km</text>
+    <text x="${pad}" y="${pad+6}" font-size="7.5" fill="var(--ink3)">最高 ${mxa.toFixed(0)} m · 最低 ${mn.toFixed(0)} m</text>
+  </svg>`;
+}
+function rtHRSVG(r){
+  const h=r.hr,W=342,H=96,pad=12;
+  const mx=h[h.length-1][0]||1;
+  const bs=h.map(q=>q[1]),mn=Math.min.apply(null,bs)-3,mxa=Math.max.apply(null,bs)+3,rg=Math.max(mxa-mn,1);
+  const X=k=>pad+(k/mx)*(W-pad*2),Y=b=>H-pad-((b-mn)/rg)*(H-pad*2);
+  const pts=h.map(q=>X(q[0]).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+    <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/><line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+    <polyline fill="none" stroke="var(--heart)" stroke-width="1.8" stroke-linejoin="round" points="${pts}"/>
+    <text x="${pad}" y="${pad+6}" font-size="7.5" fill="var(--ink3)">峰值 ${Math.max.apply(null,bs)} bpm · 均心 ${r.hrAvg||'—'}</text>
+    <text x="${pad}" y="${H-2}" font-size="7.5" fill="var(--ink3)">0 分</text>
+    <text x="${W}" y="${H-2}" font-size="7.5" fill="var(--ink3)" text-anchor="end">${mx.toFixed(0)} 分</text>
+  </svg>`;
+}
+/* ── 拖动游标：轨迹图与剖面图共用一套逻辑 ── */
+function rtBindMap(r){
+  const svg=document.getElementById('rtSvg');
+  const ev=document.getElementById('rtElevSvg');
+  const mapXY=e=>{
+    const rect=svg.getBoundingClientRect();
+    return {x:(e.clientX-rect.left)/rect.width*342,y:(e.clientY-rect.top)/rect.height*232};
+  };
+  const evXY=e=>{
+    const rect=ev.getBoundingClientRect();
+    const km=(e.clientX-rect.left)/rect.width*(r.dist||1);
+    return {km:km};
+  };
+  if(svg){
+    svg.addEventListener('pointerdown',e=>{RT.down=true;rtScrub(mapXY(e))});
+    svg.addEventListener('pointermove',e=>{if(RT.down||e.pointerType==='mouse')rtScrub(mapXY(e))});
+    ['pointerup','pointerleave','pointercancel'].forEach(t=>svg.addEventListener(t,()=>{RT.down=false}));
+  }
+  if(ev){
+    ev.addEventListener('pointerdown',e=>{RT.down=true;rtScrub(evXY(e))});
+    ev.addEventListener('pointermove',e=>{if(RT.down||e.pointerType==='mouse')rtScrub(evXY(e))});
+    ['pointerup','pointerleave','pointercancel'].forEach(t=>ev.addEventListener(t,()=>{RT.down=false}));
+  }
+}
+/* 输入：轨迹图给 {x,y}（SVG 坐标），剖面图给 {km} */
+function rtScrub(inp){
+  const r=RT.cur&&RT.data?RT.data.routes.find(x=>x.id===RT.cur):null;
+  if(!r||!RT.proj) return;
+  const p=RT.proj,scale=r.dist/(p.total||1);
+  let i=0;
+  if(inp.km!=null){
+    const target=inp.km/scale;
+    if(target<=0){i=0;}
+    else{
+      i=p.cum.length-1;
+      for(let j=1;j<p.cum.length;j++){if(p.cum[j]>=target){i=j;break;}}
+    }
+  }else{
+    let bd=1e18;
+    for(let j=0;j<p.xs.length;j++){const dx=p.xs[j]-inp.x,dy=p.ys[j]-inp.y,d=dx*dx+dy*dy;if(d<bd){bd=d;i=j;}}
+  }
+  rtShowAt(i);
+}
+function rtShowAt(i){
+  const r=RT.cur&&RT.data?RT.data.routes.find(x=>x.id===RT.cur):null;
+  if(!r||!RT.proj) return;
+  const p=RT.proj,scale=r.dist/(p.total||1);
+  const km=p.cum[i]*scale;
+  const tMin=r.dur*km/Math.max(r.dist,.001);
+  const sp=r.pts[i][2];
+  const mm=Math.floor(tMin),ss=Math.round((tMin-mm)*60);
+  const hr=rtHrAt(r,tMin);
+  const spdTxt=r.type==='骑行'?(sp*3.6).toFixed(1)+' km/h':(sp>0.3?paceTxt(Math.round(1000/sp))+'/km':'—');
+  const mk=document.getElementById('rtMk'),hl=document.getElementById('rtMkHalo'),el=document.getElementById('rtRead');
+  if(!mk||!el) return;
+  mk.setAttribute('cx',p.xs[i].toFixed(1));mk.setAttribute('cy',p.ys[i].toFixed(1));mk.setAttribute('opacity','1');
+  hl.setAttribute('cx',p.xs[i].toFixed(1));hl.setAttribute('cy',p.ys[i].toFixed(1));hl.setAttribute('opacity','.16');
+  el.innerHTML=`<b>${km.toFixed(2)}</b> km · ${mm}'${String(Math.min(ss,59)).padStart(2,'0')}" · ${spdTxt}${hr?' · ♥'+hr:''}`;
+  el.classList.add('on');
+}
+function rtHrAt(r,tMin){
+  const h=r.hr;if(!h||h.length<2)return null;
+  if(tMin<=h[0][0])return h[0][1];
+  for(let i=1;i<h.length;i++){
+    if(tMin<=h[i][0]){
+      const t=(tMin-h[i-1][0])/Math.max(h[i][0]-h[i-1][0],.001);
+      return Math.round(h[i-1][1]+(h[i][1]-h[i-1][1])*t);
+    }
+  }
+  return h[h.length-1][1];
+}
+/* 回放：从头到尾走一遍轨迹（约 5 秒），再点一次轨迹图停止 */
+function rtPlay(){
+  const r=RT.cur&&RT.data?RT.data.routes.find(x=>x.id===RT.cur):null;
+  if(!r||!RT.proj)return;
+  if(RT.play){cancelAnimationFrame(RT.play);RT.play=0;return;}
+  const n=r.pts.length,t0=performance.now(),DUR=5000;
+  const step=()=>{
+    const t=(performance.now()-t0)/DUR;
+    if(t>=1){rtShowAt(n-1);RT.play=0;return;}
+    rtShowAt(Math.round(t*(n-1)));
+    RT.play=requestAnimationFrame(step);
+  };
+  RT.play=requestAnimationFrame(step);
+}
+
+function viewAdvice(){
+  const b=D.body[0], hrMax=D.profile['最大心率']||198;
+  const wkg=b.weight_jin/2, h=D.profile['身高cm']/100;
+  const bmi=wkg/(h*h), tgt=D.profile['目标斤'], gap=b.weight_jin-tgt;
+  const hr=D.recent.filter(r=>r.类型==='跑步'&&r.平均心率)[0]||{};
+  /* ── 下面这些一律现算，不写死；数据一变文案自动跟着变 ── */
+  const avgHrNow=hr.平均心率||164;
+  const obsHr=Math.max(...D.recent.map(w=>w.最高心率||0));                    // 记录里出现过的最高心率
+  const obsHrW=D.recent.find(w=>(w.最高心率||0)===obsHr)||{};
+  const st6=D.strength.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,6);    // 最近 6 次器械
+  const ptN=p=>st6.filter(s=>(s.items||[]).some(i=>i['部位']===p)).length;
+  const ptC=ptN('胸'), ptB=ptN('背'), ptL=ptN('腿臀');
+  const runMon=(()=>{const last=D.runs.length?D.runs[D.runs.length-1].date:null;
+    if(!last) return 1;
+    const [y,m]=last.split('-').map(Number), n=new Date();
+    return (n.getFullYear()-y)*12+(n.getMonth()+1-m)})();
+  const ZN=[['Z1 热身','50–60%','#7FB3E8'],['Z2 轻松','60–70%','#3F9C6B'],
+    ['Z3 有氧','70–80%','#E3B23C'],['Z4 很用力','80–90%','#D9762B'],['Z5 冲刺','90–100%','#C0392B']];
+  const z=(lo,hi)=>Math.round(hrMax*lo)+'–'+Math.round(hrMax*hi);
+  const mk=hr.平均心率?Math.min(Math.max((hr.平均心率/hrMax-.5)/.5,0),1)*100:null;
+  const zoneOf=v=>v/hrMax>=.9?4:v/hrMax>=.8?3:v/hrMax>=.7?2:v/hrMax>=.6?1:0;
+
+  const card=(cls,pri,title,why,dos)=>`<div class="abox ${cls}">
+    <div class="ah"><span class="pri ${pri}">${pri.toUpperCase()}</span><b>${title}</b></div>
+    <div class="why">${why}</div>
+    <div class="do"><div class="dt">怎么做</div>${dos.map(d=>`<li>${d}</li>`).join('')}</div></div>`;
+
+  return head({month:nowMonthLabel(),t:'训练建议',
+    s:`按你的真实数据算的：身高 ${D.profile['身高cm']} cm · 体重 ${b.weight_jin} 斤 · 最大心率 ${hrMax}`,
+    badge:`依据：近 ${runMon} 个月 ${D.runs.length} 次跑 · ${D.strength.length} 次器械 · ${D.body.length} 次称重`},
+    'Training Advice')+
+  `<div class="wrap">
+
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">先处理这三件事</span><span class="en2">Priority</span><span class="ln"></span></div>
+      ${card('a1','p1','左肩先停下来，别硬扛',
+        `你的手记里，16 天内左肩报了三次警：9/15 洗头抬手使不上劲、9/25 蝴蝶机反向飞鸟左手发力受阻、10/01 撞了一下后抬手有阻力感 + 扩胸有撕裂拉扯感。这种"使不上劲＋撕裂感"不是普通酸痛，更像肩袖在抗议。`,
+        ['48 小时内停掉所有推类动作：卧推、坐姿推胸、夹胸、飞鸟',
+         '这周去查一次肩部超声，排除肩袖部分撕裂',
+         '想练上半身就改成拉类：高位下拉、坐姿划船、弹力带外旋',
+         '疼的时候别做拉伸硬掰，越掰越刺激'])}
+      ${card('a2','p2','跑步太快了，慢下来反而进步更快',
+        `10/01 那次 5 公里，平均心率 ${avgHrNow} bpm。按你档案里设的最大心率 ${hrMax} 算是 ${Math.round(avgHrNow/hrMax*100)}%，落在"很用力"这一档；就算按记录里跑出过的峰值 ${obsHr} 算，也有 ${Math.round(avgHrNow/obsHr*100)}% —— 已经是能练耐力底子的上限了。<br>
+         问题不在某一次跑得狠，而在"几乎每次都这么快"：轻松跑占比太低，有氧地基就搭不起来，还容易累积疲劳、恢复不过来。`,
+        ['把 70% 的跑量放到轻松区（心率 '+z(.6,.7)+' bpm），能边跑边说话',
+         '每周只留 1 次强度课（间歇或节奏跑），其余都慢',
+         '判断标准很简单：跑的时候能说完整句子，就对了'])}
+      ${card('a2','p3','力量训练里腿练得太少',
+        `最近 ${st6.length} 次器械：胸 ${ptC} 次、背 ${ptB} 次，腿臀只有 ${ptL} 次${ptL&&ptL<=2?'（还都是硬拉）':''}。上身练得多、下身练得少 —— 腿是全身最大的肌群，长期偏科会让体态和膝盖吃亏，也拖慢减脂。`,
+        ['每周至少排 1 次下肢：深蹲或腿举 4 组 × 10 次',
+         '膝盖不舒服就用腿举、坐姿腿屈伸代替深蹲',
+         '核心放在力量日最后 10 分钟，不用单独占一天'])}
+    </div>
+
+    <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">跑步该跑多快</span><span class="en2">Heart Rate</span><span class="ln"></span></div>
+      <div class="card block">
+        <div style="font-size:11.5px;color:var(--ink2);line-height:1.65">
+          下面这条是按你的最大心率 <b style="color:var(--gold)">${hrMax} bpm</b> 算的五个区间。
+          竖线是你 10/01 那次跑步的平均心率 <b style="color:var(--gold)">${avgHrNow} bpm</b>。点任意一段看说明。</div>
+        <div class="chartbox" style="margin-top:12px">
+          <svg viewBox="0 0 342 96" width="100%" height="96">
+            ${ZN.map((zn,i)=>{const x=8+i*66.4;
+              return `<rect x="${x.toFixed(1)}" y="14" width="64" height="26" rx="4" fill="${zn[2]}"
+                class="barhit" onclick="toast('${zn[0]}：心率 ${z(.5+i*.1,.6+i*.1)} bpm · ${['活动恢复，跑完放松用','能边跑边聊，耐力底子靠它','有点喘但能撑，每周一次就够','很喘，说不出整句，别天天跑','顶到极限，只在间歇最后几组出现'][i]}')"/>
+                <text x="${(x+32).toFixed(1)}" y="31" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">${zn[0].split(' ')[0]}</text>
+                <text x="${(x+32).toFixed(1)}" y="54" font-size="8" fill="var(--ink3)" text-anchor="middle">${z(.5+i*.1,.6+i*.1)}</text>
+                <text x="${(x+32).toFixed(1)}" y="65" font-size="8" fill="var(--ink3)" text-anchor="middle">${zn[1]}</text>`}).join('')}
+            ${mk!==null?`<line x1="${(8+mk*3.32).toFixed(1)}" y1="8" x2="${(8+mk*3.32).toFixed(1)}" y2="44"
+                stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="3 2"/>
+              <text x="${(8+mk*3.32).toFixed(1)}" y="82" font-size="9" fill="var(--ink)" text-anchor="middle"
+                font-weight="700">↑ 你上次 ${avgHrNow} bpm（${ZN[zoneOf(avgHrNow)][0]}）</text>`:''}
+          </svg>
+        </div>
+        <div class="cap">竖线越靠左越轻松 · 平时跑步让它落在 Z2 那一段最好</div>
+        <div style="font-size:10.5px;line-height:1.6;color:var(--ink3);margin-top:8px;padding-top:8px;border-top:1px solid var(--line2)">
+          说明：${hrMax} 这个最大心率是你档案里设的；记录里最高跑出过 <b>${obsHr} bpm</b>${obsHrW.date?'（'+obsHrW.date.slice(5)+' '+obsHrW.类型+'）':''}，比设定值高。
+          真实最大心率越高，同一心率占的百分比就越低 —— 但不管按哪个算，你那次都贴在"该慢下来"的边界上，方向不变。
+          想更准可以实测一次：充分热身后全力跑 5 分钟，取最后 1 分钟的最高心率。</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">03</span><span class="tt">减重节奏</span><span class="en2">Weight</span><span class="ln"></span></div>
+      <div class="card block">
+        <div class="srow2"><b>现在的 BMI</b><span>${bmi.toFixed(1)}（${bmi>=28?'属于肥胖区间，减下来收益最大':bmi>=24?'超重':'正常'}）</span></div>
+        <div class="srow2"><b>体重 / 目标</b><span>${b.weight_jin} 斤 → ${tgt} 斤，还差 <b style="color:var(--gold)">${gap.toFixed(1)} 斤</b></span></div>
+        <div class="srow2"><b>体脂率</b><span>${b.bf_pct} % · 内脏脂肪 ${b.visceral} 级（多数体脂秤的参考线在 9–10 以下）</span></div>
+        <div class="srow2"><b>按健康速度</b><span>每周减 0.5–0.8 斤，约需 <b style="color:var(--gold)">${Math.round(gap/0.8)}–${Math.round(gap/0.5)} 周</b></span></div>
+        <div class="quote">每天比现在少吃 300–500 千卡就够，不用节食。内脏脂肪对"少精制碳水 + 每周 150 分钟中等强度有氧"反应比较明显（150 分钟是世界卫生组织给成年人的最低推荐量），比盯着体重秤有用。</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">一周可以这样排</span><span class="en2">Weekly Plan</span><span class="ln"></span></div>
+      <div class="card block">
+        ${[['周一','器械 · 以拉类为主（推类暂停）','40 分钟 · 左肩没查清前，胸推、夹胸先不排'],
+           ['周二','跑步 · 轻松跑','30 分钟 · 心率 '+z(.6,.7)+'，能聊天'],
+           ['周三','休息 / 散步','30 分钟快走，不做强度'],
+           ['周四','器械 · 腿臀 + 核心','40 分钟 · 深蹲/腿举 4 组'],
+           ['周五','跑步 · 间歇（每周唯一强度课）','热身 10 分 + 4 组（快跑 2 分 / 走 2 分）+ 放松 10 分'],
+           ['周六','骑行或长跑','45 分钟 · 同样压在轻松区'],
+           ['周日','完全休息','睡够 7 小时，比多练一次值钱']]
+          .map(d=>`<div class="wkrow"><b class="dw">${d[0]}</b>
+            <div class="wc"><b>${d[1]}</b><div class="ws">${d[2]}</div></div></div>`).join('')}
+        <div class="cap">器械和跑步放同一天，最好隔开 6 小时以上（比如早上练力量、晚上跑步）；实在要连着做，也要把跑步放在力量之后。你 9/25 只歇 13 分钟就上跑步，太赶 —— 两边的效果都会打折。</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">05</span><span class="tt">恢复这一块</span><span class="en2">Recovery</span><span class="ln"></span></div>
+      ${card('a3','p3','睡不够，练就白练',
+        '手记里写着 23:00 才到家、睡不够。力量训练的效果是在休息时长出来的，不是练的时候。',
+        ['力量日后 48 小时不再练同一部位',
+         '尽量在 23:30 前睡，目标 7 小时',
+         '训练中补水按每小时 400–800 毫升（约每 15–20 分钟 100–200 毫升）；9/25 那 1.4 升摊到近 4 小时，刚好在下限',
+         '连续两天出现"抬手没劲"就停练，别硬撑'])}
+    </div>
+
+    ${hmTrendSec()}
+
+    <div class="empty-tip">以上建议基于你的实测数据 · 肩部不适请遵医嘱</div>
+  </div>`;
+}
+
+/* ── 记录：按 年 → 月 两级浏览 ── */
+function viewRec(){
+  const years={}; D.recent.forEach(r=>{const y=r.date.slice(0,4);(years[y]=years[y]||[]).push(r)});
+  const ys=Object.keys(years).sort().reverse();
+  const prevY=ST.recY;
+  if(!prevY||!years[prevY]) ST.recY=ys[0];
+  const cy=ST.recY, cyList=years[cy];
+  const months={}; cyList.forEach(r=>{const m=+r.date.slice(5,7);(months[m]=months[m]||[]).push(r)});
+  if(!ST.recM||prevY!==cy||!months[+ST.recM])
+    ST.recM=(CUR_YM.slice(0,4)===cy)?+CUR_YM.slice(5):Math.max(...Object.keys(months).map(Number));
+  const cm=ST.recM;
+  const ytot=cyList.reduce((a,b)=>a+b.时长,0), ykm=cyList.reduce((a,b)=>a+(b.距离||0),0),
+        ykal=cyList.reduce((a,b)=>a+(b.消耗||0),0);
+  const byday={}; (months[cm]||[]).forEach(r=>{(byday[r.date]=byday[r.date]||[]).push(r)});
+  const days=Object.keys(byday).sort().reverse();
+  const flip=!!ST.flip; ST.flip=false;          /* 点月份 → 卡片翻页动画只放一次 */
+  /* 单日记录卡内容 */
+  const dayCard=ds=>{
+    const list=byday[ds], p=ds.split('-');
+    const dt=new Date(ds), wd=WD[(dt.getDay()+6)%7];
+    const tot=list.reduce((a,b)=>a+b.时长,0), kcal=list.reduce((a,b)=>a+(b.消耗||0),0);
+    const kmD=list.reduce((a,b)=>a+(b.距离||0),0);
+    const j=D.journal.find(e=>e.date===ds);
+    const st=D.strength.find(s=>s.date===ds);
+    return `<div class="block">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div class="calbox"><div class="tear"></div><div class="m">${+p[1]} 月</div>
+          <div class="d">${String(+p[2]).padStart(2,'0')}</div><div class="w">${wd}</div></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:600">${list.map(r=>r.类型).filter((v,i,a)=>a.indexOf(v)===i).join(' + ')}</div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:3px">${list.length} 次 · ${hm(tot)} · ${kcal} kcal${kmD?' · '+kmD.toFixed(2)+' km':''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--gold);font-weight:600">${j?'有手记':''}</div>
+        </div>
+      </div>
+      <div class="chips">${list.map(r=>`<span class="chip">${(TY[r.类型]||['·'])[0]} ${r.类型} ${Math.round(r.时长)}′</span>`).join('')}
+        ${st?`<span class="chip">💪 ${st.items.length} 个动作</span>`:''}</div>
+    </div>`;
+  };
+  /* 12 个月分 3 行（细线表格，跟全站一致） */
+  const mrows=[0,1,2].map(r=>`<div class="mrow">${
+    [0,1,2,3].map(c=>{const m=r*4+c+1, list=months[m]||[];
+      const cls='mcell2'+(m===cm?' on':'')+(list.length?'':' off');
+      return `<div class="${cls}" ${list.length?`onclick="navRec('${cy}',${m})"`:'style="cursor:default"'}>
+        <b>${m} 月</b><span>${list.length?list.length+' 次':'—'}</span></div>`}).join('')}</div>`).join('');
+  return head({month:ys.length>1?ys[ys.length-1]+' – '+ys[0]:ys[0],t:'全部记录',
+    s:`共 ${D.recent.length} 次运动 · 先选年，再点月份看那一段的明细`},'All Records')+
+  `<div class="wrap">
+    <div class="sec" style="margin-top:16px">
+      <div class="segbar">
+        <button class="${ST.recView==='cal'?'':'on'}" onclick="ST.recView='cal';route()">日历</button>
+        <button class="${ST.recView==='list'?'on':''}" onclick="ST.recView='list';route()">列表</button>
+      </div>
+    </div>
+    ${ST.recView==='cal'?calMonthBody():`
+    <div class="sec">
+      <div class="shead"><span class="no">01</span><span class="tt">选个月份</span><span class="en2">Period</span><span class="ln"></span></div>
+      <div class="ychips">${ys.map(v=>`<button class="btn ${v===cy?'':'off'}" onclick="navRec('${v}',0)">${v} 年</button>`).join('')}</div>
+      <div class="card block${flip?' mcardflip':''}">
+        <div class="yhead">
+          <b>${cy} 年</b>
+          <span>共 ${cyList.length} 次 · ${hm(ytot)} · ${ykm.toFixed(1)} km · ${ykal} kcal</span>
+        </div>
+        <div>${mrows}</div>
+        <div class="cap">有记录的月份可以点 · 点一下换一个月 ↓</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="shead"><span class="no">02</span><span class="tt">这个月的记录</span><span class="en2">Log</span><span class="ln"></span></div>
+      ${days.length?days.map(ds=>
+        `<div class="card tap" style="margin-bottom:10px" onclick="detailDay('${ds}')">${dayCard(ds)}</div>`).join('')
+        :`<div class="empty-tip">${cy} 年 ${cm} 月还没有记录，换个月份看看</div>`}
+    </div>`}
+  </div>`;
+}
+/* 记录页的「日历」视图：直接复用日历页本体（底栏已没有日历 tab，这里是它的入口）。
+   用 embed 参数让它跳过 cover，只留 wrap 正文 —— 否则记录页里会出现两个页头。 */
+function calMonthBody(){
+  const keep=ST.embed; ST.embed=1;
+  const h=viewCal();
+  ST.embed=keep;
+  const a=h.indexOf('<div class="wrap">');
+  return a<0?h:`<div class="sec">${h.slice(a+18).replace(/<\/div>\s*$/,'')}</div>`;
+}
+function navRec(y,m){
+  const chMonth=(m&&m!==ST.recM);       /* 只有点月份才翻页；换年份不翻 */
+  ST.recY=y;ST.recM=m||0;ST.flip=chMonth;route();
+}
+
+/* ── 身体 ── */
+function viewBody(){
+  const b=D.body.slice().sort((x,y)=>x.date<y.date?-1:1);
+  const W=342,H=150,pad=18;
+  const w=b.map(r=>r.weight_jin), mn=Math.min(...w)-1, mx=Math.max(...w)+1, rg=mx-mn;
+  const step=(W-pad*2)/Math.max(b.length-1,1);
+  const pw=b.map((r,i)=>[pad+i*step, H-pad-((r.weight_jin-mn)/rg)*(H-pad*2-30)]);
+  const bf=b.map(r=>r.bf_pct), bn=Math.min(...bf)-.5, bx=Math.max(...bf)+.5;
+  const pf=b.map((r,i)=>[pad+i*step, H-pad-((r.bf_pct-bn)/(bx-bn))*(H-pad*2-30)]);
+  const latest=b[b.length-1], first=b[0];
+  return head({month:spanLabel(b.map(r=>r.date)),t:'身体数据',s:`薄荷体脂秤读数 · 共 ${b.length} 次记录`},'Body Metrics')+
+  `<div class="wrap">
+    <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">体重与体脂</span><span class="en2">Trend</span><span class="ln"></span></div>
+      <div class="card block">
+        <div class="chartbox">
+          <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" id="bsvg">
+            <g stroke="var(--grid)"><line x1="0" y1="${pad}" x2="${W}" y2="${pad}"/>
+              <line x1="0" y1="${(H/2).toFixed(0)}" x2="${W}" y2="${(H/2).toFixed(0)}"/>
+              <line x1="0" y1="${H-pad}" x2="${W}" y2="${H-pad}"/></g>
+            <polyline fill="none" stroke="var(--warn)" stroke-width="1.6" stroke-dasharray="4 3"
+              points="${pf.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" opacity=".85"/>
+            <polyline fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linejoin="round"
+              points="${pw.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}"/>
+            ${pw.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.4" fill="var(--gold)" class="barhit"
+              ontouchstart="evB(${i})" onclick="evB(${i})"/>
+              <rect x="${(p[0]-13).toFixed(1)}" y="${(p[1]-16).toFixed(1)}" width="26" height="30" fill="transparent" class="barhit"
+              onclick="evB(${i})"/>`).join('')}
+            <text x="0" y="12" font-size="8.5" fill="var(--ink3)">金线＝体重（斤）　橙虚线＝体脂率（%）</text>
+          </svg>
+          <div class="tip" id="btip"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:4px">
+          <span>${first.date.slice(5)}</span><span>${latest.date.slice(5)}</span></div>
+        <div class="cap">点任一金色圆点，显示那次称重的所有数据</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">02</span><span class="tt">变化小结</span><span class="en2">Delta</span><span class="ln"></span></div>
+      <div class="card block">
+        <div class="srow2"><b>体重</b><span>${first.weight_jin} → ${latest.weight_jin} 斤（${(latest.weight_jin-first.weight_jin>0?'+':'')}${(latest.weight_jin-first.weight_jin).toFixed(1)}）</span></div>
+        <div class="srow2"><b>体脂率</b><span>${first.bf_pct} → ${latest.bf_pct} %（${(latest.bf_pct-first.bf_pct>0?'+':'')}${(latest.bf_pct-first.bf_pct).toFixed(1)}）</span></div>
+        <div class="srow2"><b>去脂体重</b><span>${first.lean_jin} → ${latest.lean_jin} 斤</span></div>
+        <div class="srow2"><b>基础代谢</b><span>${first.bmr} → ${latest.bmr} kcal</span></div>
+        <div class="srow2"><b>目标</b><span>${D.profile['目标斤']} 斤，还差 <b style="color:var(--gold)">${(latest.weight_jin-D.profile['目标斤']).toFixed(1)}</b> 斤</span></div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">03</span><span class="tt">围度</span><span class="en2">Girth</span><span class="ln"></span></div>
+      <div class="card block">
+        ${(D.girths||[]).map(g=>`<div class="srow2"><b>${g.date.slice(5)} 测量</b>
+          <span>胸 ${g['胸围']} · 腰 ${g['腰围']} · 臀 ${g['臀围']} · 腿 ${g['腿围']} · 臂 ${g['臂围']} cm</span></div>`).join('')}
+        <div class="cap">单位为厘米 · 臂围越大越好，其余越小越好</div>
+      </div></div>
+
+    <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">全部称重</span><span class="en2">Log</span><span class="ln"></span></div>
+      <div class="card block"><table>
+        <tr><th>日期</th><th>体重斤</th><th>体脂%</th><th>去脂斤</th><th>代谢</th></tr>
+        ${D.body.map(r=>`<tr class="tap" onclick="evB(${D.body.slice().sort((x,y)=>x.date<y.date?-1:1).findIndex(v=>v.date===r.date)})">
+          <td>${r.date.slice(5)}</td><td>${r.weight_jin}</td><td>${r.bf_pct}</td><td>${r.lean_jin}</td><td>${r.bmr}</td></tr>`).join('')}
+      </table></div></div>
+  </div>`;
+}
+
+function evB(i){
+  const b=D.body.slice().sort((x,y)=>x.date<y.date?-1:1)[i];
+  openSheet(`<h3>${b.date} 称重</h3><div class="sst">第 ${b.i} 次记录（1＝最新）</div>
+    <div class="srow2"><b>体重</b><span>${b.weight_jin} 斤</span></div>
+    <div class="srow2"><b>体脂率</b><span>${b.bf_pct} %</span></div>
+    <div class="srow2"><b>脂肪量</b><span>${b.fat_jin} 斤</span></div>
+    <div class="srow2"><b>去脂体重</b><span>${b.lean_jin} 斤</span></div>
+    <div class="srow2"><b>基础代谢</b><span>${b.bmr} kcal</span></div>
+    <div class="srow2"><b>内脏脂肪</b><span>${b.visceral} 级</span></div>
+    <div class="srow2"><b>健康评分</b><span>${b.health} 分</span></div>`);
+}
+
+/* ── 某天明细 ── */
+/* kind: 'run'/'跑步' 只看跑步 · 'lift'/'器械' 只看器械 · 空＝这一天全部 */
+function detailDay(ds,kind){
+  kind = (kind==='跑步'||kind==='run') ? 'run'
+       : (kind==='器械'||kind==='lift') ? 'lift' : null;
+  const all=D.recent.filter(r=>r.date===ds).sort((a,b)=>a.time<b.time?1:-1);
+  const list = kind==='run'  ? all.filter(r=>r.类型==='跑步')
+             : kind==='lift' ? all.filter(r=>['力量训练','核心训练'].indexOf(r.类型)>=0)
+             : all;
+  const st = kind==='run' ? null : D.strength.find(s=>s.date===ds);
+  const j=D.journal.find(e=>e.date===ds);
+  const tot=list.reduce((a,b)=>a+b.时长,0), kcal=list.reduce((a,b)=>a+(b.消耗||0),0);
+  const km=list.reduce((a,b)=>a+(b.距离||0),0);
+  const dt=new Date(ds), wd=WD[(dt.getDay()+6)%7];
+  const FL=['轻松','有点累','累但能扛','很累','撑不住'];
+  const maxT=Math.max(...list.map(r=>r.时长),1);
+  const KIND={run:'跑步',lift:'器械'};
+  if(!list.length&&!st){
+    /* 没训练不等于没数据 —— 手表可能记了身体指标（静息心率/HRV/步数…），
+       这种日子打开就看到身体数据，别甩一句"没有记录"（2026-10-18） */
+    const hb=hmDayBlock(ds);
+    if(hb){
+      openSheet(`<div style="display:flex;gap:12px;align-items:center">
+        <div class="calbox"><div class="tear"></div><div class="m">${+ds.slice(5,7)} 月</div>
+          <div class="d">${ds.slice(8)}</div><div class="w">${wd}</div></div>
+        <div style="flex:1;min-width:0">
+          <h3 style="margin:0">${ds.slice(0,4)} 年 ${+ds.slice(5,7)} 月 ${+ds.slice(8)} 日</h3>
+          <div class="sst">这天没有训练记录</div></div></div>
+        ${hb}`);
+      return;
+    }
+    openSheet(`<h3>${ds.slice(5).replace('-',' 月 ')} 日</h3>
+      <div class="sst">这天没有${KIND[kind]||''}记录</div>`);return;
+  }
+  let html=`<div style="display:flex;gap:12px;align-items:center">
+      <div class="calbox"><div class="tear"></div><div class="m">${+ds.slice(5,7)} 月</div>
+        <div class="d">${ds.slice(8)}</div><div class="w">${wd}</div></div>
+      <div style="flex:1;min-width:0">
+        <h3 style="margin:0">${ds.slice(0,4)} 年 ${+ds.slice(5,7)} 月 ${+ds.slice(8)} 日${
+          KIND[kind]?' · '+KIND[kind]:''}</h3>
+        <div class="sst">${list.length?list.length+' 次':'—'} ${KIND[kind]?KIND[kind]+'':'运动'} · 合计 ${hm(tot)} · ${kcal} kcal${km?` · ${km.toFixed(2)} km`:''}</div>
+        ${j?`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;row-gap:6px;margin-top:7px">
+          <span style="font-size:9.5px;color:var(--ink3)">疲劳</span>
+          <span style="display:flex;gap:2px">${[1,2,3,4,5].map(i=>
+            `<i style="width:15px;height:5px;border-radius:2px;background:${i<=j.疲劳?'var(--warn)':'var(--line2)'}"></i>`).join('')}</span>
+          <span style="font-size:9.5px;color:var(--ink2)">${FL[j.疲劳-1]||''}</span>
+        </div>`:''}
+      </div></div>`;
+  if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'构成':'当天训练构成'}</div>`+
+   list.map(r=>`<div style="display:grid;grid-template-columns:70px 1fr 52px;gap:8px;align-items:center;padding:4px 0;font-size:10.5px">
+      <span style="color:var(--ink2)">${(TY[r.类型]||['·'])[0]} ${r.类型}</span>
+      <span style="height:9px;background:var(--line2);border-radius:5px;overflow:hidden">
+        <i style="display:block;height:100%;width:${(r.时长/maxT*100).toFixed(0)}%;background:var(--${(TY[r.类型]||['','run'])[1]});border-radius:5px"></i></span>
+      <span style="text-align:right;color:var(--ink3);font-family:ui-monospace,Menlo,monospace">${Math.round(r.时长)} 分</span></div>`).join('');
+  if(list.length) html+=`<div class="sh2">${KIND[kind]?KIND[kind]+'明细':'训练明细'}</div>`+
+   list.map(r=>{
+     const rtId=(D.routeIdx&&D.routeIdx.idx||[]).find(x=>x.date===ds&&x.time===r.time&&x.type===r.类型);
+     return `<div class="srow2" style="margin-top:6px">
+      <b>${(TY[r.类型]||['·'])[0]} ${r.类型}</b>
+      <span>${r.time} · ${Math.round(r.时长)}分${r.距离?' · '+r.距离+'km':''}${hasPace(r)?' · '+r.配速显示:''}</span></div>
+     <div style="font-size:10px;color:var(--ink3);margin:4px 0 8px">心率 ${r.平均心率}${r.最高心率?'（最高 '+r.最高心率+'）':''} · ${r.消耗} kcal${r.地形?' · '+r.地形:''}</div>
+     ${rtId?`<div style="margin:0 0 10px"><button class="rtgo" onclick="openRoute('${rtId.id}')">⌖ 查看路线轨迹</button></div>`:''}`;
+   }).join('');
+  html+=hmDayBlock(ds);
+  if(st){
+    html+=`<div class="sh2">力量动作 · ${esc(st.title||'')}（${st.items.length} 个）</div>
+      <div>${st.items.map((it,i)=>`<div class="ex">
+        <div class="no">${i+1}</div>
+        <div class="mid"><b>${esc(it.name)}</b>
+          <div class="meta">${it.gear?esc(it.gear)+' · ':''}${it.部位?'部位：'+esc(it.部位):''}</div>
+          ${it.note?`<div class="note">${esc(it.note)}</div>`:''}</div>
+        <div class="val">${it.kg?`<b>${it.kg}<i style="font-style:normal;font-size:9px;color:var(--ink2)"> kg</i></b>`
+          :`<b style="font-size:12.5px;font-family:-apple-system,'PingFang SC',sans-serif">徒手</b>`}
+          <span>${it.sets} 组 × ${it.reps}</span></div>
+      </div>`).join('')}</div>`;
+  }
+  if(j) html+=`<div class="sh2" style="margin-top:14px">训练手记${(j.图表&&j.图表.日期)?' · '+j.图表.日期.length+' 天数据对比':''}</div>${jBlock(j)}`;
+  openSheet(html);
+}
+
+/* ── sheet / toast ── */
+function openSheet(h){document.getElementById('sheetBody').innerHTML=h;
+  document.getElementById('mask').classList.add('on');document.getElementById('sheet').classList.add('on');}
+function closeSheet(){document.getElementById('mask').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');}
+function toast(t){
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:200;'+
+    'background:var(--ink);color:var(--bg);font-size:12px;padding:9px 15px;border-radius:10px;'+
+    'box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:80%;line-height:1.5;opacity:0;transition:opacity .2s';
+  el.textContent=t;document.body.appendChild(el);
+  requestAnimationFrame(()=>el.style.opacity='1');
+  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),250)},2200);
+}
+
+/* ── 路由 ──
+   历史策略（阿成 2026-10-03 要求「一划就回首页，别一级一级退」）：
+     · 首页 → 子页 ：pushState，压一条
+     · 子页 → 子页 ：replaceState，替换
+     · 任何 → 首页 ：replaceState，把中间站全部顶掉
+   这样不管在站里点了多少层，从屏幕左侧往右滑（系统的返回手势）
+   都一步落到首页，而不是一层层往回退。 */
+const V={'#/':viewHome,'#/overview':viewOvr,'#/calendar':viewCal,'#/records':viewRec,
+  '#/train':viewTrain,'#/route':viewRoute,'#/body':viewBody,'#/advice':viewAdvice};
+let CUR=location.hash||'#/';
+
+function paint(){
+  ST.pick=ST.pick||{}; ST.focus=ST.focus===undefined?null:ST.focus; ST.hmode=ST.hmode||'chart';
+  const h=location.hash||'#/';
+  if(h!=='#/calendar') ST.caly=0;   // 离开日历页就退出年视图，回来默认显示月历
+  const app=document.getElementById('app');
+  app.innerHTML=(V[h]||viewHome)();
+  app.style.animation='none'; void app.offsetWidth; app.style.animation='';
+  document.querySelectorAll('#tab a').forEach(a=>a.classList.toggle('on',a.dataset.r===h));
+  if(h==='#/overview'){renderMix();renderPace();renderJ();}
+  window.scrollTo(0,0);
+  syncTh();
+}
+/* 重渲染（hash 没变也要重画时用，比如日历翻月） */
+function route(){CUR=location.hash||'#/';paint()}
+/* 首页两种模式：图表优先 / 数字优先。切换时重画整页，
+   但要记住滚动位置 —— 否则用户滑到一半点一下就跳回顶部。 */
+function setHMode(m){
+  if(ST.hmode===m) return;
+  const y=window.scrollY;
+  ST.hmode=m; route();
+  window.scrollTo(0,y);
+}
+
+function navigate(t){
+  if(t===CUR) return;
+  try{
+    if(t==='#/') history.replaceState(null,'',t);
+    else if(CUR==='#/') history.pushState(null,'',t);
+    else history.replaceState(null,'',t);
+  }catch(e){ location.hash=t; return; }   // 极老浏览器兜底
+  CUR=t; paint();
+}
+function goHome(){ if(CUR!=='#/') navigate('#/') }
+
+/* 站内所有 <a href="#/…"> 交给 navigate 处理（内联 onclick 仍会照常跑） */
+document.addEventListener('click',e=>{
+  const a=e.target.closest&&e.target.closest('a[href^="#/"]');
+  if(!a) return;
+  e.preventDefault();
+  navigate(a.getAttribute('href'));
+},true);
+
+/* 屏幕左边缘往右滑 → 直接回首页。
+   占位 28px、横向位移 64px 内触发、竖向为主就放弃（不干扰上下滚动）。
+   在 Safari 里系统的边缘返回手势可能抢先接管（此时我们收不到 pointer 事件），
+   但因为有上面的浅历史，系统返回同样落在首页 —— 两条路殊途同归。 */
+let _sg=null;
+document.addEventListener('pointerdown',e=>{
+  if(e.clientX>28) return;
+  if(document.getElementById('sheet').classList.contains('on')) return;   // 明细弹层开着时不抢
+  _sg={x:e.clientX,y:e.clientY,ok:true};
+},{passive:true});
+document.addEventListener('pointermove',e=>{
+  if(!_sg||!_sg.ok) return;
+  const dx=e.clientX-_sg.x, dy=e.clientY-_sg.y;
+  if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12){_sg.ok=false;return}      // 竖向滚动，放行
+  if(dx>64){_sg.ok=false; goHome()}
+},{passive:true});
+document.addEventListener('pointerup',()=>{_sg=null},{passive:true});
+document.addEventListener('pointercancel',()=>{_sg=null},{passive:true});
+
+function setTh(m){THMODE=m;localStorage.setItem('thm',m);syncTh()}   // 'auto' | 'l' | 'd'
+function syncTh(){
+  ST.theme=wantDark();            // 每次都从 THMODE 重算 —— 别只更新 auto 分支，否则点浅色没反应
+  document.body.classList.toggle('dk',ST.theme);
+  document.querySelectorAll('.sw button').forEach(b=>{
+    b.classList.toggle('on',b.dataset.m===THMODE);
+    b.setAttribute('aria-pressed',b.dataset.m===THMODE?'true':'false');
+  });
+}
+/* 手机系统切换深/浅色时，只有「自动」模式跟着换；手动选过的不动。
+   除了 change 事件，回到前台/从缓存恢复时也补一次同步 ——
+   iOS 在后台切主题时不一定会派发 change，光靠它会有"没及时跟上"。 */
+MQ.addEventListener('change',syncTh);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncTh()});
+window.addEventListener('pageshow',syncTh);
+window.addEventListener('focus',syncTh);
+window.addEventListener('popstate',()=>{CUR=location.hash||'#/';paint()});
+window.addEventListener('hashchange',()=>{CUR=location.hash||'#/';paint()});
+
+/* data.json 加 cache-bust：GitHub Pages 会给它 10 分钟缓存，不破一下的话
+   手机刷新看到的还是旧数据（他反馈过"改了没生效"）。文件才 120KB 级，不值一提。 */
+fetch('data.json?v='+Date.now()).then(r=>r.json()).then(d=>{
+  if(d.v && d.v!==APPV && !upgrading(d.v)) return;   // 页面旧、数据新 → 自动刷一次新版
+  Object.assign(D,d);route();
+})
+  .catch(e=>{document.getElementById('app').innerHTML='<div class="empty-tip">数据加载失败：'+e+'</div>'});
+
+/* 检测到线上有新版本：提示后换 URL 重载（带 cb 参数绕开 Safari 的文档缓存）。
+   用 sessionStorage 兜底，避免万一拉不到新版时反复重载。 */
+function upgrading(v){
+  let done=false;
+  try{ done = sessionStorage.getItem('up_'+v)==='1'; sessionStorage.setItem('up_'+v,'1'); }catch(e){}
+  if(done) return false;
+  try{ toast('已更新到新版，正在刷新…'); }catch(e){}
+  setTimeout(()=>{location.replace(location.href.split('?')[0].split('#')[0]+'?cb='+Date.now());},900);
+  return true;
+}
+</script>
+</body>
+</html>
