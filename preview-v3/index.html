@@ -1143,7 +1143,7 @@ const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="b5017040412";
+const APPV="b48e2425fe3";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1788,6 +1788,9 @@ function viewHome(){
       <div class="sectt"><i></i><b>体重与目标</b><span>${w.date.slice(5)} 称重</span></div>
       ${wCard}
     </div>`:''}
+
+    <!-- ⑤ 今日身体（健康指标：静息心率 / HRV / 血氧 + 活动四项） -->
+    ${hmHomeCard()}
 
     ${sigBlock}
 
@@ -2443,16 +2446,18 @@ function hmHomeCard(){
   let act=null;
   for(let i=days.length-1;i>=0;i--){ if(days[i].steps!=null){act=days[i];break;} }
   const actHtml=act?`<div class="hmact">
-      ${[['👟','步数',fmtNum(act.steps),'步'],['🔥','锻炼',act.exmin!=null?act.exmin:'—','分钟'],
-         ['🧍','站立',act.stand!=null?act.stand:'—','小时'],['🪜','爬楼',act.flights!=null?act.flights:'—','层']]
-        .map(a=>`<div class="ac"><i>${a[0]}</i><b>${a[2]}</b><span>${a[3]}</span></div>`).join('')}
+      ${[['步数',fmtNum(act.steps)],
+         ['锻炼分钟',act.exmin!=null?act.exmin:'—'],
+         ['站立小时',act.stand!=null?act.stand:'—'],
+         ['爬楼层数',act.flights!=null?act.flights:'—']]
+        .map(a=>`<div class="ac"><b>${a[1]}</b><span>${a[0]}</span></div>`).join('')}
     </div>`:'';
   const spark=hmSparkHTML();
   const gap=hmGapNote();
-  return `<div class="sec"><div class="shead"><span class="tt">今日身体</span><span class="en2">Body</span><span class="ln"></span></div>
+  return `<div class="sec"><div class="sectt"><i></i><b>今日身体</b><span>最近一次 ${last.d.slice(5).replace('-','/')} · 点开看全部</span></div>
     <div class="card block tap" onclick="hmSheet()">
       <div style="display:flex;align-items:baseline;justify-content:space-between">
-        <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">最近一次记录 · ${last.d.slice(5).replace('-','/')}</div>
+        <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.5px">静息心率 · HRV · 血氧</div>
         <div style="font-size:9.5px;color:var(--gold);font-weight:600">更多指标 ▸</div></div>
       <div class="hmgrid" style="grid-template-columns:repeat(${cells.split('<div class="hc">').length-1||1},1fr)">${cells}</div>
       ${actHtml}
