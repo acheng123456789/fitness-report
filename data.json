@@ -6397,10 +6397,22 @@
      "部位": "背",
      "note": "试重：单边 20kg 吃力 → 15kg 做 2 个仍吃力 → 10kg 完成 5×12 · 左侧明显比右侧吃力，左肩关节有轻微扭动/不适感，右侧正常 · 标牌 ISO-LATERAL CROSS LAT PULLDOWN（JW SPORT）",
      "photos": [
-      "photos/2026-10-20-iso-lateral-lat-pulldown-1.jpg",
-      "photos/2026-10-20-iso-lateral-lat-pulldown-2.jpg"
+      "photos/2026-10-20-iso-lateral-lat-pulldown-1.jpg"
      ],
      "photoName": "ISO-LATERAL CROSS LAT PULLDOWN"
+    },
+    {
+     "name": "仰卧起坐",
+     "gear": "自重",
+     "sets": 4,
+     "reps": "10–25",
+     "kg": null,
+     "部位": "核心",
+     "note": "各组 25 / 20 / 10 / 10，第四组后力竭 · 斜板标牌 WEB BOARD（坡度固定偏高、不可调）· 双滚轴勾脚 · 合计 65 个",
+     "photos": [
+      "photos/2026-10-20-web-board-situp.jpg"
+     ],
+     "photoName": "WEB BOARD"
     }
    ]
   }
@@ -6930,5 +6942,5 @@
    "health": 80
   }
  ],
- "v": "b8c425dad64"
+ "v": "b34585b709e"
 }

@@ -426,17 +426,28 @@ body.dk .quote{background:rgba(255,255,255,.04)}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .empty-tip{text-align:center;font-size:11.5px;color:var(--ink3);padding:26px 0}
 
-/* 器械照片缩略图：点开看大图（2026-10-20 阿成要的） */
-.phs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.ph{width:96px;cursor:pointer;border-radius:10px;overflow:hidden;
-  border:1px solid var(--line);background:var(--line2)}
-.ph img{width:96px;height:72px;object-fit:cover;display:block;transition:opacity .15s}
-.ph:active img{opacity:.75}
-.ph span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  font-size:8px;line-height:1.35;color:var(--ink3);padding:4px 5px 5px;letter-spacing:.02em}
-.phview img{width:100%;max-height:62vh;object-fit:contain;border-radius:12px;display:block;
-  margin-top:10px;background:var(--line2)}
-.phview .pcap{font-size:9.5px;color:var(--ink3);margin-top:8px;text-align:center;letter-spacing:.06em}
+/* 器械照片：卡片里一张横幅图，点开全屏看（2026-10-20 第二版，阿成说第一版别扭） */
+.phw{position:relative;margin-top:11px;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);background:var(--line2);cursor:pointer}
+.phw img{width:100%;height:138px;object-fit:cover;display:block;transition:transform .3s ease}
+.phw:active img{transform:scale(.985)}
+.phw .nm{position:absolute;left:10px;bottom:9px;max-width:calc(100% - 20px);
+  font-size:9.5px;letter-spacing:.05em;color:#fff;line-height:1.2;
+  background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  padding:5px 9px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;
+  background:#06080b;opacity:0;pointer-events:none;transition:opacity .22s ease}
+.pv.on{opacity:1;pointer-events:auto}
+.pvbar{padding:calc(env(safe-area-inset-top,0px) + 16px) 60px 4px 20px;color:#fff}
+.pvbar b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.2px}
+.pvbar span{display:block;font-size:9px;letter-spacing:.14em;color:rgba(255,255,255,.5);margin-top:4px;text-transform:uppercase}
+.pv img{flex:1;min-height:0;width:100%;object-fit:contain;padding:10px 0 30px;
+  transform:scale(.985);transition:transform .24s ease}
+.pv.on img{transform:scale(1)}
+.pvx{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;
+  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.13);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1}
+.pvx:active{background:rgba(255,255,255,.24)}
 </style>
 </head>
 <body>
@@ -461,13 +472,18 @@ try{var _m=localStorage.getItem('thm')||'auto';
 
 <div id="mask" onclick="closeSheet()"></div>
 <div id="sheet"><div class="grab"></div><div class="sbody" id="sheetBody"></div></div>
+<div id="pv" class="pv" onclick="closePhoto()">
+  <div class="pvbar"><b>器械照片</b><span></span></div>
+  <img alt="">
+  <div class="pvx" onclick="event.stopPropagation();closePhoto()">✕</div>
+</div>
 
 <script>
 const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="b8c425dad64";
+const APPV="b34585b709e";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1210,8 +1226,8 @@ function liftBody(){
             <div style="font-size:12.5px;font-weight:600">${esc(s.title||'力量训练')}</div>
             <div style="font-size:10px;color:var(--ink3);margin-top:3px">${s.items.length} 个动作 · ${setsOf(s)} 组 · ${Object.keys(s.items.reduce((a,i)=>{a[i.部位||'其他']=1;return a},{})).join('·')}</div>
           </div></div>
+        ${s.items.map(i=>photoBanner(i)).join('')}
         <div class="chips">${s.items.map(i=>`<span class="chip">${esc(i.name)} ${i.kg?i.kg+'kg':'徒手'}</span>`).join('')}</div>
-        ${s.items.map(i=>photoThumbs(i)).join('')}
       </div></div>`).join('')}</div>`;
 }
 
@@ -1530,12 +1546,11 @@ function detailDay(ds,kind){
         <div class="no">${i+1}</div>
         <div class="mid"><b>${esc(it.name)}</b>
           <div class="meta">${it.gear?esc(it.gear)+' · ':''}${it.部位?'部位：'+esc(it.部位):''}</div>
-          ${it.note?`<div class="note">${esc(it.note)}</div>`:''}
-          ${photoThumbs(it)}</div>
+          ${it.note?`<div class="note">${esc(it.note)}</div>`:''}</div>
         <div class="val">${it.kg?`<b>${it.kg}<i style="font-style:normal;font-size:9px;color:var(--ink2)"> kg</i></b>`
           :`<b style="font-size:12.5px;font-family:-apple-system,'PingFang SC',sans-serif">徒手</b>`}
           <span>${it.sets} 组 × ${it.reps}</span></div>
-      </div>`).join('')}</div>`;
+      </div>${photoBanner(it)}`).join('')}</div>`;
   }
   if(j) html+=`<div class="sh2" style="margin-top:14px">训练手记${(j.图表&&j.图表.日期)?' · '+j.图表.日期.length+' 天数据对比':''}</div>${jBlock(j)}`;
   openSheet(html);
@@ -1546,19 +1561,22 @@ function openSheet(h){document.getElementById('sheetBody').innerHTML=h;
   document.getElementById('mask').classList.add('on');document.getElementById('sheet').classList.add('on');}
 function closeSheet(){document.getElementById('mask').classList.remove('on');
   document.getElementById('sheet').classList.remove('on');}
-/* 器械照片：点缩略图 → 弹层看大图，标题是机器名（标牌上的英文名） */
-function showPhoto(src,name){
-  openSheet(`<h3 style="margin:0">${esc(name)}</h3><div class="sst">器械照片</div>
-    <div class="phview"><img src="${esc(src)}" alt="${esc(name)}"></div>`);
-}
-/* 一条动作的缩略图行（有 photos 才渲染；点开看大图并显示机器名） */
-function photoThumbs(it){
+/* 器械照片：卡片里一张横幅图 → 点开全屏（图上写机器名）。只取远景图 photos[0]，
+   细节图（标牌特写）只用来让 AI 认名字，不放进记录 —— 阿成 2026-10-20 明确要求 */
+function photoBanner(it){
   const ps=(it&&it.photos||[]).filter(Boolean); if(!ps.length) return '';
   const nm=it.photoName||it.name||'';
-  return `<div class="phs">${ps.map(src=>
-    `<div class="ph" onclick="event.stopPropagation();showPhoto('${src}','${esc(nm)}')">
-      <img src="${src}" loading="lazy" alt="${esc(nm)}"><span>${esc(nm)}</span></div>`).join('')}</div>`;
+  return `<div class="phw" onclick="event.stopPropagation();openPhoto('${ps[0]}','${esc(it.name||'')}','${esc(nm)}')">
+    <img src="${ps[0]}" loading="lazy" alt="${esc(nm)}"><div class="nm">${esc(nm)}</div></div>`;
 }
+function openPhoto(src,title,sub){
+  const pv=document.getElementById('pv');
+  pv.querySelector('b').textContent=title||'器械照片';
+  pv.querySelector('.pvbar span').textContent=sub||'';
+  pv.querySelector('img').src=src;
+  pv.classList.add('on');
+}
+function closePhoto(){document.getElementById('pv').classList.remove('on');}
 function toast(t){
   const el=document.createElement('div');
   el.style.cssText='position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:200;'+
