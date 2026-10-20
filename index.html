@@ -425,6 +425,18 @@ body.dk .quote{background:rgba(255,255,255,.04)}
 #app{animation:fade .3s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .empty-tip{text-align:center;font-size:11.5px;color:var(--ink3);padding:26px 0}
+
+/* 器械照片缩略图：点开看大图（2026-10-20 阿成要的） */
+.phs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ph{width:96px;cursor:pointer;border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);background:var(--line2)}
+.ph img{width:96px;height:72px;object-fit:cover;display:block;transition:opacity .15s}
+.ph:active img{opacity:.75}
+.ph span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font-size:8px;line-height:1.35;color:var(--ink3);padding:4px 5px 5px;letter-spacing:.02em}
+.phview img{width:100%;max-height:62vh;object-fit:contain;border-radius:12px;display:block;
+  margin-top:10px;background:var(--line2)}
+.phview .pcap{font-size:9.5px;color:var(--ink3);margin-top:8px;text-align:center;letter-spacing:.06em}
 </style>
 </head>
 <body>
@@ -455,7 +467,7 @@ const D={};
 /* 页面版本号 —— build_preview_data.py 每次重建会自动改写成新值，别手改。
    主屏 PWA（iOS 独立模式）会把 index.html 整份缓存死，改了页面他刷不到；
    data.json 是 cache-bust 拉的新版，拿它的 v 跟这里比，不一致 = 页面旧了 → 换 URL 重载。 */
-const APPV="b1fed23310a";
+const APPV="b8c425dad64";
 const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
@@ -1199,6 +1211,7 @@ function liftBody(){
             <div style="font-size:10px;color:var(--ink3);margin-top:3px">${s.items.length} 个动作 · ${setsOf(s)} 组 · ${Object.keys(s.items.reduce((a,i)=>{a[i.部位||'其他']=1;return a},{})).join('·')}</div>
           </div></div>
         <div class="chips">${s.items.map(i=>`<span class="chip">${esc(i.name)} ${i.kg?i.kg+'kg':'徒手'}</span>`).join('')}</div>
+        ${s.items.map(i=>photoThumbs(i)).join('')}
       </div></div>`).join('')}</div>`;
 }
 
@@ -1237,12 +1250,11 @@ function viewAdvice(){
   `<div class="wrap">
 
     <div class="sec"><div class="shead"><span class="no">01</span><span class="tt">先处理这三件事</span><span class="en2">Priority</span><span class="ln"></span></div>
-      ${card('a1','p1','左肩先停下来，别硬扛',
-        `你的手记里，16 天内左肩报了三次警：9/15 洗头抬手使不上劲、9/25 蝴蝶机反向飞鸟左手发力受阻、10/01 撞了一下后抬手有阻力感 + 扩胸有撕裂拉扯感。这种"使不上劲＋撕裂感"不是普通酸痛，更像肩袖在抗议。`,
-        ['48 小时内停掉所有推类动作：卧推、坐姿推胸、夹胸、飞鸟',
-         '这周去查一次肩部超声，排除肩袖部分撕裂',
-         '想练上半身就改成拉类：高位下拉、坐姿划船、弹力带外旋',
-         '疼的时候别做拉伸硬掰，越掰越刺激'])}
+      ${card('a2','p3','左肩已经恢复，推类可以正常练',
+        `你 10/20 确认：之前那次左肩撞击疼早就缓解了，现在没有影响。原来这里写的是"停掉推类、去做超声"，按你的反馈改掉，别再用旧结论约束训练。`,
+        ['推类回到常规安排：卧推、坐姿推胸、夹胸都可以练',
+         '上重量前留 2 组空杆 / 弹力带外旋热身，肩袖更稳',
+         '以后若再出现抬手阻力感或撕裂感，先停推类再复查'])}
       ${card('a2','p2','跑步太快了，慢下来反而进步更快',
         `10/01 那次 5 公里，平均心率 ${avgHrNow} bpm。按你档案里设的最大心率 ${hrMax} 算是 ${Math.round(avgHrNow/hrMax*100)}%，落在"很用力"这一档；就算按记录里跑出过的峰值 ${obsHr} 算，也有 ${Math.round(avgHrNow/obsHr*100)}% —— 已经是能练耐力底子的上限了。<br>
          问题不在某一次跑得狠，而在"几乎每次都这么快"：轻松跑占比太低，有氧地基就搭不起来，还容易累积疲劳、恢复不过来。`,
@@ -1293,7 +1305,7 @@ function viewAdvice(){
 
     <div class="sec"><div class="shead"><span class="no">04</span><span class="tt">一周可以这样排</span><span class="en2">Weekly Plan</span><span class="ln"></span></div>
       <div class="card block">
-        ${[['周一','器械 · 以拉类为主（推类暂停）','40 分钟 · 左肩没查清前，胸推、夹胸先不排'],
+        ${[['周一','器械 · 上身（推拉都排）','40 分钟 · 推类已恢复正常，注意左右手发力对称'],
            ['周二','跑步 · 轻松跑','30 分钟 · 心率 '+z(.6,.7)+'，能聊天'],
            ['周三','休息 / 散步','30 分钟快走，不做强度'],
            ['周四','器械 · 腿臀 + 核心','40 分钟 · 深蹲/腿举 4 组'],
@@ -1518,7 +1530,8 @@ function detailDay(ds,kind){
         <div class="no">${i+1}</div>
         <div class="mid"><b>${esc(it.name)}</b>
           <div class="meta">${it.gear?esc(it.gear)+' · ':''}${it.部位?'部位：'+esc(it.部位):''}</div>
-          ${it.note?`<div class="note">${esc(it.note)}</div>`:''}</div>
+          ${it.note?`<div class="note">${esc(it.note)}</div>`:''}
+          ${photoThumbs(it)}</div>
         <div class="val">${it.kg?`<b>${it.kg}<i style="font-style:normal;font-size:9px;color:var(--ink2)"> kg</i></b>`
           :`<b style="font-size:12.5px;font-family:-apple-system,'PingFang SC',sans-serif">徒手</b>`}
           <span>${it.sets} 组 × ${it.reps}</span></div>
@@ -1533,6 +1546,19 @@ function openSheet(h){document.getElementById('sheetBody').innerHTML=h;
   document.getElementById('mask').classList.add('on');document.getElementById('sheet').classList.add('on');}
 function closeSheet(){document.getElementById('mask').classList.remove('on');
   document.getElementById('sheet').classList.remove('on');}
+/* 器械照片：点缩略图 → 弹层看大图，标题是机器名（标牌上的英文名） */
+function showPhoto(src,name){
+  openSheet(`<h3 style="margin:0">${esc(name)}</h3><div class="sst">器械照片</div>
+    <div class="phview"><img src="${esc(src)}" alt="${esc(name)}"></div>`);
+}
+/* 一条动作的缩略图行（有 photos 才渲染；点开看大图并显示机器名） */
+function photoThumbs(it){
+  const ps=(it&&it.photos||[]).filter(Boolean); if(!ps.length) return '';
+  const nm=it.photoName||it.name||'';
+  return `<div class="phs">${ps.map(src=>
+    `<div class="ph" onclick="event.stopPropagation();showPhoto('${src}','${esc(nm)}')">
+      <img src="${src}" loading="lazy" alt="${esc(nm)}"><span>${esc(nm)}</span></div>`).join('')}</div>`;
+}
 function toast(t){
   const el=document.createElement('div');
   el.style.cssText='position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:200;'+
