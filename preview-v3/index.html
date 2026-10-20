@@ -3775,15 +3775,15 @@ function viewRec(){
       return `<div class="${cls}" ${list.length?`onclick="navRec('${cy}',${m})"`:'style="cursor:default"'}>
         <b>${m} 月</b><span>${list.length?list.length+' 次':'—'}</span></div>`}).join('')}</div>`).join('');
   return head({month:ys.length>1?ys[ys.length-1]+' – '+ys[0]:ys[0],t:'全部记录',
-    s:`共 ${D.recent.length} 次运动 · 先选年，再点月份看那一段的明细`},'All Records')+
+    s:`共 ${D.recent.length} 次手表记录 · 日历看分布，列表按月翻明细`},'All Records')+
   `<div class="wrap">
     <div class="sec" style="margin-top:16px">
       <div class="segbar">
-        <button class="${ST.recView==='cal'?'':'on'}" onclick="ST.recView='cal';route()">日历</button>
-        <button class="${ST.recView==='list'?'on':''}" onclick="ST.recView='list';route()">列表</button>
+        <button class="${ST.recView==='cal'?'on':''}" onclick="ST.recView='cal';route()">日历</button>
+        <button class="${(ST.recView||'list')==='list'?'on':''}" onclick="ST.recView='list';route()">列表</button>
       </div>
     </div>
-    ${ST.recView==='cal'?calMonthBody():`
+    ${(ST.recView||'list')==='cal'?recCalBody():`
     <div class="sec">
       <div class="shead"><span class="no">01</span><span class="tt">选个月份</span><span class="en2">Period</span><span class="ln"></span></div>
       <div class="ychips">${ys.map(v=>`<button class="btn ${v===cy?'':'off'}" onclick="navRec('${v}',0)">${v} 年</button>`).join('')}</div>
@@ -3807,6 +3807,62 @@ function viewRec(){
 }
 /* 记录页的「日历」视图：直接复用日历页本体（底栏已没有日历 tab，这里是它的入口）。
    用 embed 参数让它跳过 cover，只留 wrap 正文 —— 否则记录页里会出现两个页头。 */
+/* 记录页的日历视图（v5 重做）：和首页同一套格子语言，可翻月。
+   ⚠️ 数据必须合并 D.strength —— 老版只读 D.recent，手动补录的器械日在这张日历上是空的，
+   跟首页对不上（他一定会发现"今天明明练了，日历里没有"）。 */
+function recCalBody(){
+  const ym=ST.ym||nowYM(), [Y,M]=ym.split('-').map(Number);
+  const days=allDays(), dim=new Date(Y,M,0).getDate();
+  const start=(new Date(Y,M-1,1).getDay()+6)%7;
+  let mx=1;
+  for(let d=1;d<=dim;d++){const o=days[Y+'-'+dsPad(M)+'-'+dsPad(d)]; if(o&&o.min>mx) mx=o.min}
+  const tds=dsOf(new Date());
+  let cells='',on=0;
+  for(let i=0;i<start;i++) cells+='<div class="cd empty"></div>';
+  for(let d=1;d<=dim;d++){
+    const ds=Y+'-'+dsPad(M)+'-'+dsPad(d), o=days[ds];
+    const has=!!(o&&(o.n||o.st));
+    let lv=0;
+    if(has){on++;lv=o.min>0?(o.min<mx*0.3?1:o.min<mx*0.6?2:o.min<mx*0.85?3:4):2}
+    const cls='cd'+(lv?' lv'+lv:'')+(ds===tds?' now':'');
+    cells+=`<div class="${cls}"${has?` onclick="detailDay('${ds}')"`:''} aria-label="${M} 月 ${d} 日${has?' 有训练':''}">
+      <span class="cdn">${d}</span>${o&&o.st?'<div class="dotline"><i></i></div>':''}</div>`;
+  }
+  const tail=(7-(start+dim)%7)%7;
+  for(let i=0;i<tail;i++) cells+='<div class="cd empty"></div>';
+
+  const ms=monthStat(ym), isCur=ym===nowYM();
+  return `<div class="sec">
+    <div class="sectt"><i></i><b>日历</b><span>点某天看当天做了什么</span></div>
+    <div class="card block mcal">
+      <div class="mnav">
+        <button onclick="navMonth(-1)" aria-label="上个月">‹</button>
+        <b>${Y} 年 ${M} 月</b>
+        <div class="mn">
+          ${isCur?'':'<button class="minibtn" style="width:auto;padding:0 9px" onclick="ST.ym=nowYM();route()">本月</button>'}
+          <button onclick="navMonth(1)" aria-label="下个月">›</button>
+        </div>
+      </div>
+      <div class="ch7">${['一','二','三','四','五','六','日'].map(x=>`<span>${x}</span>`).join('')}</div>
+      <div class="cg">${cells}</div>
+      <div class="leg"><span>练了 <b style="color:var(--gold);font-weight:700">${on}</b> 天</span>
+        <span style="margin-left:auto">金格＝有训练 · 小金点＝手动补录的器械</span></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sectt"><i></i><b>这个月</b><span>${Y} 年 ${M} 月</span></div>
+    <div class="card block">
+      <div class="duo" style="gap:0">
+        <div style="text-align:left"><div style="font-size:9.5px;color:var(--ink3);letter-spacing:.08em">训练次数</div>
+          <div style="font-size:23px;font-weight:700;letter-spacing:-.8px;margin-top:4px;font-variant-numeric:tabular-nums">${ms.n}<u style="font-size:10px;font-weight:600;color:var(--ink3);text-decoration:none;margin-left:3px">次</u></div></div>
+        <div style="text-align:left"><div style="font-size:9.5px;color:var(--ink3);letter-spacing:.08em">累计时长</div>
+          <div style="font-size:23px;font-weight:700;letter-spacing:-.8px;margin-top:4px;font-variant-numeric:tabular-nums">${ms.min?hrsOf(ms.min):'—'}<u style="font-size:10px;font-weight:600;color:var(--ink3);text-decoration:none;margin-left:3px">小时</u></div></div>
+      </div>
+      <div class="cap" style="margin-top:12px">${ms.d?`${ms.d} 天有训练${ms.min?` · 平均每次 ${Math.round(ms.min/ms.n)} 分钟`:''}`:'这个月还没有记录'}</div>
+    </div>
+  </div>`;
+}
+
 function calMonthBody(){
   const keep=ST.embed; ST.embed=1;
   const h=viewCal();
