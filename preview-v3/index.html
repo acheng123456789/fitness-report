@@ -2498,7 +2498,9 @@ function hmSparkHTML(){
   let body;
   if(arr.length<2){ body='<div class="cap">近两周数据不足</div>'; }
   else{
-    const W=342,H=46,PL=4,PR=4,PT=8,PB=8;
+    /* PT 留 14：最右那天的数值标签要写在点上方，顶部不留白会被 SVG 边界裁掉半个字
+       PR 留 18：最后一个点往左让开，标签才不会压在折线尾巴上（2026-10-21 阿成圈图）*/
+    const W=342,H=50,PL=4,PR=18,PT=14,PB=8;
     const vs=arr.map(p=>p.v); let lo=Math.min(...vs),hi=Math.max(...vs);
     if(hi===lo){hi+=1;lo-=1;}
     const t0=new Date(arr[0].d).getTime(),t1=new Date(arr[arr.length-1].d).getTime();
@@ -2507,11 +2509,14 @@ function hmSparkHTML(){
     const lines=hmSegs(arr).map(s=>`<polyline points="${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')}"
       fill="none" stroke="var(--gold)" stroke-width="1.7" stroke-linejoin="round"/>`).join('');
     const lastP=arr[arr.length-1];
+    /* 标签纵向夹住：点越靠顶，标签越贴近点，但不许越过上边界（9px 字至少要 12 的基线）*/
+    const labY=Math.min(Math.max(y(lastP.v)-4.5,12),H-PB-2);
     body=`<div class="hmchart"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
         ${hmSegs(arr).map(s=>`<polygon points="${PL},${H-PB} ${s.map(p=>`${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')} ${x(s[s.length-1].d).toFixed(1)},${H-PB}" fill="var(--gold)" fill-opacity=".10"/>`).join('')}
         ${lines}
         ${arr.map(p=>`<circle cx="${x(p.d).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="1.9" fill="var(--gold)"/>`).join('')}
-        <text x="${W-2}" y="${y(lastP.v)-4}" class="daxl" text-anchor="end" style="fill:var(--gold);font-weight:700">${hmFmt(k,lastP.v)}</text>
+        <text x="${W-2}" y="${labY.toFixed(1)}" class="daxl" text-anchor="end"
+          style="fill:var(--gold);font-weight:700;font-size:9px">${hmFmt(k,lastP.v)}</text>
       </svg></div>
       <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-top:2px">
         <span>${arr[0].d.slice(5).replace('-','/')}</span><span>${m.name}</span>
