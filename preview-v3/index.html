@@ -46,6 +46,7 @@ html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif;
   font-feature-settings:"tnum";-webkit-font-smoothing:antialiased;
+  overscroll-behavior-x:none;
   padding-bottom:calc(78px + env(safe-area-inset-bottom));transition:background .3s,color .3s}
 .wrap{max-width:430px;margin:0 auto;padding:0 16px}
 
@@ -672,7 +673,11 @@ body.dk .rflt button.on{color:#171102}
 .rflt button:active{transform:scale(.95)}
 /* 路线卡 */
 .rtc{display:flex;gap:12px;align-items:center;padding:11px 12px;margin-bottom:10px;cursor:pointer;
-  transition:transform .15s;-webkit-tap-highlight-color:transparent}
+  transition:transform .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* 可点元素统一 touch-action:manipulation —— 去掉 iOS 上"先判断是不是双击缩放"的 300ms 等待，
+   点击反馈立刻出来（2026-10-21：阿成说点路线卡片"很久才反应过来"，一半是下载、一半是这个）。 */
+.rtc,.card.tap,.wkbar .c,.mcal .cd,.hero-today .go,#tab a,.segbar button,.rflt button,.rows .rw{
+  touch-action:manipulation}
 .rtc:active{transform:scale(.98)}
 .rtc .rtmini{flex:none;width:92px;height:68px;border-radius:9px;background:var(--emb);
   border:1px solid var(--line2);position:relative;overflow:hidden}
@@ -694,8 +699,10 @@ body.dk .rtc .rtmini{background:rgba(255,255,255,.03)}
 #rtView.on{transform:translateY(0);visibility:visible}
 #rtView .rtbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:11px;
   padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
-  background:color-mix(in srgb,var(--bg) 86%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  /* 不用毛玻璃：整个浮层要跟着手指滑，sticky + backdrop-filter 在这种滚动容器里
+     会把每帧都重新模糊一次（iOS 上明显发滞），底色本来就是同色，看不出差别。 */
+  background:var(--bg);
+  border-bottom:1px solid var(--line)}
 #rtView .rtbar .rtx{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);background:var(--card);
   color:var(--ink2);font-size:13px;cursor:pointer;flex:none;font-family:inherit;transition:transform .15s}
 #rtView .rtbar .rtx:active{transform:scale(.9)}
@@ -905,52 +912,72 @@ body.dk #tab:after{display:none}
 .sectt i{width:3px;height:13px;border-radius:2px;background:var(--gold);display:block;flex:none}
 .sectt span{margin-left:auto;font-size:10.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
 
-/* ① 今天 —— 首页唯一的深色 hero。深色在这里不是为了炫技，
-   是让「今天」在一屏白卡里一眼跳出来，也把烫金压得更沉。 */
-.hero-today{background:linear-gradient(168deg,#1B1F27 0%,#0B0E13 100%);
-  border:1px solid rgba(255,255,255,.075);border-radius:var(--r);
-  box-shadow:0 1px 1px rgba(10,12,16,.2),0 18px 40px -22px rgba(10,12,16,.55);
-  overflow:hidden;position:relative;color:#EDEFF2}
+/* ① 今天 —— 首页的视觉锚点。
+   ⚠️ 2026-10-21 阿成指出：整页是浅色时这块还是黑的，很突兀。
+   现在**浅色主题给浅色版**（暖象牙底 + 烫金细框，仍然比周围卡片"重"一档，
+   但不再是一块黑砖），深色版本只在 body.dk 下出现。
+   内部颜色全部走 --h-* 变量，两套主题各写一遍，不要再往规则里硬编码白色。 */
+.hero-today{
+  --h-ink:#14171C; --h-ink2:#5C6472; --h-ink3:#8A919C;
+  --h-gold:#8A6A2C; --h-ln:rgba(20,23,28,.10); --h-ln2:rgba(20,23,28,.055);
+  --h-chip:rgba(255,255,255,.78); --h-chipbd:rgba(20,23,28,.10);
+  --h-go:rgba(144,112,47,.055); --h-date:rgba(255,255,255,.62); --h-datebd:rgba(144,112,47,.26);
+  background:linear-gradient(168deg,#FFFDF8 0%,#F6F2E7 100%);
+  border:1px solid rgba(144,112,47,.22);border-radius:var(--r);
+  box-shadow:0 1px 1px rgba(16,19,24,.04),0 16px 34px -26px rgba(16,19,24,.34);
+  overflow:hidden;position:relative;color:var(--h-ink)}
 .hero-today:after{content:"";position:absolute;right:-60px;top:-80px;width:230px;height:230px;border-radius:50%;
-  background:radial-gradient(circle,rgba(201,169,97,.16),transparent 68%);pointer-events:none}
-body.dk .hero-today{background:linear-gradient(168deg,#1E232C 0%,#0F1218 100%);
-  border-color:rgba(201,169,97,.22)}
+  background:radial-gradient(circle,rgba(201,169,97,.14),transparent 68%);pointer-events:none}
+body.dk .hero-today{
+  --h-ink:#FFFFFF; --h-ink2:rgba(255,255,255,.60); --h-ink3:rgba(255,255,255,.42);
+  --h-gold:#D9BE86; --h-ln:rgba(255,255,255,.09); --h-ln2:rgba(255,255,255,.06);
+  --h-chip:rgba(255,255,255,.055); --h-chipbd:rgba(255,255,255,.09);
+  --h-go:rgba(201,169,97,.07); --h-date:rgba(255,255,255,.06); --h-datebd:rgba(201,169,97,.32);
+  background:linear-gradient(168deg,#1E232C 0%,#0F1218 100%);
+  border-color:rgba(201,169,97,.22);
+  box-shadow:0 1px 1px rgba(10,12,16,.2),0 18px 40px -22px rgba(10,12,16,.55)}
 .hero-today .th{display:flex;align-items:flex-start;gap:14px;padding:18px 18px 0;position:relative;z-index:1}
 .hero-today .dnum{flex:none;width:54px;text-align:center;padding:8px 0 7px;border-radius:14px;
-  background:linear-gradient(160deg,rgba(201,169,97,.2),rgba(201,169,97,.05));
-  border:1px solid rgba(201,169,97,.32)}
-.hero-today .dnum b{display:block;font-size:23px;font-weight:700;letter-spacing:-1px;line-height:1;color:#fff;
+  background:linear-gradient(160deg,rgba(201,169,97,.22),rgba(201,169,97,.05));
+  border:1px solid var(--h-datebd)}
+.hero-today .dnum b{display:block;font-size:23px;font-weight:700;letter-spacing:-1px;line-height:1;color:var(--h-ink);
   font-variant-numeric:tabular-nums}
-.hero-today .dnum span{display:block;font-size:8.5px;color:#D9BE86;letter-spacing:.1em;margin-top:4px;font-weight:600}
+.hero-today .dnum span{display:block;font-size:8.5px;color:var(--h-gold);letter-spacing:.1em;margin-top:4px;font-weight:600}
 .hero-today .tx{flex:1;min-width:0;padding-top:1px}
-.hero-today .tx .k{font-size:9.5px;letter-spacing:.18em;color:#D9BE86;font-weight:600}
-.hero-today .tx h2{font-size:19px;font-weight:700;letter-spacing:-.4px;margin-top:5px;line-height:1.25;color:#fff}
-.hero-today .tx .s{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:5px;line-height:1.5}
+.hero-today .tx .k{font-size:9.5px;letter-spacing:.18em;color:var(--h-gold);font-weight:600}
+.hero-today .tx h2{font-size:19px;font-weight:700;letter-spacing:-.4px;margin-top:5px;line-height:1.25;color:var(--h-ink)}
+.hero-today .tx .s{font-size:11.5px;color:var(--h-ink2);margin-top:5px;line-height:1.5}
 .hero-today .tb{padding:14px 18px 16px;position:relative;z-index:1}
 .hero-today .chipwrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
 .hero-today .ex-chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:500;
-  padding:5px 9px;border-radius:8px;background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.78)}
-.hero-today .ex-chip b{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
-.hero-today .ex-chip em{color:rgba(255,255,255,.42)!important}
-.hero-today .empty{padding:2px 0 4px;font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.6}
-.hero-today .mstats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.08);
+  padding:5px 9px;border-radius:8px;background:var(--h-chip);
+  border:1px solid var(--h-chipbd);color:var(--h-ink2)}
+.hero-today .ex-chip b{font-weight:700;color:var(--h-ink);font-variant-numeric:tabular-nums}
+.hero-today .ex-chip em{color:var(--h-ink3)!important}
+.hero-today .empty{padding:2px 0 4px;font-size:11.5px;color:var(--h-ink2);line-height:1.6}
+.hero-today .mstats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--h-ln);
   margin-top:14px;padding-top:13px}
-.hero-today .mstats div{text-align:center;border-right:1px solid rgba(255,255,255,.06)}
+.hero-today .mstats div{text-align:center;border-right:1px solid var(--h-ln2)}
 .hero-today .mstats div:last-child{border:0}
-.hero-today .mstats b{display:block;font-size:16px;font-weight:700;letter-spacing:-.4px;color:#fff;
+.hero-today .mstats b{display:block;font-size:16px;font-weight:700;letter-spacing:-.4px;color:var(--h-ink);
   font-variant-numeric:tabular-nums}
-.hero-today .mstats span{display:block;font-size:9px;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.06em}
+.hero-today .mstats span{display:block;font-size:9px;color:var(--h-ink3);margin-top:3px;letter-spacing:.06em}
 .hero-today .go{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;
-  color:#D9BE86;font-weight:600;padding:13px;border-top:1px solid rgba(255,255,255,.07);
-  background:rgba(201,169,97,.07);position:relative;z-index:1}
+  color:var(--h-gold);font-weight:600;padding:13px;border-top:1px solid var(--h-ln2);
+  background:var(--h-go);position:relative;z-index:1}
 
 /* ② 本周 7 条：细柱（宽度固定 18px 居中）—— 之前柱宽 100%，
    只有一天有训练时看着像一整块金色，分不清是"一天"还是"一周"。 */
 .wkbar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:2px}
-.wkbar .c{display:flex;flex-direction:column;align-items:center;gap:7px;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;padding:2px 0;border-radius:10px;
+.wkbar .c{display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;padding:2px 0 8px;border-radius:10px;
   transition:background .16s ease,transform .12s ease}
+/* 「今天」只能用一个小圆点标出来 ——
+   ⚠️ 原来今天那根柱子底下画了条金色横杠（.cur .bar:after），
+   没训练的日子看着像"练了一点"，阿成 2026-10-21 明确说会误读，已删。
+   现在：今天 = 星期那个字变金 + 底下一个小金点，柱子里除了真实数据什么都不画。 */
+.wkbar .c.cur:after{content:"";position:absolute;left:50%;bottom:0;width:4px;height:4px;
+  margin-left:-2px;border-radius:50%;background:var(--gold)}
 .wkbar .c:active{background:color-mix(in srgb,var(--gold) 9%,transparent);transform:scale(.955)}
 .wkbar .c:active .bar i{filter:brightness(1.08)}
 .wkbar .c .bar{width:18px;height:52px;border-radius:4px;background:transparent;
@@ -961,7 +988,6 @@ body.dk .hero-today{background:linear-gradient(168deg,#1E232C 0%,#0F1218 100%);
 .wkbar .c.rest .bar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
   border-radius:2px;background:var(--line)}
 .wkbar .c.fut .bar:after{background:var(--line2)}
-.wkbar .c.cur .bar:after{background:color-mix(in srgb,var(--gold) 45%,transparent)}
 .wkbar .c.fut .bar{opacity:.55}
 .wkbar .c .d{font-size:9.5px;color:var(--ink3);letter-spacing:.04em}
 .wkbar .c.cur .d{color:var(--gold);font-weight:700}
@@ -982,19 +1008,31 @@ body.dk .hero-today{background:linear-gradient(168deg,#1E232C 0%,#0F1218 100%);
   padding-top:5px;gap:1px;position:relative}
 .mcal .cd.empty{background:transparent}
 .mcal .cd .cdn{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums;font-weight:500}
-.mcal .cd.lv1{background:color-mix(in srgb,var(--gold) 15%,transparent);
-  border-color:color-mix(in srgb,var(--gold) 20%,transparent)}
-.mcal .cd.lv2{background:color-mix(in srgb,var(--gold) 28%,transparent);
-  border-color:color-mix(in srgb,var(--gold) 36%,transparent)}
-.mcal .cd.lv3{background:color-mix(in srgb,var(--gold) 45%,transparent);
-  border-color:color-mix(in srgb,var(--gold) 55%,transparent)}
-.mcal .cd.lv4{background:color-mix(in srgb,var(--gold) 66%,transparent);
-  border-color:color-mix(in srgb,var(--gold) 74%,transparent)}
+.mcal .cd.lv1{background:color-mix(in srgb,var(--gold) 13%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 18%,transparent)}
+.mcal .cd.lv2{background:color-mix(in srgb,var(--gold) 25%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 32%,transparent)}
+.mcal .cd.lv3{background:color-mix(in srgb,var(--gold) 38%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 46%,transparent)}
+.mcal .cd.lv4{background:color-mix(in srgb,var(--gold) 54%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 62%,transparent)}
+/* 深色主题底色本来就暗，四档要更实才看得出来 */
+body.dk .mcal .cd.lv1{background:color-mix(in srgb,var(--gold) 15%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 22%,transparent)}
+body.dk .mcal .cd.lv2{background:color-mix(in srgb,var(--gold) 28%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 38%,transparent)}
+body.dk .mcal .cd.lv3{background:color-mix(in srgb,var(--gold) 45%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 56%,transparent)}
+body.dk .mcal .cd.lv4{background:color-mix(in srgb,var(--gold) 66%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 76%,transparent)}
 .mcal .cd.lv1 .cdn,.mcal .cd.lv2 .cdn{color:var(--ink)}
-.mcal .cd.lv3 .cdn,.mcal .cd.lv4 .cdn{color:#fff}
+/* ⚠️ 2026-10-21：lv3/lv4 原来是 #fff 白字，浅色主题下这两档是"浅金底"，
+   白字对比度只有 1.9，几乎看不见（阿成说"其他地方有没有类似的问题"就是这类）。
+   浅色统一用深墨字，深色主题里金底更亮，继续用近黑字。 */
+.mcal .cd.lv3 .cdn,.mcal .cd.lv4 .cdn{color:var(--ink)}
 body.dk .mcal .cd.lv3 .cdn,body.dk .mcal .cd.lv4 .cdn{color:#0B0E13}
 .mcal .cd.now{box-shadow:0 0 0 1.5px var(--gold) inset;border-color:transparent}
-.mcal .cd.now .cdn{color:var(--gold);font-weight:700}
+.mcal .cd.now .cdn{color:var(--ink);font-weight:700}
 .mcal .cd.fut{opacity:.34}
 .mcal .cd .dotline{display:flex;gap:2px;height:3px;align-items:center;margin-top:2px}
 .mcal .cd .dotline i{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.5}
@@ -1126,6 +1164,13 @@ const WD=['周一','周二','周三','周四','周五','周六','周日'];
 const TY={'跑步':['🏃','run'],'步行':['🚶','walk'],'徒步':['🥾','walk'],'骑行':['🚴','ride'],
   '力量训练':['💪','lift'],'核心训练':['🧘','lift'],'乒乓球':['🏓','lift'],'爬楼梯':['🪜','walk'],
   '健身游戏':['🎮','lift'],'椭圆机':['⚙️','lift'],'游泳':['🏊','run']};
+/* 类型名带前缀（户外骑行 / 室内跑步）在 TY 里查不到，之前会退化成 '·'，
+   首页 chip 就显示成「· 户外骑行」这种半截符号。这里先剥前缀再查，查不到就不给图标。 */
+function tyIcon(t){
+  const s=String(t||''), k=s.replace(/^(户外|室内)/,'');
+  const m=TY[k]||TY[s];
+  return m?m[0]:'';
+}
 
 /* 哪些类型的"配速（分钟/公里）"有意义 ——
    游泳按每公里算会显示成 102'45" 这种怪数字，干脆不显示。 */
@@ -1546,10 +1591,10 @@ function homeCalHTML(){
     <div class="ch7">${['一','二','三','四','五','六','日'].map(x=>`<span>${x}</span>`).join('')}</div>
     <div class="cg">${cells}</div>
     <div class="leg"><span>少</span>
-      <i style="background:color-mix(in srgb,var(--gold) 11%,transparent)"></i>
-      <i style="background:color-mix(in srgb,var(--gold) 22%,transparent)"></i>
-      <i style="background:color-mix(in srgb,var(--gold) 36%,transparent)"></i>
-      <i style="background:color-mix(in srgb,var(--gold) 56%,transparent)"></i>
+      <i style="background:color-mix(in srgb,var(--gold) 13%,transparent)"></i>
+      <i style="background:color-mix(in srgb,var(--gold) 25%,transparent)"></i>
+      <i style="background:color-mix(in srgb,var(--gold) 38%,transparent)"></i>
+      <i style="background:color-mix(in srgb,var(--gold) 54%,transparent)"></i>
       <span>多</span><span style="margin-left:auto">点某天看当天做了什么</span></div>
   </div>`;
 }
@@ -1637,7 +1682,7 @@ function viewHome(){
         it.sets?` <em style="font-style:normal;color:var(--ink3)">${it.sets}×${esc(it.reps||'')}</em>`:''}</span>`;
     });
     tw.forEach(r=>{
-      chips+=`<span class="ex-chip">${(TY[r.类型]||['·'])[0]} ${esc(r.类型)}${
+      chips+=`<span class="ex-chip">${tyIcon(r.类型)?tyIcon(r.类型)+' ':''}${esc(r.类型)}${
         r.距离?` <b>${r.距离}km</b>`:''}${
         hasPace(r)?` <em style="font-style:normal;color:var(--ink3)">${r.配速显示}</em>`:''}</span>`;
     });
@@ -3239,15 +3284,38 @@ const RT={data:null,loading:false,err:null,cur:null,proj:null,down:false,play:0}
 const RT_COL={'跑步':'#4A8FD4','骑行':'#3FA07A','徒步':'#D9A83C','步行':'#8A93A3'};
 const SPD_STOPS=['#4A8FD4','#3FA07A','#D9A83C','#E07B39','#C8503C'];   /* 慢 → 快 */
 
-function rtLoad(){
+function rtLoad(quiet){
   if(RT.data||RT.loading) return;
   RT.loading=true;
-  fetch('routes.json?v='+Date.now()).then(r=>r.json()).then(d=>{
-    RT.data=d;RT.loading=false;
+  /* ⚠️ 原来这里带 ?v=Date.now()，等于每次都禁用缓存、重下 0.5 MB 轨迹，
+     点卡片要等好几秒才有反应（2026-10-21 阿成反馈"点它很久才反应过来"）。
+     现在用数据版本号做参数：同一个版本第一次下完就进 HTTP 缓存，之后秒开。 */
+  const ver=(D.routeIdx&&D.routeIdx.v)||D.v||'1';
+  fetch('routes.json?v='+encodeURIComponent(ver)).then(r=>r.json()).then(d=>{
+    RT.data=d;RT.loading=false;RT.err=null;
     rtFillHome();
     if(CUR==='#/route') route();          /* 在路线页触发的加载 → 重画列表补上缩略图 */
     if(RT.cur) rtOpen(RT.cur);            /* 加载期间点了卡片/明细入口 → 补开详情 */
-  }).catch(e=>{RT.loading=false;RT.err=String(e);route()});
+  }).catch(e=>{
+    RT.loading=false;RT.err=String(e);
+    const v=document.getElementById('rtView');
+    if(RT.cur&&v&&v.classList.contains('on')){
+      document.getElementById('rtBody').innerHTML=
+        `<div class="wrap" style="padding-top:16px"><div class="empty-tip">轨迹数据没载进来：${esc(RT.err)}<br>
+        <button class="rtgo" style="margin-top:10px" onclick="RT.err=null;rtLoad()">重试</button></div></div>`;
+    }
+    if(!quiet) route();
+  });
+}
+/* 首页渲染完就顺手把轨迹数据拉到内存里（idle 时段），
+   这样点「路线轨迹」是直接出图，不用先等 0.5 MB 下载。 */
+let rtPre=0;
+function rtPreload(){
+  if(rtPre||RT.data||RT.loading||!D.routeIdx||!D.routeIdx.n) return;
+  rtPre=1;
+  const go=()=>{rtPre=0;rtLoad(true)};
+  if('requestIdleCallback' in window) requestIdleCallback(go,{timeout:2200});
+  else setTimeout(go,1200);
 }
 /* 首页「路线轨迹」卡的缩略图（数据到了再补，不挡首屏） */
 function rtFillHome(){
@@ -3353,10 +3421,20 @@ function rtCardHTML(r){
 }
 
 /* ── 详情 ── */
+/* 点了就立刻有反馈：先弹出浮层骨架，数据到了再填内容。
+   以前是"点了没反应，等 fetch 完了才整页滑出来"，手感像卡死。 */
 function openRoute(id){
   closeSheet();
-  if(!RT.data){RT.cur=id;rtLoad();return;}
+  if(!RT.data){RT.cur=id;rtLoadingCover();rtLoad();return;}
   rtOpen(id);
+}
+function rtLoadingCover(){
+  const t=document.getElementById('rtTitle'), b=document.getElementById('rtBody');
+  if(t) t.innerHTML='正在载入轨迹<span>ROUTE TRACE</span>';
+  if(b) b.innerHTML='<div class="wrap" style="padding-top:16px"><div class="empty-tip">正在读取 GPS 轨迹…<br>'+
+    '<span style="font-size:10px">第一次打开要下载约 0.5 MB，之后会缓存秒开</span></div></div>';
+  const v=document.getElementById('rtView');
+  if(v){v.classList.add('on');v.scrollTop=0;}
 }
 function rtOpen(id){
   RT.cur=id;
@@ -4088,6 +4166,7 @@ function paint(){
   window.scrollTo(0, samePage?keepY:(SCROLLPOS[h]||0));
   LASTPAINT=h;
   syncTh();
+  rtPreload();   /* 空闲时预取轨迹数据，点「路线轨迹」就不用等下载 */
 }
 /* 重渲染（hash 没变也要重画时用，比如日历翻月） */
 function route(){CUR=location.hash||'#/';paint()}
@@ -4128,24 +4207,47 @@ document.addEventListener('click',e=>{
   navigate(a.getAttribute('href'));
 },true);
 
-/* 屏幕左边缘往右滑 → 直接回首页。
-   占位 28px、横向位移 64px 内触发、竖向为主就放弃（不干扰上下滚动）。
-   在 Safari 里系统的边缘返回手势可能抢先接管（此时我们收不到 pointer 事件），
-   但因为有上面的浅历史，系统返回同样落在首页 —— 两条路殊途同归。 */
+/* 往右滑 = 返回上一级。顺序：轨迹详情层 → 明细弹层 → 首页。
+   ⚠️ 2026-10-21 重写（阿成反馈"轨迹出来以后左滑右滑回不去"）：
+   1) 旧版只认「28px 以内起手」，可 iOS Safari 那二十来像素会被系统的侧滑返回抢走，
+      我们根本收不到 pointer 事件 → 手指按在边缘滑，页面上什么都不发生。
+      现在起手范围放宽到屏幕左侧 46%，触发位移 60px。
+   2) 旧版只调 goHome()，**没关 #rtView 浮层** —— 底层页面换了、浮层还盖在上面，
+      看起来就是"滑了没反应"。现在先关浮层（这才是"上一页"），关完才回首页。
+   3) 轨迹图/横滑筛选条自己要用横向拖动，起手落在这些元素上直接放行。 */
 let _sg=null;
+function noSwipe(el){
+  if(!el||!el.closest) return false;
+  if(el.closest('.rtmap,.ychips,.segbar,.rflt')) return true;
+  for(let n=el;n&&n!==document.body;n=n.parentElement){
+    const cs=getComputedStyle(n);
+    if((cs.overflowX==='auto'||cs.overflowX==='scroll')&&n.scrollWidth>n.clientWidth+6) return true;
+  }
+  return false;
+}
+function backOne(){
+  const v=document.getElementById('rtView');
+  if(v&&v.classList.contains('on')){closeRoute();return true}
+  const sh=document.getElementById('sheet');
+  if(sh&&sh.classList.contains('on')){closeSheet();return true}
+  if(CUR&&CUR!=='#/'){navigate('#/');return true}
+  return false;
+}
 document.addEventListener('pointerdown',e=>{
-  if(e.clientX>28) return;
-  if(document.getElementById('sheet').classList.contains('on')) return;   // 明细弹层开着时不抢
+  _sg=null;
+  if(e.pointerType==='mouse') return;
+  if(e.clientX>innerWidth*.46) return;
+  if(noSwipe(e.target)) return;
   _sg={x:e.clientX,y:e.clientY,ok:true};
 },{passive:true});
 document.addEventListener('pointermove',e=>{
   if(!_sg||!_sg.ok) return;
   const dx=e.clientX-_sg.x, dy=e.clientY-_sg.y;
-  if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12){_sg.ok=false;return}      // 竖向滚动，放行
-  if(dx>64){_sg.ok=false; goHome()}
+  if(dx<-12){_sg.ok=false;return}                                   // 往左滑，不管
+  if(Math.abs(dy)>14&&Math.abs(dy)>Math.abs(dx)){_sg.ok=false;return} // 竖着滚动，放行
+  if(dx>60&&Math.abs(dy)<Math.abs(dx)*.8){_sg.ok=false;backOne()}
 },{passive:true});
-document.addEventListener('pointerup',()=>{_sg=null},{passive:true});
-document.addEventListener('pointercancel',()=>{_sg=null},{passive:true});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{_sg=null},{passive:true}));
 
 function setTh(m){THMODE=m;localStorage.setItem('thm',m);syncTh()}   // 'auto' | 'l' | 'd'
 
