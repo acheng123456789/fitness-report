@@ -3424,7 +3424,10 @@ function rtCardHTML(r){
 /* 点了就立刻有反馈：先弹出浮层骨架，数据到了再填内容。
    以前是"点了没反应，等 fetch 完了才整页滑出来"，手感像卡死。 */
 function openRoute(id){
-  closeSheet();
+  /* ⚠️ 2026-10-21 阿成：从「当天明细」点进轨迹，关掉轨迹后应该回到**那天的明细**，
+     不是直接掉回日历页。原来这里无条件 closeSheet()，所以回去时明细已经没了。
+     现在不关弹层：轨迹浮层 z-index 100 直接盖在明细弹层（90）上面，
+     关掉轨迹 → 原地露出当天明细；再返回一次才关明细、回日历。逐级退，和点进来时对称。 */
   if(!RT.data){RT.cur=id;rtLoadingCover();rtLoad();return;}
   rtOpen(id);
 }
@@ -3481,7 +3484,7 @@ function rtDetailHTML(r){
       <div class="rtgrid">${cells.map(c=>`<div class="cell"><div class="v">${c[0]}<u>${c[1]}</u></div><div class="lb">${c[2]}</div></div>`).join('')}</div>
     </div>
     ${r.elev&&r.elev.length>1?`<div class="sec"><div class="shead"><span class="no">03</span><span class="tt">海拔剖面</span><span class="en2">Elevation</span><span class="ln"></span></div>
-      <div class="card block">${rtElevSVG(r)}
+      <div class="card block" data-noswipe>${rtElevSVG(r)}
       <div class="cap">同样可以拖动 · 和上面的轨迹左右对齐</div></div></div>`:''}
     ${r.hr&&r.hr.length>1?`<div class="sec"><div class="shead"><span class="no">04</span><span class="tt">心率曲线</span><span class="en2">Heart Rate</span><span class="ln"></span></div>
       <div class="card block">${rtHRSVG(r)}
@@ -4218,6 +4221,11 @@ document.addEventListener('click',e=>{
 let _sg=null;
 function noSwipe(el){
   if(!el||!el.closest) return false;
+  /* 图（轨迹图/海拔剖面/心率曲线/迷你图）自己要用横向拖动 ——
+     ⚠️ 2026-10-21：在海拔图上左右拖，会把浮层当成"右滑返回"关掉，阿成录屏里就踩到了。
+     所有 svg 一律不参与返回手势。 */
+  if(el.closest('svg')) return true;
+  if(el.closest('[data-noswipe]')) return true;
   if(el.closest('.rtmap,.ychips,.segbar,.rflt')) return true;
   for(let n=el;n&&n!==document.body;n=n.parentElement){
     const cs=getComputedStyle(n);
